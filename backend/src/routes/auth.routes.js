@@ -5,8 +5,8 @@ import { login, logout, register } from "../controllers/auth.controller.js";
 const router = Router();
 
 router
-  .post("/login", login)
-  .post("/register", register)
-  .post("/logout", logout);
+    .post("/login", login)
+    .post("/register", register)
+    .post("/logout", logout);
 
-export default router;
+export default router; // Usa export default
