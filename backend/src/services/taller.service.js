@@ -138,7 +138,7 @@ export async function updateTallerService(query, body) {
   }
 }
 
-export async function eliminarAlumnoService(req, res) {
+export async function deleteStudentService(req, res) {
   try {
     // Obtener los IDs de los parámetros de la ruta
     const { tallerId, alumnoId } = req.params;
@@ -247,7 +247,7 @@ export async function inscribirAlumnoAutenticado(req, res) {
   }
 }
 
-export async function inscribirAlumnoService(req, res) { //inscribir a un alumno en un taller siendo un profesor o administrador
+export async function inscribirAlumnoService(req, res) {
   try {
     const { tallerId, alumnoId } = req.body;
     const userId = req.user.id;  // ID del profesor o administrador que está haciendo la inscripción
@@ -258,12 +258,14 @@ export async function inscribirAlumnoService(req, res) { //inscribir a un alumno
     // Buscar el taller
     const taller = await tallerRepository.findOne({
       where: { id: tallerId },
-      relations: ["usuarios"],
+      relations: ["usuarios", "profesor"],  // Incluyendo el profesor relacionado
     });
     if (!taller) return res.status(404).json({ message: "Taller no encontrado" });
 
     // Verificar si el usuario es un profesor del taller o administrador
     const user = await userRepository.findOne({ where: { id: userId } });
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
     if (user.rol !== "profesor" && user.rol !== "administrador") {
       return res.status(403).json({ message: "Solo profesores o administradores pueden inscribir a estudiantes" });
     }
@@ -273,8 +275,16 @@ export async function inscribirAlumnoService(req, res) { //inscribir a un alumno
       return res.status(403).json({ message: "Solo el profesor asignado puede inscribir estudiantes en este taller" });
     }
 
-    // Verificar si el alumno ya está inscrito
+    // Verificar si el alumno existe
     const alumno = await userRepository.findOne({ where: { id: alumnoId } });
+    if (!alumno) return res.status(404).json({ message: "Alumno no encontrado" });
+
+    // Verificar si el usuario tiene el rol de estudiante
+    if (alumno.rol !== "estudiante") {
+      return res.status(400).json({ message: "El usuario no tiene el rol de estudiante" });
+    }
+
+    // Verificar si el alumno ya está inscrito
     const isAlreadyEnrolled = taller.usuarios.some((u) => u.id === alumnoId);
     if (isAlreadyEnrolled) return res.status(400).json({ message: "El alumno ya está inscrito en este taller" });
 
@@ -295,12 +305,23 @@ export async function inscribirAlumnoService(req, res) { //inscribir a un alumno
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 export async function obtenerTalleresInscritos(req, res) {
   try {
     const userId = req.user.id; // Obtener el ID del alumno de los parámetros de la ruta
 
     const userRepository = AppDataSource.getRepository(User);  // Repositorio de usuarios
-    const tallerRepository = AppDataSource.getRepository(Taller);  // Repositorio de talleres
 
     // Buscar al alumno por su ID
     const alumno = await userRepository.findOne({
@@ -327,3 +348,38 @@ export async function obtenerTalleresInscritos(req, res) {
 }
 
 
+export async function obtenerTalleresInscritosProfesor(req, res) {
+  try {
+    const profesorId = req.user.id; // El ID del profesor viene desde el JWT
+
+    // Repositorio de usuarios y talleres
+    const userRepository = AppDataSource.getRepository(User);
+    const tallerRepository = AppDataSource.getRepository(Taller);
+
+    // Buscar al profesor por su ID y rol
+    const profesor = await userRepository.findOne({
+      where: { id: profesorId, rol: "profesor" },
+      relations: ["talleres"], // Incluir la relación de talleres
+    });
+
+    if (!profesor) {
+      return res.status(404).json({ message: "Profesor no encontrado" });
+    }
+
+    // Obtener los talleres en los que el profesor está inscrito
+    const talleresAsignados = await tallerRepository.find({
+      where: { profesor: profesorId }, // Filtrar por el profesor
+      relations: ["usuarios"], // Relación con los usuarios inscritos, si es necesario
+    });
+
+    if (talleresAsignados.length === 0) {
+      return res.status(200).json({ message: "No tienes talleres asignados" });
+    }
+
+    // Devolver los talleres en los que el profesor está asignado
+    return res.status(200).json({ talleres: talleresAsignados });
+  } catch (error) {
+    console.error("Error al obtener los talleres del profesor:", error);
+    return res.status(500).json({ message: "Error interno del servidor" });
+  }
+}

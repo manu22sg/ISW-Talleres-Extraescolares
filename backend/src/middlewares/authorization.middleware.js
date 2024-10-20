@@ -69,7 +69,7 @@ export async function isStudent(req, res, next) {
       });
     }
   }
-  export async function esProfesor(req, res, next) {
+  export async function isTeacher(req, res, next) {
     try {
       const userRepository = AppDataSource.getRepository(User);
   

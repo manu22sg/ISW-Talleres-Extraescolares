@@ -2,8 +2,8 @@
 import { Router } from "express";
 import userRoutes from "./user.routes.js";
 import authRoutes from "./auth.routes.js";
-import talleres from "./taller.routes.js";
-import inscribir from "./student.routes.js";
+import talleresRoutes from "./taller.routes.js";
+import estudiantesRoutes from "./student.routes.js";
 
 
 const router = Router();
@@ -11,8 +11,8 @@ const router = Router();
 router
     .use("/auth", authRoutes)
     .use("/user", userRoutes)
-    .use("/taller", talleres)
-    .use("/estudiantes", inscribir);
+    .use("/taller", talleresRoutes)
+    .use("/estudiantes", estudiantesRoutes);
     
 
 export default router;

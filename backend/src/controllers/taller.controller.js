@@ -7,8 +7,10 @@ import {
   deleteTallerService,
   inscribirAlumnoAutenticado,
   inscribirAlumnoService,
-  eliminarAlumnoService,
-  obtenerTalleresInscritos
+  
+  obtenerTalleresInscritos,
+  deleteStudentService,
+  obtenerTalleresInscritosProfesor
 } from "../services/taller.service.js";
 import { tallerBodyValidation,tallerPatchValidation } from "../validations/taller.validation.js";
 
@@ -64,9 +66,9 @@ export async function updateTallerController(req, res) {
   res.json(taller);
 }
 
-export const eliminarAlumnoPorProfesorOAdmin = async (req, res) => {
+export const deleteStudentController = async (req, res) => {
   try {
-    await eliminarAlumnoService(req, res);
+    await deleteStudentService(req, res);
   } catch (error) {
     console.error('Error al eliminar alumno:', error);
     return res.status(500).json({ message: 'Error interno del servidor' });
@@ -115,6 +117,17 @@ export const inscribirAlumnoPorProfesorOAdmin = async (req, res) => {  /// VALID
 export const TalleresInscritos = async (req, res) => {
   try {
     await obtenerTalleresInscritos(req, res);
+    
+  } catch (error) {
+    console.error('Error al inscribir alumno:', error);
+    return res.status(500).json({ message: 'Error interno del servidor' });
+  }
+};
+
+export const TalleresInscritosProfesor = async (req, res) => {
+  try {
+    console.log("Request Body:", req.body); 
+    await obtenerTalleresInscritosProfesor(req, res);
     
   } catch (error) {
     console.error('Error al inscribir alumno:', error);
