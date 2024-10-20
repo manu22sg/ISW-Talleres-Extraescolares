@@ -1,4 +1,3 @@
-"use strict";
 import { EntitySchema } from "typeorm";
 
 const UserSchema = new EntitySchema({
@@ -46,6 +45,24 @@ const UserSchema = new EntitySchema({
       default: () => "CURRENT_TIMESTAMP",
       onUpdate: "CURRENT_TIMESTAMP",
       nullable: false,
+    },
+  },
+  relations: {
+    talleres: {
+      target: "Taller",  // Relación con la entidad Taller
+      type: "many-to-many",
+      inverseSide: "usuarios",  // Relación inversa en Taller (usuarios)
+      joinTable: {
+        name: "inscripciones",  // Nombre de la tabla intermedia
+        joinColumn: {
+          name: "usuarioId",
+          referencedColumnName: "id",
+        },
+        inverseJoinColumn: {
+          name: "tallerId",
+          referencedColumnName: "id",
+        },
+      },
     },
   },
   indices: [

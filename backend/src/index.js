@@ -11,6 +11,7 @@ import { connectDB } from "./config/configDb.js";
 import { createUsers } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
 
+
 async function setupServer() {
   try {
     const app = express();
@@ -38,7 +39,7 @@ async function setupServer() {
     );
 
     app.use(cookieParser());
-
+    
     app.use(morgan("dev"));
 
     app.use(
@@ -60,6 +61,7 @@ async function setupServer() {
     passportJwtSetup();
 
     app.use("/api", indexRoutes);
+    
 
     app.listen(PORT, () => {
       console.log(`=> Servidor corriendo en ${HOST}:${PORT}/api`);
@@ -67,7 +69,9 @@ async function setupServer() {
   } catch (error) {
     console.log("Error en index.js -> setupServer(), el error es: ", error);
   }
+  
 }
+
 
 async function setupAPI() {
   try {

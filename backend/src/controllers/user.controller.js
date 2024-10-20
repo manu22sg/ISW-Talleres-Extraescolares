@@ -53,43 +53,35 @@ export async function getUsers(req, res) {
 
 export async function updateUser(req, res) {
   try {
-    const { rut, id, email } = req.query;
-    const { body } = req;
+    const { id } = req.params; // El id se obtiene de los parámetros de la URL
+    const body = req.body;     // El body tiene los datos a actualizar
 
-    const { error: queryError } = userQueryValidation.validate({
-      rut,
-      id,
-      email,
-    });
-
-    if (queryError) {
-      return handleErrorClient(
-        res,
-        400,
-        "Error de validación en la consulta",
-        queryError.message,
-      );
-    }
-
+    // Valida solo los datos del body, ya que el id está en los parámetros de la URL
     const { error: bodyError } = userBodyValidation.validate(body);
 
-    if (bodyError)
+    if (bodyError) {
       return handleErrorClient(
         res,
         400,
         "Error de validación en los datos enviados",
-        bodyError.message,
+        bodyError.message
       );
+    }
 
-    const [user, userError] = await updateUserService({ rut, id, email }, body);
+    // Llamar al servicio para actualizar el usuario con el id y los datos del body
+    const [user, userError] = await updateUserService({ id }, body);
 
-    if (userError) return handleErrorClient(res, 400, "Error modificando al usuario", userError);
+    if (userError) {
+      return handleErrorClient(res, 400, "Error modificando al usuario", userError);
+    }
 
+    // Responder con éxito
     handleSuccess(res, 200, "Usuario modificado correctamente", user);
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }
 }
+
 
 export async function deleteUser(req, res) {
   try {
