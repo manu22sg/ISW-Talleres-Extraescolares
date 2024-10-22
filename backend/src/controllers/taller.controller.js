@@ -126,11 +126,10 @@ export const TalleresInscritos = async (req, res) => {
 
 export const TalleresInscritosProfesor = async (req, res) => {
   try {
-    console.log("Request Body:", req.body); 
     await obtenerTalleresInscritosProfesor(req, res);
     
   } catch (error) {
     console.error('Error al inscribir alumno:', error);
-    return res.status(500).json({ message: 'Error interno del servidor' });
+    return res.status(500).json({ message: 'Error interno del servidor 2' });
   }
 };

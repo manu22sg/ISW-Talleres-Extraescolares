@@ -351,26 +351,18 @@ export async function obtenerTalleresInscritos(req, res) {
 export async function obtenerTalleresInscritosProfesor(req, res) {
   try {
     const profesorId = req.user.id; // El ID del profesor viene desde el JWT
+    // Para depurar
 
-    // Repositorio de usuarios y talleres
-    const userRepository = AppDataSource.getRepository(User);
     const tallerRepository = AppDataSource.getRepository(Taller);
-
-    // Buscar al profesor por su ID y rol
-    const profesor = await userRepository.findOne({
-      where: { id: profesorId, rol: "profesor" },
-      relations: ["talleres"], // Incluir la relación de talleres
-    });
-
-    if (!profesor) {
-      return res.status(404).json({ message: "Profesor no encontrado" });
-    }
 
     // Obtener los talleres en los que el profesor está inscrito
     const talleresAsignados = await tallerRepository.find({
-      where: { profesor: profesorId }, // Filtrar por el profesor
-      relations: ["usuarios"], // Relación con los usuarios inscritos, si es necesario
+      where: { profesor: { id: profesorId } }, // Busca por el ID del profesor en la relación
+      relations: ["usuarios"], // Incluir los usuarios inscritos en cada taller
     });
+    
+
+    // Para depurar
 
     if (talleresAsignados.length === 0) {
       return res.status(200).json({ message: "No tienes talleres asignados" });

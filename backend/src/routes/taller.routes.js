@@ -27,7 +27,7 @@ router.patch("/:id", isTeacher, updateTallerController);   //check
 router.delete("/:id", isAdmin, deleteTallerController); // Eliminar un taller por su id CHECK
 router.post("/inscripcion", isAdmin, inscribirAlumnoPorProfesorOAdmin); // ingresar alumno CHECK
 router.post("/inscripcion", isTeacher, inscribirAlumnoPorProfesorOAdmin);  //CHECK
-router.get("/tallerProfesor",isTeacher,TalleresInscritosProfesor ); // obtener talleres inscritos no check
+router.get("/profesor/Tallerprofesor",isTeacher,TalleresInscritosProfesor ); // obtener talleres inscritos no check
 
 
 

@@ -90,11 +90,11 @@ export async function isStudent(req, res, next) {
         });
       }
   
-      // Si el usuario es un estudiante, continúa con la siguiente acción
+      // Si el usuario es un profesor, continúa con la siguiente acción
       next();
     } catch (error) {
       return res.status(500).json({
-        message: "Error del servidor",
+        message: "Error del servidor 1",
         error: error.message,
       });
     }
