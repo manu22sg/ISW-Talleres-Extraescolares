@@ -1,6 +1,7 @@
 "use strict";
 import Taller from "../entity/taller.entity.js";
 import { parse } from 'date-fns'; //
+import {enviarCorreo} from '../helpers/nodemailer.helper.js';
 
 import User from "../entity/user.entity.js"; // Importar la entidad de usuarios
 import { AppDataSource } from "../config/configDb.js";
@@ -85,8 +86,23 @@ export const createTallerService = async (tallerData) => {
     estado
   });
 
-  // Guardamos el taller en la base de datos
-  return await tallerRepository.save(nuevoTaller);
+  const tallerGuardado = await tallerRepository.save(nuevoTaller);
+  
+  const estudiantes = await userRepository.find({
+    where: { rol: "estudiante" }, // Cambia según tu lógica de relación entre talleres y estudiantes
+    select: ['email'], // Solo necesitamos los correos electrónicos
+  });
+  const correosEstudiantes = estudiantes.map(estudiante => estudiante.email).join(','); // Unimos los correos en una cadena
+  const asunto = `Nuevo Taller Creado: ${nombre}`;
+  const texto = `Estimado(a) alumno(a),\nSe ha creado un nuevo taller: ${nombre}.\nDescripción: ${descripcion}\n \nProfesor : ${profesor.nombreCompleto}\nFecha de inicio: ${fechaInicioConvertida}\nFecha de fin: ${fechaFinConvertida}`;
+
+  // Llamamos a la función para enviar el correo
+  enviarCorreo(correosEstudiantes, asunto, texto);  
+return tallerGuardado
+
+  
+  
+
 };
 
 
@@ -130,7 +146,17 @@ export async function updateTallerService(query, body) {
     // Guardar el taller actualizado
     await tallerRepository.save(tallerFound);
 
-    // Devolver el taller actualizado
+    const estudiantes = await userRepository.find({
+      where: { rol: "estudiante",talleres: tallerFound }, // Cambia según tu lógica de relación entre talleres y estudiantes
+      select: ['email'], // Solo necesitamos los correos electrónicos
+    });
+    const correosEstudiantes = estudiantes.map(estudiante => estudiante.email).join(','); // Unimos los correos en una cadena
+    const asunto = `Actualización Taller: ${tallerFound.nombre}`;
+    const texto = `Estimado(a) alumno(a),\nSe ha actualizado información del taller: ${tallerFound.nombre}.`;
+  
+    // Llamamos a la función para enviar el correo
+    enviarCorreo(correosEstudiantes, asunto, texto);  
+  
     return [tallerFound, null];
   } catch (error) {
     console.error("Error al actualizar el taller:", error);
@@ -172,7 +198,7 @@ export async function deleteStudentService(req, res) {
     // Eliminar al alumno
     taller.usuarios.splice(alumnoIndex, 1);  // Remover el alumno de la lista
     taller.inscritos -= 1;  // Disminuir el contador de inscritos
-    await tallerRepository.save(taller);  // Guardar los cambios en la BD
+    await tallerRepository.save(taller);  // Guardar los cambios 
 
     return res.status(200).json({ message: "Alumno eliminado correctamente del taller", taller });
   } catch (error) {
