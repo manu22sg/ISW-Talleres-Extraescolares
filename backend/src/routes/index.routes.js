@@ -12,7 +12,7 @@ router
     .use("/auth", authRoutes)
     .use("/user", userRoutes)
     .use("/taller", talleresRoutes)
-    .use("/estudiantes", estudiantesRoutes);
+    .use("/estudiante", estudiantesRoutes);
     
 
 export default router;

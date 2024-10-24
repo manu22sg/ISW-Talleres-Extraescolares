@@ -20,12 +20,12 @@ router.use(authenticateJwt);
 router.get("/",  getTalleresController); // Obtener todos los talleres CHECK
 router.get("/:id", getTallerController); // Obtener un taller por id  CHECK
 router.post("/", isAdmin, createTallerController); // Crear un nuevo taller CHECK
-router.delete("/:tallerId/alumno/:alumnoId", isAdminorTeacher,deleteStudentController); //CHECk
+router.delete("/:tallerId/alumno/:alumnoId", isAdminorTeacher,deleteStudentController); //CHECk eliminar alumno de un taller
 router.patch("/:id", isAdminorTeacher, updateTallerController); // Actualizar un taller por su id CHECK
    //check  
 router.delete("/:id", isAdmin, deleteTallerController); // Eliminar un taller por su id CHECK
 router.post("/inscripcion", isAdminorTeacher, inscribirAlumnoPorProfesorOAdmin); // ingresar alumno CHECK
-router.get("/profesor/Tallerprofesor",isAdminorTeacher,TalleresInscritosProfesor ); // obtener talleres inscritos no check
+router.get("/profesor/Tallerprofesor",isAdminorTeacher,TalleresInscritosProfesor ); // obtener talleres inscritos check
 
 
 

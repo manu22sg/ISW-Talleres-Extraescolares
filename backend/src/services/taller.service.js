@@ -7,14 +7,12 @@ import User from "../entity/user.entity.js"; // Importar la entidad de usuarios
 import { AppDataSource } from "../config/configDb.js";
 
 // Obtener un taller por id o nombre
-export async function getTallerService(query) { //obtener un taller por id || nombre
+export async function getTallerService(id) { // obtener un taller por id
   try {
-    const { id, nombre } = query;
-
     const tallerRepository = AppDataSource.getRepository(Taller);
 
     const tallerFound = await tallerRepository.findOne({
-      where: [{ id: id }, { nombre: nombre }],
+      where: { id: id },
       relations: ["profesor", "usuarios"], // Cargar también la relación con los usuarios
     });
 
@@ -26,6 +24,7 @@ export async function getTallerService(query) { //obtener un taller por id || no
     return [null, "Error interno del servidor"];
   }
 }
+
 
 // Obtener todos los talleres
 export async function getTalleresService() { // obtener todos los talleres
@@ -108,9 +107,9 @@ return tallerGuardado
 
 
 // Actualizar un taller
-export async function updateTallerService(query, body) {
+export async function updateTallerService(id, body) {
   try {
-    const { id } = query; // ID del taller que se va a actualizar
+     // ID del taller que se va a actualizar
 
     const tallerRepository = AppDataSource.getRepository(Taller);
     const userRepository = AppDataSource.getRepository(User); // Repositorio de usuarios
@@ -150,12 +149,14 @@ export async function updateTallerService(query, body) {
       where: { rol: "estudiante",talleres: tallerFound }, // Cambia según tu lógica de relación entre talleres y estudiantes
       select: ['email'], // Solo necesitamos los correos electrónicos
     });
-    const correosEstudiantes = estudiantes.map(estudiante => estudiante.email).join(','); // Unimos los correos en una cadena
-    const asunto = `Actualización Taller: ${tallerFound.nombre}`;
-    const texto = `Estimado(a) alumno(a),\nSe ha actualizado información del taller: ${tallerFound.nombre}.`;
+    if (estudiantes.length > 0) {
+      const correosEstudiantes = estudiantes.map(estudiante => estudiante.email).join(','); // Unimos los correos en una cadena
+      const asunto = `Actualización Taller: ${tallerFound.nombre}`;
+      const texto = `Estimado(a) alumno(a),\nSe ha actualizado información del taller: ${tallerFound.nombre}.`;
+      enviarCorreo(correosEstudiantes, asunto, texto); 
+    }
   
-    // Llamamos a la función para enviar el correo
-    enviarCorreo(correosEstudiantes, asunto, texto);  
+       
   
     return [tallerFound, null];
   } catch (error) {
@@ -164,47 +165,37 @@ export async function updateTallerService(query, body) {
   }
 }
 
-export async function deleteStudentService(req, res) {
-  try {
-    // Obtener los IDs de los parámetros de la ruta
-    const { tallerId, alumnoId } = req.params;
-    const userId = req.user.id;  // ID del profesor o administrador que está haciendo la operación
+export async function deleteStudentService(req) {
+  const { tallerId, alumnoId } = req.params;
+  const userId = req.user.id;
 
-    const tallerRepository = AppDataSource.getRepository(Taller);
-    const userRepository = AppDataSource.getRepository(User);
+  const tallerRepository = AppDataSource.getRepository(Taller);
+  const userRepository = AppDataSource.getRepository(User);
 
-    // Buscar el taller
-    const taller = await tallerRepository.findOne({
-      where: { id: tallerId },
-      relations: ["usuarios", "profesor"],  // Incluye el profesor y usuarios inscritos
-    });
-    if (!taller) return res.status(404).json({ message: "Taller no encontrado" });
+  const taller = await tallerRepository.findOne({
+    where: { id: tallerId },
+    relations: ["usuarios", "profesor"],
+  });
+  
+  if (!taller) throw { statusCode: 404, message: "Taller no encontrado" };
 
-    // Verificar si el usuario es un profesor del taller o administrador
-    const user = await userRepository.findOne({ where: { id: userId } });
-    if (user.rol !== "profesor" && user.rol !== "administrador") {
-      return res.status(403).json({ message: "Solo profesores o administradores pueden eliminar estudiantes" });
-    }
-
-    // Si es profesor, verificar que sea el profesor asignado al taller
-    if (user.rol === "profesor" && taller.profesor.id !== userId) {
-      return res.status(403).json({ message: "Solo el profesor asignado puede eliminar estudiantes de este taller" });
-    }
-
-    // Verificar si el alumno está inscrito en el taller
-    const alumnoIndex = taller.usuarios.findIndex((u) => u.id === parseInt(alumnoId, 10));
-    if (alumnoIndex === -1) return res.status(400).json({ message: "El alumno no está inscrito en este taller" });
-
-    // Eliminar al alumno
-    taller.usuarios.splice(alumnoIndex, 1);  // Remover el alumno de la lista
-    taller.inscritos -= 1;  // Disminuir el contador de inscritos
-    await tallerRepository.save(taller);  // Guardar los cambios 
-
-    return res.status(200).json({ message: "Alumno eliminado correctamente del taller", taller });
-  } catch (error) {
-    console.error("Error al eliminar al alumno:", error);
-    return res.status(500).json({ message: "Error interno del servidor" });
+  const user = await userRepository.findOne({ where: { id: userId } });
+  if (user.rol !== "profesor" && user.rol !== "administrador") {
+    throw { statusCode: 403, message: "Solo profesores o administradores pueden eliminar estudiantes" };
   }
+
+  if (user.rol === "profesor" && taller.profesor.id !== userId) {
+    throw { statusCode: 403, message: "Solo el profesor asignado puede eliminar estudiantes de este taller" };
+  }
+
+  const alumnoIndex = taller.usuarios.findIndex((u) => u.id === parseInt(alumnoId, 10));
+  if (alumnoIndex === -1) throw { statusCode: 400, message: "El alumno no está inscrito en este taller" };
+
+  taller.usuarios.splice(alumnoIndex, 1);
+  taller.inscritos -= 1;
+  await tallerRepository.save(taller);
+
+  return taller;  // Devuelve el taller actualizado
 }
 
 
@@ -377,8 +368,7 @@ export async function obtenerTalleresInscritos(req, res) {
 export async function obtenerTalleresInscritosProfesor(req, res) {
   try {
     const profesorId = req.user.id; // El ID del profesor viene desde el JWT
-    // Para depurar
-
+    
     const tallerRepository = AppDataSource.getRepository(Taller);
 
     // Obtener los talleres en los que el profesor está inscrito
