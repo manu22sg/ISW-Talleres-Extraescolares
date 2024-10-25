@@ -5,14 +5,10 @@ const SesionSchema = new EntitySchema({
   name: "Sesion",
   tableName: "sesiones",
   columns: {
-    sesion_id: {
+    id: {
       type: "int",
       primary: true,
       generated: true,
-    },
-    taller_id: {
-      type: "int",
-      nullable: false,
     },
     fecha: {
       type: "date",
@@ -20,10 +16,25 @@ const SesionSchema = new EntitySchema({
     },
     estado: {
       type: "varchar",
-      length: 20,
-      default: "en curso",
-    }
-  }
+      length: 50,
+      nullable: false,
+    },
+    taller_id: {
+      type: "int",
+      nullable: false,
+    },
+    createdAt: {
+      type: "timestamp with time zone",
+      default: () => "CURRENT_TIMESTAMP",
+      nullable: false,
+    },
+    updatedAt: {
+      type: "timestamp with time zone",
+      default: () => "CURRENT_TIMESTAMP",
+      onUpdate: "CURRENT_TIMESTAMP",
+      nullable: false,
+    },
+  },
 });
 
 export default SesionSchema;
