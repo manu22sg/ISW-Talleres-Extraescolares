@@ -3,9 +3,9 @@ import { EntitySchema } from "typeorm";
 
 const AsistenciaSchema = new EntitySchema({
   name: "Asistencia",
-  tableName: "asistencia",
+  tableName: "asistencias", // Cambiar el nombre de la tabla a plural para mantener consistencia
   columns: {
-    asistencia_id: {
+    id: {
       type: "int",
       primary: true,
       generated: true,
@@ -27,7 +27,18 @@ const AsistenciaSchema = new EntitySchema({
       type: "text",
       nullable: true,
     },
-  }
+    createdAt: {
+      type: "timestamp with time zone",
+      default: () => "CURRENT_TIMESTAMP",
+      nullable: false,
+    },
+    updatedAt: {
+      type: "timestamp with time zone",
+      default: () => "CURRENT_TIMESTAMP",
+      onUpdate: "CURRENT_TIMESTAMP",
+      nullable: false,
+    },
+  },
 });
 
 export default AsistenciaSchema;

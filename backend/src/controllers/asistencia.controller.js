@@ -14,14 +14,24 @@ export async function registrarAsistencia(req, res) {
     const sesionRepository = AppDataSource.getRepository(Sesion);
 
     // Verificar si la sesión está en curso
-    const sesion = await sesionRepository.findOne({ where: { sesion_id, estado: 'en curso' } });
+    const sesion = await sesionRepository.findOne({ where: { id: sesion_id, estado: 'en curso' } });
     if (!sesion) return handleErrorClient(res, 400, "La sesión no está en curso o no existe.");
 
     // Registrar o actualizar la asistencia del estudiante
-    const nuevaAsistencia = asistenciaRepository.create({ sesion_id, estudiante_id, estado, comentarios });
-    await asistenciaRepository.save(nuevaAsistencia);
+    const asistenciaExistente = await asistenciaRepository.findOne({ where: { sesion_id, estudiante_id } });
 
-    handleSuccess(res, 201, "Asistencia registrada exitosamente.", nuevaAsistencia);
+    if (asistenciaExistente) {
+      // Si ya existe, actualizamos el registro
+      asistenciaExistente.estado = estado;
+      asistenciaExistente.comentarios = comentarios;
+      await asistenciaRepository.save(asistenciaExistente);
+      handleSuccess(res, 200, "Asistencia actualizada exitosamente.", asistenciaExistente);
+    } else {
+      // Si no existe, creamos un nuevo registro de asistencia
+      const nuevaAsistencia = asistenciaRepository.create({ sesion_id, estudiante_id, estado, comentarios });
+      await asistenciaRepository.save(nuevaAsistencia);
+      handleSuccess(res, 201, "Asistencia registrada exitosamente.", nuevaAsistencia);
+    }
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }
@@ -48,7 +58,7 @@ export async function finalizarSesion(req, res) {
     const { sesion_id } = req.params;
     const sesionRepository = AppDataSource.getRepository(Sesion);
 
-    const sesion = await sesionRepository.findOne({ where: { sesion_id } });
+    const sesion = await sesionRepository.findOne({ where: { id: sesion_id } });
     if (!sesion) return handleErrorClient(res, 404, "La sesión no existe.");
 
     // Cambiar el estado de la sesión a "finalizada"
