@@ -3,7 +3,7 @@ import { EntitySchema } from "typeorm";
 
 const AsistenciaSchema = new EntitySchema({
   name: "Asistencia",
-  tableName: "asistencias", // Cambiar el nombre de la tabla a plural para mantener consistencia
+  tableName: "asistencias",
   columns: {
     id: {
       type: "int",

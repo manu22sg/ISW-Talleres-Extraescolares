@@ -1,6 +1,9 @@
 "use strict";
 import { Router } from "express";
-import { registrarAsistencia, obtenerAsistenciaPorSesion, finalizarSesion } from "../controllers/asistencia.controller.js";
+import { registrarAsistencia, 
+    obtenerAsistenciaPorSesion, 
+    finalizarSesion, 
+    obtenerHistorialAsistencia } from "../controllers/asistencia.controller.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 
 const router = Router();
@@ -16,5 +19,8 @@ router.get("/sesiones/:sesion_id/asistencia", obtenerAsistenciaPorSesion);
 
 // Ruta para finalizar una sesión
 router.put("/sesiones/:sesion_id/finalizar", finalizarSesion);
+
+// Nueva ruta para obtener el historial de asistencia de un estudiante
+router.get("/estudiantes/:estudiante_id/historial", obtenerHistorialAsistencia);
 
 export default router;

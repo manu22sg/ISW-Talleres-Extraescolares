@@ -70,3 +70,30 @@ export async function finalizarSesion(req, res) {
     handleErrorServer(res, 500, error.message);
   }
 }
+
+// Obtener el historial de asistencia de un estudiante
+export async function obtenerHistorialAsistencia(req, res) {
+  try {
+    const { estudiante_id } = req.params;
+    const userRole = req.user.rol;
+    const userId = req.user.id;
+
+    const asistenciaRepository = AppDataSource.getRepository(Asistencia);
+
+    // Verificar si el usuario tiene permiso para ver el historial
+    if (userRole === "alumno" && userId !== parseInt(estudiante_id)) {
+      return handleErrorClient(res, 403, "No tienes permiso para acceder a este recurso.");
+    }
+
+    // Obtener el historial de asistencia para el estudiante
+    const historial = await asistenciaRepository.find({ where: { estudiante_id } });
+
+    if (!historial.length) {
+      return handleErrorClient(res, 404, "No se encontró historial de asistencia para el estudiante especificado.");
+    }
+
+    handleSuccess(res, 200, "Historial de asistencia obtenido exitosamente.", historial);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
