@@ -222,6 +222,8 @@ export async function deleteTallerService(id) {
 
 
 // Inscribir a un alumno en un taller siendo un estudiante autenticado
+
+
 export async function inscribirAlumnoAutenticado(req, res) {
   try {
     const { tallerId } = req.body;
@@ -233,7 +235,7 @@ export async function inscribirAlumnoAutenticado(req, res) {
     // Buscar el taller
     const taller = await tallerRepository.findOne({
       where: { id: tallerId },
-      relations: ["usuarios"],
+      relations: ["usuarios", "profesor"], // Agregamos "profesor" para acceder al email del profesor
     });
     if (!taller) return res.status(404).json({ message: "Taller no encontrado" });
 
@@ -257,12 +259,21 @@ export async function inscribirAlumnoAutenticado(req, res) {
     taller.inscritos += 1;
     await tallerRepository.save(taller);
 
-    return res.status(200).json({ taller, message: "Te has inscrito al taller con éxito" });
+    // Enviar correo al profesor
+    const mensajeProfesor = `Se inscribió al taller "${taller.nombre}" el alumno ${user.nombreCompleto}. La cantidad de inscritos es: ${taller.inscritos}.`;
+    enviarCorreo(taller.profesor.email, "Nuevo alumno inscrito en tu taller", mensajeProfesor);
+
+    // Enviar correo al alumno
+    const mensajeAlumno = `Te has inscrito con éxito al taller "${taller.nombre}".`;
+    enviarCorreo(user.email, "Inscripción exitosa al taller", mensajeAlumno);
+
+    return res.status(200).json({ taller, message: "Te has inscrito al taller con éxito y se han enviado los correos de confirmación" });
   } catch (error) {
     console.error("Error al inscribir al alumno:", error);
     return res.status(500).json({ message: "Error interno del servidor" });
   }
 }
+
 
 export async function inscribirAlumnoService(req, res) {
   try {
