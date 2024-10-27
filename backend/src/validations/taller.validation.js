@@ -95,7 +95,7 @@ export const tallerBodyValidation = Joi.object({
 
 
 
-  export const tallerPatchValidation = tallerBodyValidation.fork(
+  export const tallerPatchValidation = tallerBodyValidation.fork( // Extender la validación de tallerBodyValidation para PATCH
     ['nombre', 'descripcion', 'capacidad', 'fecha_inicio', 'fecha_fin', 'estado', 'profesorId'], 
     (schema) => schema.optional()
   );
