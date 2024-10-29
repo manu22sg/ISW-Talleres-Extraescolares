@@ -18,38 +18,38 @@ import { handleSuccess, handleErrorClient, handleErrorServer } from "../handlers
 
 // Obtener un taller por id o nombre
 export async function getTallerController(req, res) { // Obtener un taller por id
- try {
-  const { id } = req.params;
-  const [taller, error] = await getTallerService(id);
+  try {
+    const { id } = req.params;
+    const { user } = req; // Extraer el usuario autenticado desde la solicitud
+    const [taller, error] = await getTallerService(id, user);
 
-  if (error) {
-    return handleErrorClient(res, 400, error);
+    if (error) {
+      return handleErrorClient(res, 400, error);
+    }
+
+    return handleSuccess(res, 200, "Taller encontrado", taller);
+  } catch (error) {
+    console.error("Error al procesar la solicitud:", error);
+    return handleErrorServer(res, 500, "Error interno del servidor");
   }
-
-  return handleSuccess(res, 200, "Taller encontrado", taller);
- } catch (error) {
-  return handleErrorServer(res, 500, "Error al procesar la solicitud");
-
- }
 }
+
 
 
 
 export async function getTalleresController(req, res) { // Obtener todos los talleres
   try {
-    
-    const [talleres, error] = await getTalleresService(); // Llamada al servicio
+    const { user } = req; // Extraer el usuario autenticado desde la solicitud
+    const [talleres, error] = await getTalleresService(user); // Pasar el usuario al servicio
 
-    
     if (error) {
       return handleErrorClient(res, 400, error);
     }
 
-    
     return handleSuccess(res, 200, "Talleres encontrados", talleres); // Si no hay errores, devolver respuesta de éxito
 
   } catch (err) {
-    
+    console.error("Error al obtener los talleres:", err);
     return handleErrorServer(res, 500, "Error al obtener los talleres");
   }
 }
@@ -187,7 +187,7 @@ export const inscribirAlumnoPorProfesorOAdminController = async (req, res) => {
 export const talleresInscritosController = async (req, res) => {
   const userId = req.user.id; // ID del alumno
 
-  const { success, error, statusCode, message, talleres } = await obtenerTalleresInscritosService(userId);
+  const { success, error, statusCode, talleres } = await obtenerTalleresInscritosService(userId);
 
   if (!success) {
     
@@ -199,7 +199,7 @@ export const talleresInscritosController = async (req, res) => {
   }
 
  
-  return handleSuccess(res, 200, { talleres, message: "Alumno inscrito correctamente" });  // Respuesta exitosa
+  return handleSuccess(res, 200, { talleres, message: "Talleres correspondientes" });  // Respuesta exitosa
 
 };
 

@@ -53,7 +53,7 @@ async function createUsers() {
           rut: "20.976.635-3",
           email: "usuario4.2024@gmail.cl",
           password: await encryptPassword("user1234"),
-          rol: "usuario",
+          rol: "profesor",
         }),
       ),
       userRepository.save(
@@ -62,7 +62,7 @@ async function createUsers() {
           rut: "21.172.447-1",
           email: "usuario5.2024@gmail.cl",
           password: await encryptPassword("user1234"),
-          rol: "usuario",
+          rol: "estudiante",
         }),
       ),
       userRepository.save(
@@ -71,7 +71,7 @@ async function createUsers() {
           rut: "20.738.415-1",
           email: "usuario6.2024@gmail.cl",
           password: await encryptPassword("user1234"),
-          rol: "usuario",
+          rol: "profesor",
         }),
       ),
     ]);

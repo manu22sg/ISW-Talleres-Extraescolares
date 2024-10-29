@@ -31,7 +31,7 @@ const TallerSchema = new EntitySchema({
     // Añadimos 'estado' para gestionar el estado del taller
     estado: {
       type: "enum",
-      enum: ["pendiente", "enCurso", "finalizado"],
+      enum: ["pendiente", "enCurso", "finalizado", "eliminado"],
     
       nullable: false,
     },

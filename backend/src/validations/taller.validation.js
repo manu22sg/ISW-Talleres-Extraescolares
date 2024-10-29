@@ -26,13 +26,13 @@ export const tallerBodyValidation = Joi.object({
       "number.positive": "El id debe ser un número positivo.",
     }),
   nombre: Joi.string()
-    .min(15)
+    .min(10)
     .max(100)
     .pattern(/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$/) // Permitir números y letras
     .messages({
       "string.empty": "El nombre del taller no puede estar vacío.",
       "string.base": "El nombre del taller debe ser de tipo string.",
-      "string.min": "El nombre del taller debe tener como mínimo 15 caracteres.",
+      "string.min": "El nombre del taller debe tener como mínimo 10 caracteres.",
       "string.max": "El nombre del taller debe tener como máximo 100 caracteres.",
       "string.pattern.base": "El nombre del taller solo puede contener letras, números y espacios.",
     }),
@@ -51,6 +51,8 @@ export const tallerBodyValidation = Joi.object({
     .messages({
       "number.base": "La capacidad debe ser un número.",
       "number.positive": "La capacidad debe ser mayor a 0.",
+      "number.integer": "La capacidad debe ser un número entero.",
+      "number.less" : "La capacidad debe ser menor a 50."
     }),
   fecha_inicio: Joi.string() // Cadena para el formato 'DD/MM/YYYY'
     .custom(validateDate)
@@ -66,7 +68,7 @@ export const tallerBodyValidation = Joi.object({
       "any.invalid": "La fecha de fin debe ser válida y en formato 'DD/MM/YYYY'.",
       "any.required": "La fecha de fin es obligatoria.",
     }),
-  estado: Joi.string().valid('pendiente', 'enCurso', 'finalizado').required(),
+  estado: Joi.string().valid('pendiente', 'enCurso', 'finalizado', 'eliminado').required(),
   profesorId: Joi.number()
     .integer()
     .positive()

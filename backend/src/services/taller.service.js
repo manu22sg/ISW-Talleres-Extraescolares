@@ -2,6 +2,7 @@
 import Taller from "../entity/taller.entity.js";
 import { parse } from 'date-fns'; //
 import {enviarCorreo} from '../helpers/nodemailer.helper.js';
+import { Not } from "typeorm";
 
 import User from "../entity/user.entity.js"; // Importar la entidad de usuarios
 import { AppDataSource } from "../config/configDb.js";
@@ -10,13 +11,23 @@ const convertirFecha = (fechaStr) => {
   return parse(fechaStr, 'dd/MM/yyyy', new Date());
 };
 
+
+
 // Obtener un taller por id o nombre
-export async function getTallerService(id) { // obtener un taller por id
+export async function getTallerService(id, user) { // obtener un taller por id
   try {
     const tallerRepository = AppDataSource.getRepository(Taller);
 
+    let condicion = { id: id }; // Condición de búsqueda por ID del taller
+
+    // Si el usuario no es administrador, excluir los talleres eliminados
+    if (user.rol !== "administrador") { // si el usuario no es administrador excluye los talleres eliminados
+      condicion.estado = Not("eliminado"); // Excluir los talleres con estado 'eliminado'
+    }
+
+    // Buscar el taller según la condición establecida
     const tallerFound = await tallerRepository.findOne({
-      where: { id: id },
+      where: condicion, // Condición de búsqueda por ID y estado
       relations: ["profesor", "usuarios"], // Cargar también la relación con los usuarios
     });
 
@@ -31,11 +42,18 @@ export async function getTallerService(id) { // obtener un taller por id
 
 
 
-export async function getTalleresService() { // Obtener todos los talleres
+
+
+export async function getTalleresService(user) { // Obtener todos los talleres
   try {
     const tallerRepository = AppDataSource.getRepository(Taller);
 
+    // Condición de búsqueda: si el usuario no es administrador, excluir los talleres eliminados
+    const condicion = user.rol !== "administrador" ? { estado: Not("eliminado") } : {}; // Si no es administrador, excluir los talleres eliminados
+
+    // Obtener los talleres con la condición de búsqueda y relaciones
     const talleres = await tallerRepository.find({
+      where: condicion,
       relations: ["profesor", "usuarios"], // Cargar relación con profesor y usuarios
     });
 
@@ -47,6 +65,7 @@ export async function getTalleresService() { // Obtener todos los talleres
     return [null, "Error interno del servidor"];
   }
 }
+
 
 
 // Crear un nuevo taller
@@ -134,6 +153,9 @@ export async function updateTallerService(id, body) {
     }
     if (body.fecha_fin) {
       tallerFound.fecha_fin = convertirFecha(body.fecha_fin);
+      if (tallerFound.fecha_fin < tallerFound.fecha_inicio) {
+        return [null, "La fecha de fin no puede ser menor a la fecha de inicio"];
+      }
     }
     
 
@@ -167,53 +189,52 @@ export async function updateTallerService(id, body) {
   }
 }
 
-export async function deleteStudentService(req) { // Eliminar alumno de un taller
+export async function deleteStudentService(req) { 
+  // Eliminar alumno de un taller
   const { tallerId, alumnoId } = req.params;
-  const userId = req.user.id;
 
   const tallerRepository = AppDataSource.getRepository(Taller);
-  const userRepository = AppDataSource.getRepository(User);
 
+  // Obtener el taller especificado con sus relaciones
   const taller = await tallerRepository.findOne({
     where: { id: tallerId },
-    relations: ["usuarios", "profesor"],
+    relations: ["usuarios"],
   });
   
   if (!taller) throw { statusCode: 404, message: "Taller no encontrado" };
 
-  const user = await userRepository.findOne({ where: { id: userId } }); // Buscar al usuario autenticado 
-  if (user.rol !== "profesor" && user.rol !== "administrador") {
-    throw { statusCode: 403, message: "Solo profesores o administradores pueden eliminar estudiantes" };
-  }
-
-  if (user.rol === "profesor" && taller.profesor.id !== userId) { // Verificar si el profesor es el asignado al taller
-    throw { statusCode: 403, message: "Solo el profesor asignado puede eliminar estudiantes de este taller" };
-  }
-
-  const alumnoIndex = taller.usuarios.findIndex((u) => u.id === parseInt(alumnoId, 10)); // Buscar al alumno en el taller
+  // Buscar y eliminar al alumno del taller
+  const alumnoIndex = taller.usuarios.findIndex((u) => u.id === parseInt(alumnoId, 10));
   if (alumnoIndex === -1) throw { statusCode: 400, message: "El alumno no está inscrito en este taller" };
 
   taller.usuarios.splice(alumnoIndex, 1);
   taller.inscritos -= 1;
   await tallerRepository.save(taller);
 
-  return taller;  // Devuelve el taller actualizado
+  return taller; // Devuelve el taller actualizado
 }
-
 
 
 
 // Eliminar un taller
 export async function deleteTallerService(id) { // Eliminar un taller
   try {
+
+    
     const tallerRepository = AppDataSource.getRepository(Taller);
 
     // Buscar el taller por su ID
     const tallerFound = await tallerRepository.findOneBy({ id });
     if (!tallerFound) return [null, "Taller no encontrado"];
 
-    // Eliminar el taller
-    await tallerRepository.remove(tallerFound); // Eliminar el taller de la base de datos
+    if (tallerFound.estado === 'enCurso') {
+      return [null, "No se puede eliminar un taller en curso"];
+    }
+
+    
+    
+    tallerFound.estado = 'eliminado'; // Cambiar el estado del taller a 'eliminado'
+    await tallerRepository.save(tallerFound);
 
     return [tallerFound, null]; // Retornar el taller eliminado (por si acaso)
   } catch (error) {
@@ -257,6 +278,10 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => { /
       return { success: false, statusCode: 400, message: "No hay más cupos disponibles" };
     }
 
+    if(taller.estado === 'eliminado') {
+      return { success: false, statusCode: 400, message: "No se puede inscribir en un taller eliminado" };
+    }
+
     // Inscribir al usuario
     taller.usuarios.push(user);
     taller.inscritos += 1;
@@ -295,15 +320,6 @@ export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => { //
     const user = await userRepository.findOne({ where: { id: userId } }); //verificar si existe el usuario
     if (!user) return { error: 'Usuario no encontrado', statusCode: 404 };
 
-    if (user.rol !== "profesor" && user.rol !== "administrador") { // Verificar si el usuario es profesor o administrador
-      return { error: 'Solo profesores o administradores pueden inscribir a estudiantes', statusCode: 403 };
-    }
-
-    if (user.rol === "profesor" && taller.profesor.id !== userId) { // Verificar si el profesor es el asignado al taller
-      return { error: 'Solo el profesor asignado puede inscribir estudiantes en este taller', statusCode: 403 };
-    }
-
-  
     const alumno = await userRepository.findOne({ where: { id: alumnoId } }); // Buscar al alumno por su ID
     if (!alumno) return { error: 'Alumno no encontrado', statusCode: 404 };
 
@@ -318,7 +334,9 @@ export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => { //
     if (taller.usuarios.length >= taller.capacidad) {
       return { error: 'No hay más cupos disponibles', statusCode: 400 };
     }
-
+       if(taller.estado === 'eliminado') {
+      return { error: 'No se puede inscribir en un taller eliminado', statusCode: 400 };
+       }
     // Inscribir al alumno
     taller.usuarios.push(alumno);
     taller.inscritos += 1;
