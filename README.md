@@ -1,5 +1,5 @@
 # Talleres-Extraescolares-ISW-2024/2
-
+Realizado para la asignatura Ingeniería de Software 2024-2 en la Universidad del Bío-Bío
 
 Grupo 4 Sección 2
 Integrantes: Bastian Baeza, Miguel Barrera, Manuel Gálvez y Guido Montecinos
@@ -26,31 +26,16 @@ Integrantes: Bastian Baeza, Miguel Barrera, Manuel Gálvez y Guido Montecinos
 
 ## Descripción General
 
-La `Plantilla-ISW-Proyecto-2024` es una base preconfigurada para proyectos de Ingeniería de Software que incluye tanto la parte del Backend como la del Frontend. Está diseñada para que los estudiantes puedan enfocarse en desarrollar sus funcionalidades específicas sin tener que preocuparse por la configuración inicial del proyecto. 
+Este proyecto está orientado para la creación de un software que permita a alumnos de Liceos de Chile poder inscribirse a Talleres extraescolares debido a la falta de tecnologías en esta área. 
 
 ### Backend
 
-El Backend de esta plantilla implementa las siguientes funcionalidades principales:
+El Backend implementa las siguientes funcionalidades principales:
 
-- **Autenticación y Autorización**: Uso de `passport.js` para la autenticación segura de los usuarios.
-- **CRUD de Usuarios**: Permite la lectura, actualización y eliminación de usuarios.
-- **Registro de Usuarios**: Implementación de un sistema de registro que permite a nuevos usuarios registrarse en la aplicación.
+- **CRUD de Talleres**: Permite la creación, lectura, actualización y eliminación de Talleres.
+ - **Ingreso de Alumnos a talleres**: Se implementan las funciones para que todos los alumnos se puedan inscribir a talleres y ver en que talleres se han inscrito.
+- **Profesores en talleres**: Los profesores pueden ingresar alumnos a talleres y pueden ver en que talleres están inscritos(con todos los detalles) 
 
-### Frontend
-
-El Frontend proporciona una interfaz de usuario simple y funcional para interactuar con el sistema. Incluye las siguientes páginas y funcionalidades:
-
-- **Página de Inicio de Sesión**: Permite a los usuarios autenticarse en el sistema.
-- **Página de Registro de Usuarios**: Los nuevos usuarios pueden registrarse mediante un formulario.
-- **Página de Error**: Muestra un mensaje de error cuando algo sale mal.
-- **Página Principal**: Página de inicio tras la autenticación exitosa.
-- **Página de Gestión de Usuarios**: 
-  - Muestra una tabla con todos los usuarios registrados.
-  - Permite modificar y eliminar usuarios directamente desde la tabla.
-  - Incluye una funcionalidad de búsqueda para encontrar usuarios específicos.
-- **Cerrar Sesión**: Opción para que los usuarios cierren su sesión de manera segura.
-
-Esta plantilla proporciona una estructura robusta para que los estudiantes puedan extender y personalizar según las necesidades de sus proyectos.
 
 ## Arquitectura del Proyecto
 
@@ -301,6 +286,11 @@ Este proyecto utiliza el stack **PERN**, que incluye las siguientes tecnologías
   - **Enlace**: [bcrypt.js](https://www.npmjs.com/package/bcryptjs)
 - **dotenv**: Carga variables de entorno desde un archivo `.env`.
   - **Enlace**: [dotenv](https://www.npmjs.com/package/dotenv)
+  - **date-fns**: Cambia el formato a dd/MM/yyyy
+  - **Enlace**: [date-fns] (https://date-fns.org/docs/Getting-Started)
+  - **Dayjs**: [Dayjs]Permite que Joi lea el formato dd/MM/yyyy
+  - **Enlace**: [Dayjs] https://day.js.org/
+  - 
 
 Estas tecnologías y herramientas forman la base de la aplicación y permiten su funcionamiento de forma correcta.
 
