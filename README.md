@@ -1,6 +1,8 @@
-# Plantilla-ISW-Proyecto-2024
+# Talleres-Extraescolares-ISW-2024/2
 
-Una plantilla base para proyectos de Ingeniería de Software (ISW) desarrollados durante el año 2024-2. Esta plantilla está diseñada para ayudar a los estudiantes a estructurar y organizar sus proyectos de software, incluyendo tanto la parte de Backend como de Frontend.
+
+Grupo 4 Sección 2
+Integrantes: Bastian Baeza, Miguel Barrera, Manuel Gálvez y Guido Montecinos
 
 ## Tabla de contenidos
 * [Descripción General](#descripción-general)
@@ -63,19 +65,23 @@ Este proyecto está dividido en dos partes principales: el Backend y el Frontend
 │   │   ├── auth
 │   │   │   └── passport.auth.js
 │   │   ├── config
-│   │   │   ├── .env.example
+│   │   │   ├── .env
 │   │   │   ├── configDb.js
 │   │   │   ├── configEnv.js
 │   │   │   └── initialSetup.js
+|   |   |    └── talleresSetup.js
 │   │   ├── controllers
 │   │   │   ├── auth.controller.js
 │   │   │   └── user.controller.js
+|   |   |    └── taller.controller.js
 │   │   ├── entity
 │   │   │   └── user.entity.js
+|   |   |    └── taller.entity.js
 │   │   ├── handlers
 │   │   │   └── responseHandlers.js
 │   │   ├── helpers
 │   │   │   └── bcrypt.helper.js
+|   |   |    └── nodemailer.helper.js
 │   │   ├── middlewares
 │   │   │   ├── authentication.middleware.js
 │   │   │   └── authorization.middleware.js
@@ -83,12 +89,16 @@ Este proyecto está dividido en dos partes principales: el Backend y el Frontend
 │   │   │   ├── auth.routes.js
 │   │   │   ├── index.routes.js
 │   │   │   └── user.routes.js
+|   |   |   └── student.routes.js
+|   |   |   └── taller.rotues.js
 │   │   ├── services
 │   │   │   ├── auth.service.js
 │   │   │   └── user.service.js
+|   |   |   └── taller.entity.js
 │   │   ├── validations
 │   │   │   ├── auth.validation.js
 │   │   │   └── user.validation.js
+|   |   |   └── taller.validation.js
 │   │   └── index.js
 │   ├── .gitignore
 │   ├── .prettierrc.json
@@ -189,7 +199,7 @@ cd backend
 npm install
 ```
 
-3. Renombra el archivo `.env.example` a `.env` y configura las variables de entorno necesarias.
+3. Crea el archivo `.env` y configura las variables de entorno necesarias.
 
 ```bash
 HOST= localhost (Proyecto en local) o IP servidor (Proyecto en producción)
@@ -294,4 +304,3 @@ Este proyecto utiliza el stack **PERN**, que incluye las siguientes tecnologías
 
 Estas tecnologías y herramientas forman la base de la aplicación y permiten su funcionamiento de forma correcta.
 
-⌨️ with ❤️ by [@Didudocl](https://github.com/Didudocl)
