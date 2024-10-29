@@ -48,6 +48,7 @@ export const tallerBodyValidation = Joi.object({
   capacidad: Joi.number()
     .integer()
     .positive()
+    .less(50)
     .messages({
       "number.base": "La capacidad debe ser un número.",
       "number.positive": "La capacidad debe ser mayor a 0.",
