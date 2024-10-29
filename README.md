@@ -34,7 +34,11 @@ El Backend implementa las siguientes funcionalidades principales:
 
 - **CRUD de Talleres**: Permite la creación, lectura, actualización y eliminación de Talleres.
  - **Ingreso de Alumnos a talleres**: Se implementan las funciones para que todos los alumnos se puedan inscribir a talleres y ver en que talleres se han inscrito.
-- **Profesores en talleres**: Los profesores pueden ingresar alumnos a talleres y pueden ver en que talleres están inscritos(con todos los detalles) 
+- **Profesores en talleres**: Los profesores pueden ingresar alumnos a talleres y pueden ver en que talleres están inscritos(con todos los detalles)
+
+### Frontend
+
+Por realizar
 
 
 ## Arquitectura del Proyecto
@@ -288,7 +292,7 @@ Este proyecto utiliza el stack **PERN**, que incluye las siguientes tecnologías
   - **Enlace**: [dotenv](https://www.npmjs.com/package/dotenv)
   - **date-fns**: Cambia el formato a dd/MM/yyyy
   - **Enlace**: [date-fns] (https://date-fns.org/docs/Getting-Started)
-  - **Dayjs**: [Dayjs]Permite que Joi lea el formato dd/MM/yyyy
+  - **Dayjs**: Permite que al validar el taller permita el formato dd/MM/yyyy
   - **Enlace**: [Dayjs] https://day.js.org/
   - 
 
