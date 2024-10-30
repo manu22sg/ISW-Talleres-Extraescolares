@@ -1,14 +1,14 @@
 "use strict";
 import Taller from "../entity/taller.entity.js";
-import { parse } from 'date-fns'; //
-import {enviarCorreo} from '../helpers/nodemailer.helper.js';
+import { parse } from "date-fns"; //
+import { enviarCorreo } from "../helpers/nodemailer.helper.js";
 import { Not } from "typeorm";
 
 import User from "../entity/user.entity.js"; // Importar la entidad de usuarios
 import { AppDataSource } from "../config/configDb.js";
 
 const convertirFecha = (fechaStr) => {
-  return parse(fechaStr, 'dd/MM/yyyy', new Date());
+  return parse(fechaStr, "dd/MM/yyyy", new Date());
 };
 
 
@@ -42,14 +42,13 @@ export async function getTallerService(id, user) { // obtener un taller por id
 
 
 
-
-
 export async function getTalleresService(user) { // Obtener todos los talleres
   try {
     const tallerRepository = AppDataSource.getRepository(Taller);
 
     // Condición de búsqueda: si el usuario no es administrador, excluir los talleres eliminados
-    const condicion = user.rol !== "administrador" ? { estado: Not("eliminado") } : {}; // Si no es administrador, excluir los talleres eliminados
+    const condicion = user.rol !== "administrador" ? { estado: Not("eliminado") } : {};
+     // Si no es administrador, excluir los talleres eliminados
 
     // Obtener los talleres con la condición de búsqueda y relaciones
     const talleres = await tallerRepository.find({
@@ -65,7 +64,6 @@ export async function getTalleresService(user) { // Obtener todos los talleres
     return [null, "Error interno del servidor"];
   }
 }
-
 
 
 // Crear un nuevo taller
@@ -87,7 +85,7 @@ export const createTallerService = async (tallerData) => {
   }
 
   // Verificamos si el usuario tiene el rol de "profesor"
-  if (profesor.rol !== 'profesor') {
+  if (profesor.rol !== "profesor") {
     throw new Error("El usuario no tiene el rol de profesor.");
   }
   
@@ -110,11 +108,14 @@ export const createTallerService = async (tallerData) => {
   
   const estudiantes = await userRepository.find({
     where: { rol: "estudiante" }, // Cambia según tu lógica de relación entre talleres y estudiantes
-    select: ['email'], // Solo necesitamos los correos electrónicos
+    select: ["email"], // Solo necesitamos los correos electrónicos
   });
-  const correosEstudiantes = estudiantes.map(estudiante => estudiante.email).join(','); // Unimos los correos en una cadena
+  const correosEstudiantes = estudiantes.map(estudiante => estudiante.email).join(","); 
+  // Unimos los correos en una cadena
   const asunto = `Nuevo Taller Creado: ${nombre}`;
-  const texto = `Estimado(a) alumno(a),\nSe ha creado un nuevo taller: ${nombre}.\nDescripción: ${descripcion}\n \nProfesor : ${profesor.nombreCompleto}\nFecha de inicio: ${fechaInicioConvertida}\nFecha de fin: ${fechaFinConvertida}`;
+  const texto = `Estimado(a) alumno(a),\nSe ha creado un nuevo taller: ${nombre}.\nDescripción: ${descripcion}\n 
+  \nProfesor : ${profesor.nombreCompleto}\nFecha de inicio: ${fechaInicioConvertida}
+  \nFecha de fin: ${fechaFinConvertida}`;
 
   // Llamamos a la función para enviar el correo
   enviarCorreo(correosEstudiantes, asunto, texto);  
@@ -141,7 +142,7 @@ export async function updateTallerService(id, body) {
 
     // Si se pasa profesorId en el body, buscar al profesor con ese ID
     if (body.profesorId) {
-      const profesor = await userRepository.findOneBy({ id: body.profesorId, rol: 'profesor' });
+      const profesor = await userRepository.findOneBy({ id: body.profesorId, rol: "profesor" });
 
       if (!profesor) return [null, "Profesor no encontrado o no tiene el rol adecuado"];
       
@@ -171,10 +172,12 @@ export async function updateTallerService(id, body) {
 
     const estudiantes = await userRepository.find({
       where: { rol: "estudiante",talleres: tallerFound }, 
-      select: ['email'], // Solo necesitamos los correos electrónicos de los alumnos inscritos
+      select: ["email"], // Solo necesitamos los correos electrónicos de los alumnos inscritos
     });
     if (estudiantes.length > 0) {
-      const correosEstudiantes = estudiantes.map(estudiante => estudiante.email).join(','); // Unimos los correos en una cadena
+      // Unimos los correos en una cadena
+      const correosEstudiantes = estudiantes.map(estudiante => estudiante.email).join(","); 
+      
       const asunto = `Actualización Taller: ${tallerFound.nombre}`;
       const texto = `Estimado(a) alumno(a),\nSe ha actualizado información del taller: ${tallerFound.nombre}.`;
       enviarCorreo(correosEstudiantes, asunto, texto); 
@@ -227,13 +230,13 @@ export async function deleteTallerService(id) { // Eliminar un taller
     const tallerFound = await tallerRepository.findOneBy({ id });
     if (!tallerFound) return [null, "Taller no encontrado"];
 
-    if (tallerFound.estado === 'enCurso') {
+    if (tallerFound.estado === "enCurso") {
       return [null, "No se puede eliminar un taller en curso"];
     }
 
     
     
-    tallerFound.estado = 'eliminado'; // Cambiar el estado del taller a 'eliminado'
+    tallerFound.estado = "eliminado"; // Cambiar el estado del taller a 'eliminado'
     await tallerRepository.save(tallerFound);
 
     return [tallerFound, null]; // Retornar el taller eliminado (por si acaso)
@@ -247,7 +250,8 @@ export async function deleteTallerService(id) { // Eliminar un taller
 
 
 
-export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => { // Inscribir a un alumno en un taller siendo un estudiante autenticado
+export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => { 
+  // Inscribir a un alumno en un taller siendo un estudiante autenticado
   try {
     const tallerRepository = AppDataSource.getRepository(Taller);
     const userRepository = AppDataSource.getRepository(User);
@@ -278,7 +282,7 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => { /
       return { success: false, statusCode: 400, message: "No hay más cupos disponibles" };
     }
 
-    if(taller.estado === 'eliminado') {
+    if(taller.estado === "eliminado") {
       return { success: false, statusCode: 400, message: "No se puede inscribir en un taller eliminado" };
     }
 
@@ -288,14 +292,17 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => { /
     await tallerRepository.save(taller);
 
     // Enviar correo al profesor
-    const mensajeProfesor = `Se inscribió al taller "${taller.nombre}" el alumno ${user.nombreCompleto}. La cantidad de inscritos es: ${taller.inscritos}.`;
+    const mensajeProfesor = `Se inscribió al taller "${taller.nombre}" el alumno ${user.nombreCompleto}.
+     La cantidad de inscritos es: ${taller.inscritos}.`;
     enviarCorreo(taller.profesor.email, "Nuevo alumno inscrito en tu taller", mensajeProfesor);
 
     // Enviar correo al alumno
     const mensajeAlumno = `Te has inscrito con éxito al taller "${taller.nombre}".`;
     enviarCorreo(user.email, "Inscripción exitosa al taller", mensajeAlumno);
 
-    return { success: true, taller, message: "Te has inscrito al taller con éxito y se han enviado los correos de confirmación" };
+    return { 
+      success: true, taller, message: "Te has inscrito al taller con éxito y se han enviado los correos de confirmación"
+     };
   } catch (error) {
     console.error("Error en inscribirAlumnoService:", error);
     return { success: false, statusCode: 500, message: "Error interno del servidor" };
@@ -304,7 +311,8 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => { /
 
 
 
-export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => { // Inscribir a un alumno en un taller siendo un profesor o administrador
+export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => {
+   // Inscribir a un alumno en un taller siendo un profesor o administrador
   try {
     const tallerRepository = AppDataSource.getRepository(Taller);
     const userRepository = AppDataSource.getRepository(User);
@@ -314,35 +322,36 @@ export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => { //
       where: { id: tallerId },
       relations: ["usuarios", "profesor"],
     });
-    if (!taller) return { error: 'Taller no encontrado', statusCode: 404 };
+    if (!taller) return { error: "Taller no encontrado", statusCode: 404 };
 
     
     const user = await userRepository.findOne({ where: { id: userId } }); //verificar si existe el usuario
-    if (!user) return { error: 'Usuario no encontrado', statusCode: 404 };
+    if (!user) return { error: "Usuario no encontrado", statusCode: 404 };
 
     const alumno = await userRepository.findOne({ where: { id: alumnoId } }); // Buscar al alumno por su ID
-    if (!alumno) return { error: 'Alumno no encontrado', statusCode: 404 };
+    if (!alumno) return { error: "Alumno no encontrado", statusCode: 404 };
 
     if (alumno.rol !== "estudiante") { // Verificar si el usuario es un estudiante
-      return { error: 'El usuario no tiene el rol de estudiante', statusCode: 400 };
+      return { error: "El usuario no tiene el rol de estudiante", statusCode: 400 };
     }
 
     // Verificar si el alumno ya está inscrito
     const isAlreadyEnrolled = taller.usuarios.some((u) => u.id === alumnoId);
-    if (isAlreadyEnrolled) return { error: 'El alumno ya está inscrito en este taller', statusCode: 400 };
+    if (isAlreadyEnrolled) return { error: "El alumno ya está inscrito en este taller", statusCode: 400 };
 
     if (taller.usuarios.length >= taller.capacidad) {
-      return { error: 'No hay más cupos disponibles', statusCode: 400 };
+      return { error: "No hay más cupos disponibles", statusCode: 400 };
     }
-       if(taller.estado === 'eliminado') {
-      return { error: 'No se puede inscribir en un taller eliminado', statusCode: 400 };
+       if(taller.estado === "eliminado") {
+      return { error: "No se puede inscribir en un taller eliminado", statusCode: 400 };
        }
     // Inscribir al alumno
     taller.usuarios.push(alumno);
     taller.inscritos += 1;
     await tallerRepository.save(taller);
 
-    const mensajeProfesor = `Se inscribió al taller "${taller.nombre}" el alumno ${alumno.nombreCompleto}. La cantidad de inscritos es: ${taller.inscritos}.`;
+    const mensajeProfesor = `Se inscribió al taller "${taller.nombre}" el alumno ${alumno.nombreCompleto}.
+     La cantidad de inscritos es: ${taller.inscritos}.`;
     enviarCorreo(taller.profesor.email, "Nuevo alumno inscrito en tu taller", mensajeProfesor);
 
     const mensajeAlumno = `Te has inscrito con éxito al taller "${taller.nombre}".`;
@@ -368,13 +377,13 @@ export const obtenerTalleresInscritosService = async (userId) => { // Obtener lo
     });
 
     if (!alumno) {
-      return { error: 'Alumno no encontrado', statusCode: 404 };
+      return { error: "Alumno no encontrado", statusCode: 404 };
     }
 
     // Verificar si el alumno está inscrito en algún taller
     const talleresInscritos = alumno.talleres;
     if (talleresInscritos.length === 0) {
-      return { message: 'No estás inscrito en ningún taller', talleres: [] };
+      return { message: "No estás inscrito en ningún taller", talleres: [] };
     }
 
     // Retornar los talleres en los que el alumno está inscrito
