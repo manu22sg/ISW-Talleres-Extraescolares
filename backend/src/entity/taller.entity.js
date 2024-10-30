@@ -78,6 +78,21 @@ const TallerSchema = new EntitySchema({
         },
       },
     },
+    asistencia: {
+      target: "User",
+      type: "many-to-many",
+      joinTable: {
+        name: "asistencias",
+        joinColumn: {
+          name: "tallerId",
+          referencedColumnName: "id",
+        },
+        inverseJoinColumn: {
+          name: "usuarioId",
+          referencedColumnName: "id",
+        },
+      },
+    },
   },
 });
 

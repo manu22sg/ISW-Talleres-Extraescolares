@@ -1,19 +1,19 @@
 "use strict";
 import {
-  getTallerService,
-  getTalleresService,
   createTallerService,
-  updateTallerService,
+  deleteStudentService,
   deleteTallerService,
+  getTalleresService,
+  getTallerService,
   inscribirAlumnoAutenticadoService,
   inscribirAlumnoService,
   
+  obtenerTalleresInscritosProfesorService,
   obtenerTalleresInscritosService,
-  deleteStudentService,
-  obtenerTalleresInscritosProfesorService
+  updateTallerService
 } from "../services/taller.service.js";
 import { tallerBodyValidation,tallerPatchValidation } from "../validations/taller.validation.js";
-import { handleSuccess, handleErrorClient, handleErrorServer } from "../handlers/responseHandlers.js";
+import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 
 
 // Obtener un taller por id o nombre
@@ -153,8 +153,8 @@ export const inscribirAlumnoAutenticadoController = async (req, res) => {
     // Respuesta exitosa
     return handleSuccess(res, 200, { taller, message: "Alumno inscrito correctamente" });
   } catch (error) {
-    console.error('Error al inscribir alumno:', error);
-    return handleErrorServer(res, 500, 'Error interno del servidor');
+    console.error("Error al inscribir alumno:", error);
+    return handleErrorServer(res, 500, "Error interno del servidor");
   }
 };
 
@@ -163,6 +163,7 @@ export const inscribirAlumnoAutenticadoController = async (req, res) => {
 // Controlador para profesores y administradores
 export const inscribirAlumnoPorProfesorOAdminController = async (req, res) => {
   const { tallerId, alumnoId } = req.body;
+  
   const userId = req.user.id; // ID del profesor o administrador
 
   const { success, error, statusCode, taller } = await inscribirAlumnoService(tallerId, alumnoId, userId);
@@ -207,7 +208,8 @@ export const talleresInscritosController = async (req, res) => {
 export const talleresInscritosProfesorController = async (req, res) => {
   const profesorId = req.user.id; // ID del profesor obtenido del token
 
-  const { success, error, statusCode, talleres } = await obtenerTalleresInscritosProfesorService(profesorId); // Llamada al servicio
+  const { success, error, statusCode, talleres } = await obtenerTalleresInscritosProfesorService(profesorId);
+   // Llamada al servicio
 
   if (!success) {
     // Si es un error de cliente (4xx), usar handleErrorClient
