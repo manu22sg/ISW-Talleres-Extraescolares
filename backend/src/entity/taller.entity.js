@@ -35,6 +35,13 @@ const TallerSchema = new EntitySchema({
       nullable: false,
     },
   },
+  relations: {
+    sesiones: {
+      type: "one-to-many",
+      target: "Sesion", // La entidad relacionada
+      inverseSide: "taller", // Nombre de la relación inversa en `Sesion`
+    },
+  },
 });
 
 export default TallerSchema;

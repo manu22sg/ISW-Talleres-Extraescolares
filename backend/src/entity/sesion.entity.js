@@ -19,10 +19,6 @@ const SesionSchema = new EntitySchema({
       length: 50,
       nullable: false,
     },
-    taller_id: {
-      type: "int",
-      nullable: false,
-    },
     createdAt: {
       type: "timestamp with time zone",
       default: () => "CURRENT_TIMESTAMP",
@@ -33,6 +29,15 @@ const SesionSchema = new EntitySchema({
       default: () => "CURRENT_TIMESTAMP",
       onUpdate: "CURRENT_TIMESTAMP",
       nullable: false,
+    },
+  },
+  relations: {
+    taller: {
+      type: "many-to-one",
+      target: "Taller",
+      joinColumn: { name: "taller_id" }, // La columna que almacenará el ID del taller
+      nullable: false,
+      onDelete: "CASCADE", // Eliminar sesiones si el taller es eliminado
     },
   },
 });

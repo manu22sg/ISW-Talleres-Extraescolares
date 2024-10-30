@@ -30,6 +30,18 @@ const InscripcionSchema = new EntitySchema({
       nullable: false,
     },
   },
+  relations: {
+    estudiante: {
+      type: "many-to-one",
+      target: "User", // Esto debe coincidir con el nombre de la entidad del estudiante
+      joinColumn: { name: "estudiante_id" },
+    },
+    taller: {
+      type: "many-to-one",
+      target: "Taller",
+      joinColumn: { name: "taller_id" },
+    },
+  },
 });
 
 export default InscripcionSchema;
