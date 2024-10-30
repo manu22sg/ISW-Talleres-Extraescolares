@@ -39,6 +39,20 @@ const AsistenciaSchema = new EntitySchema({
       nullable: false,
     },
   },
+  relations: {
+    sesion: {
+      type: "many-to-one",
+      target: "Sesion",
+      joinColumn: { name: "sesion_id" },
+      onDelete: "CASCADE",
+    },
+    estudiante: {
+      type: "many-to-one",
+      target: "User", // Cambia "User" al nombre de la entidad de estudiante si es distinto
+      joinColumn: { name: "estudiante_id" },
+      onDelete: "CASCADE",
+    },
+  },
 });
 
 export default AsistenciaSchema;

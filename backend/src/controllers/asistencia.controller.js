@@ -7,27 +7,29 @@ import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers
 // Registrar la asistencia de un estudiante
 export async function registrarAsistencia(req, res) {
   try {
-    const { sesion_id } = req.params;
+    const sesion_id = parseInt(req.params.sesion_id, 10);
     const { estudiante_id, estado, comentarios } = req.body;
 
     const asistenciaRepository = AppDataSource.getRepository(Asistencia);
     const sesionRepository = AppDataSource.getRepository(Sesion);
 
     // Verificar si la sesión está en curso
-    const sesion = await sesionRepository.findOne({ where: { id: sesion_id, estado: 'en curso' } });
-    if (!sesion) return handleErrorClient(res, 400, "La sesión no está en curso o no existe.");
+    const sesion = await sesionRepository.findOne({ where: { id: sesion_id, estado: "en curso" } });
+    if (!sesion) {
+      return handleErrorClient(res, 400, "La sesión no está en curso o no existe.");
+    }
 
     // Registrar o actualizar la asistencia del estudiante
     const asistenciaExistente = await asistenciaRepository.findOne({ where: { sesion_id, estudiante_id } });
 
     if (asistenciaExistente) {
-      // Si ya existe, actualizamos el registro
+      // Si ya existe, actualizar el registro
       asistenciaExistente.estado = estado;
       asistenciaExistente.comentarios = comentarios;
       await asistenciaRepository.save(asistenciaExistente);
       handleSuccess(res, 200, "Asistencia actualizada exitosamente.", asistenciaExistente);
     } else {
-      // Si no existe, creamos un nuevo registro de asistencia
+      // Si no existe, crear un nuevo registro de asistencia
       const nuevaAsistencia = asistenciaRepository.create({ sesion_id, estudiante_id, estado, comentarios });
       await asistenciaRepository.save(nuevaAsistencia);
       handleSuccess(res, 201, "Asistencia registrada exitosamente.", nuevaAsistencia);
@@ -40,11 +42,18 @@ export async function registrarAsistencia(req, res) {
 // Obtener la lista de asistencia de una sesión
 export async function obtenerAsistenciaPorSesion(req, res) {
   try {
-    const { sesion_id } = req.params;
+    const sesion_id = parseInt(req.params.sesion_id, 10);
     const asistenciaRepository = AppDataSource.getRepository(Asistencia);
 
-    const asistencia = await asistenciaRepository.find({ where: { sesion_id } });
-    if (!asistencia.length) return handleErrorClient(res, 404, "No se encontró asistencia para la sesión especificada.");
+    // Incluir la relación con "estudiante" para obtener detalles del estudiante
+    const asistencia = await asistenciaRepository.find({
+      where: { sesion_id },
+      relations: ["estudiante"],
+    });
+
+    if (!asistencia.length) {
+      return handleErrorClient(res, 404, "No se encontró asistencia para la sesión especificada.");
+    }
 
     handleSuccess(res, 200, "Asistencia obtenida exitosamente.", asistencia);
   } catch (error) {
@@ -55,11 +64,13 @@ export async function obtenerAsistenciaPorSesion(req, res) {
 // Finalizar la sesión para bloquear cambios en la asistencia
 export async function finalizarSesion(req, res) {
   try {
-    const { sesion_id } = req.params;
+    const sesion_id = parseInt(req.params.sesion_id, 10);
     const sesionRepository = AppDataSource.getRepository(Sesion);
 
     const sesion = await sesionRepository.findOne({ where: { id: sesion_id } });
-    if (!sesion) return handleErrorClient(res, 404, "La sesión no existe.");
+    if (!sesion) {
+      return handleErrorClient(res, 404, "La sesión no existe.");
+    }
 
     // Cambiar el estado de la sesión a "finalizada"
     sesion.estado = "finalizada";
@@ -74,19 +85,19 @@ export async function finalizarSesion(req, res) {
 // Obtener el historial de asistencia de un estudiante
 export async function obtenerHistorialAsistencia(req, res) {
   try {
-    const { estudiante_id } = req.params;
+    const estudiante_id = parseInt(req.params.estudiante_id, 10);
     const userRole = req.user.rol;
     const userId = req.user.id;
 
     const asistenciaRepository = AppDataSource.getRepository(Asistencia);
 
     // Verificar si el usuario tiene permiso para ver el historial
-    if (userRole === "alumno" && userId !== parseInt(estudiante_id)) {
+    if (userRole === "alumno" && userId !== estudiante_id) {
       return handleErrorClient(res, 403, "No tienes permiso para acceder a este recurso.");
     }
 
     // Obtener el historial de asistencia para el estudiante
-    const historial = await asistenciaRepository.find({ where: { estudiante_id } });
+    const historial = await asistenciaRepository.find({ where: { estudiante_id }, relations: ["sesion"] });
 
     if (!historial.length) {
       return handleErrorClient(res, 404, "No se encontró historial de asistencia para el estudiante especificado.");

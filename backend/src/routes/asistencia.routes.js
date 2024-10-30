@@ -1,26 +1,24 @@
-"use strict";
 import { Router } from "express";
-import { registrarAsistencia, 
-    obtenerAsistenciaPorSesion, 
-    finalizarSesion, 
-    obtenerHistorialAsistencia } from "../controllers/asistencia.controller.js";
+import {
+  registrarAsistencia,
+  obtenerAsistenciaPorSesion,
+  finalizarSesion,
+  obtenerHistorialAsistencia
+} from "../controllers/asistencia.controller.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 
 const router = Router();
 
-// Proteger las rutas con autenticación JWT
-router.use(authenticateJwt);
+// Ruta para registrar la asistencia de un estudiante en una sesión
+router.post("/:sesion_id/asistencia", authenticateJwt, registrarAsistencia);
 
-// Ruta para registrar la asistencia de los estudiantes
-router.post("/sesiones/:sesion_id/asistencia", registrarAsistencia);
-
-// Ruta para obtener la asistencia de una sesión específica
-router.get("/sesiones/:sesion_id/asistencia", obtenerAsistenciaPorSesion);
+// Ruta para obtener la lista de asistencia de una sesión específica
+router.get("/:sesion_id/asistencia", authenticateJwt, obtenerAsistenciaPorSesion);
 
 // Ruta para finalizar una sesión
-router.put("/sesiones/:sesion_id/finalizar", finalizarSesion);
+router.post("/:sesion_id/finalizar", authenticateJwt, finalizarSesion);
 
-// Nueva ruta para obtener el historial de asistencia de un estudiante
-router.get("/estudiantes/:estudiante_id/historial", obtenerHistorialAsistencia);
+// Ruta para obtener el historial de asistencia de un estudiante específico
+router.get("/historial/:estudiante_id", authenticateJwt, obtenerHistorialAsistencia);
 
 export default router;
