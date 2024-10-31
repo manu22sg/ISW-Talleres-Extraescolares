@@ -9,6 +9,7 @@ import {
   inscribirAlumnoService,
   
   obtenerTalleresInscritosProfesorService,
+  obtenerTalleresInscritosProfesor1Service,
   obtenerTalleresInscritosService,
   updateTallerService
 } from "../services/taller.service.js";
@@ -224,4 +225,25 @@ export const talleresInscritosProfesorController = async (req, res) => {
   return handleSuccess(res, 200, { talleres, message: "Talleres correspondientes" });
 
 };
+
+export const talleresInscritosProfesor1Controller = async (req, res) => {
+  const profesorId = req.user.id; // ID del profesor obtenido del token
+  const { tallerId } = req.body; // ID del taller a inscribir en el cuerpo de la solicitud
+
+  const { success, error, statusCode = 500, taller } = await obtenerTalleresInscritosProfesor1Service(profesorId, tallerId);
+
+  if (!success) {
+    // Si es un error de cliente (4xx), usar handleErrorClient
+    if (statusCode >= 400 && statusCode < 500) {
+      return handleErrorClient(res, statusCode, error);
+    }
+    // Si es un error de servidor (5xx), usar handleErrorServer
+    return handleErrorServer(res, statusCode, error);
+  }
+
+  // Respuesta exitosa
+  return handleSuccess(res, 200, "Taller correspondiente encontrado", taller);
+};
+
+
 

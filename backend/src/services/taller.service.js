@@ -64,7 +64,7 @@ export async function getTalleresService(user) { // Obtener todos los talleres
     return [null, "Error interno del servidor"];
   }
 }
-
+   // claro, solo cambia de estado el taller a eliminado 
 
 // Crear un nuevo taller
 export const createTallerService = async (tallerData) => {
@@ -121,7 +121,7 @@ export const createTallerService = async (tallerData) => {
   enviarCorreo(correosEstudiantes, asunto, texto);  
 return tallerGuardado
 
-  
+  //si, para notificar a alumnos que se creo un taller. si
   
 
 };
@@ -183,7 +183,7 @@ export async function updateTallerService(id, body) {
       enviarCorreo(correosEstudiantes, asunto, texto); 
     }
   
-       
+       //ahi tambien envia correo a los alumnos del taller que se actualizo el taller
   
     return [tallerFound, null];
   } catch (error) {
@@ -217,7 +217,7 @@ export async function deleteStudentService(req) {
   return taller; // Devuelve el taller actualizado
 }
 
-
+//esa funcion solo la puede ejecutar un administrador
 
 // Eliminar un taller
 export async function deleteTallerService(id) { // Eliminar un taller
@@ -309,7 +309,7 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
   }
 };
 
-
+// es mio, que vendria siendo la base del resto
 
 export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => {
    // Inscribir a un alumno en un taller siendo un profesor o administrador
@@ -413,5 +413,28 @@ export const obtenerTalleresInscritosProfesorService = async (profesorId) => {
   } catch (error) {
     console.error("Error en obtenerTalleresInscritosProfesorService:", error);
     return { error: "Error interno del servidor", statusCode: 500 };
+  }
+};
+
+
+export const obtenerTalleresInscritosProfesor1Service = async (profesorId, tallerId) => {
+  try {
+    const tallerRepository = AppDataSource.getRepository(Taller);
+
+    // Obtener los talleres asignados al profesor
+    const talleresAsignados = await tallerRepository.find({
+      where: { profesor: { id: profesorId } }, // Buscar por el ID del profesor
+      relations: ["usuarios"],
+    });
+
+    const taller = talleresAsignados.find((t) => t.id === tallerId);
+    if (!taller) {
+      return { success: false, error: "Taller no encontrado", statusCode: 404 };
+    }
+   
+    return { success: true, taller };
+  } catch (error) {
+    console.error("Error en obtenerTalleresInscritosProfesor1Service:", error);
+    return { success: false, error: "Error interno del servidor", statusCode: 500 };
   }
 };

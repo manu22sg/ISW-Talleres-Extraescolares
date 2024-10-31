@@ -14,3 +14,4 @@ router.get("/alumnos/:id", inscritosAlumnosController);
 router.get("/asistencia/:id", asistenciaAlumnosController);
 
 export default router;
+
