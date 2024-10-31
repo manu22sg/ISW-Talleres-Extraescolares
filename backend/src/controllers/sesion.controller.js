@@ -4,8 +4,9 @@ import { crearSesionService } from "../services/sesion.service.js";
 export async function crearSesion(req, res) {
   const { tallerId } = req.params;
   const { fecha, estado } = req.body;
-
-  const result = await crearSesionService(tallerId, fecha, estado);
+  const idProfesor = req.user.id; // Usar el ID del profesor obtenido del middleware de autenticación
+  
+  const result = await crearSesionService(tallerId, fecha, estado, idProfesor); // se agrega idProfesor
   if (result.error) {
     return res.status(result.statusCode).json({ error: result.error });
   }
