@@ -40,3 +40,51 @@ export async function crearSesionService(tallerId, fecha, estado = "pendiente", 
     return { error: "Error interno del servidor", statusCode: 500 };
   }
 }
+
+// Servicio para actualizar una sesión
+export async function actualizarSesionService(sesionId, camposActualizados) {
+  try {
+    const sesionRepository = AppDataSource.getRepository(Sesion);
+
+    // Buscar la sesión por su ID
+    const sesion = await sesionRepository.findOne({ where: { id: sesionId } });
+    if (!sesion) {
+      return { error: "Sesión no encontrada", statusCode: 404 };
+    }
+
+    // Actualizar los campos proporcionados
+    if (camposActualizados.fecha) {
+      sesion.fecha = camposActualizados.fecha;
+    }
+    if (camposActualizados.estado) {
+      sesion.estado = camposActualizados.estado;
+    }
+
+    // Guardar los cambios en la base de datos
+    const sesionActualizada = await sesionRepository.save(sesion);
+
+    return { success: true, sesion: sesionActualizada };
+  } catch (error) {
+    console.error("Error al actualizar la sesión:", error);
+    return { error: "Error interno del servidor", statusCode: 500 };
+  }
+}
+
+// Servicio para obtener las sesiones de un taller
+export async function obtenerSesionesPorTallerService(tallerId) {
+  try {
+    const sesionRepository = AppDataSource.getRepository(Sesion);
+
+    // Buscar todas las sesiones asociadas al taller
+    const sesiones = await sesionRepository.find({ where: { taller: { id: tallerId } } });
+
+    if (sesiones.length === 0) {
+      return { message: "No hay sesiones disponibles para este taller", sesiones: [] };
+    }
+
+    return { success: true, sesiones };
+  } catch (error) {
+    console.error("Error al obtener las sesiones del taller:", error);
+    return { error: "Error interno del servidor", statusCode: 500 };
+  }
+}
