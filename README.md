@@ -1,6 +1,8 @@
-# Plantilla-ISW-Proyecto-2024
+# Talleres-Extraescolares-ISW-2024/2
+Realizado para la asignatura Ingeniería de Software 2024-2 en la Universidad del Bío-Bío
 
-Una plantilla base para proyectos de Ingeniería de Software (ISW) desarrollados durante el año 2024-2. Esta plantilla está diseñada para ayudar a los estudiantes a estructurar y organizar sus proyectos de software, incluyendo tanto la parte de Backend como de Frontend.
+Grupo 4 Sección 2
+Integrantes: Bastian Baeza, Miguel Barrera, Manuel Gálvez y Guido Montecinos
 
 ## Tabla de contenidos
 * [Descripción General](#descripción-general)
@@ -24,31 +26,20 @@ Una plantilla base para proyectos de Ingeniería de Software (ISW) desarrollados
 
 ## Descripción General
 
-La `Plantilla-ISW-Proyecto-2024` es una base preconfigurada para proyectos de Ingeniería de Software que incluye tanto la parte del Backend como la del Frontend. Está diseñada para que los estudiantes puedan enfocarse en desarrollar sus funcionalidades específicas sin tener que preocuparse por la configuración inicial del proyecto. 
+Este proyecto está orientado para la creación de un software que permita a alumnos de Liceos de Chile poder inscribirse a Talleres extraescolares debido a la falta de tecnologías en esta área. 
 
 ### Backend
 
-El Backend de esta plantilla implementa las siguientes funcionalidades principales:
+El Backend implementa las siguientes funcionalidades principales:
 
-- **Autenticación y Autorización**: Uso de `passport.js` para la autenticación segura de los usuarios.
-- **CRUD de Usuarios**: Permite la lectura, actualización y eliminación de usuarios.
-- **Registro de Usuarios**: Implementación de un sistema de registro que permite a nuevos usuarios registrarse en la aplicación.
+- **CRUD de Talleres**: Permite la creación, lectura, actualización y eliminación de Talleres.
+ - **Ingreso de Alumnos a talleres**: Se implementan las funciones para que todos los alumnos se puedan inscribir a talleres y ver en que talleres se han inscrito.
+- **Profesores en talleres**: Los profesores pueden ingresar alumnos a talleres y pueden ver en que talleres están inscritos(con todos los detalles)
 
 ### Frontend
 
-El Frontend proporciona una interfaz de usuario simple y funcional para interactuar con el sistema. Incluye las siguientes páginas y funcionalidades:
+Por realizar
 
-- **Página de Inicio de Sesión**: Permite a los usuarios autenticarse en el sistema.
-- **Página de Registro de Usuarios**: Los nuevos usuarios pueden registrarse mediante un formulario.
-- **Página de Error**: Muestra un mensaje de error cuando algo sale mal.
-- **Página Principal**: Página de inicio tras la autenticación exitosa.
-- **Página de Gestión de Usuarios**: 
-  - Muestra una tabla con todos los usuarios registrados.
-  - Permite modificar y eliminar usuarios directamente desde la tabla.
-  - Incluye una funcionalidad de búsqueda para encontrar usuarios específicos.
-- **Cerrar Sesión**: Opción para que los usuarios cierren su sesión de manera segura.
-
-Esta plantilla proporciona una estructura robusta para que los estudiantes puedan extender y personalizar según las necesidades de sus proyectos.
 
 ## Arquitectura del Proyecto
 
@@ -63,19 +54,23 @@ Este proyecto está dividido en dos partes principales: el Backend y el Frontend
 │   │   ├── auth
 │   │   │   └── passport.auth.js
 │   │   ├── config
-│   │   │   ├── .env.example
+│   │   │   ├── .env
 │   │   │   ├── configDb.js
 │   │   │   ├── configEnv.js
 │   │   │   └── initialSetup.js
+|   |   |    └── talleresSetup.js
 │   │   ├── controllers
 │   │   │   ├── auth.controller.js
 │   │   │   └── user.controller.js
+|   |   |    └── taller.controller.js
 │   │   ├── entity
 │   │   │   └── user.entity.js
+|   |   |    └── taller.entity.js
 │   │   ├── handlers
 │   │   │   └── responseHandlers.js
 │   │   ├── helpers
 │   │   │   └── bcrypt.helper.js
+|   |   |    └── nodemailer.helper.js
 │   │   ├── middlewares
 │   │   │   ├── authentication.middleware.js
 │   │   │   └── authorization.middleware.js
@@ -83,12 +78,16 @@ Este proyecto está dividido en dos partes principales: el Backend y el Frontend
 │   │   │   ├── auth.routes.js
 │   │   │   ├── index.routes.js
 │   │   │   └── user.routes.js
+|   |   |   └── student.routes.js
+|   |   |   └── taller.rotues.js
 │   │   ├── services
 │   │   │   ├── auth.service.js
 │   │   │   └── user.service.js
+|   |   |   └── taller.entity.js
 │   │   ├── validations
 │   │   │   ├── auth.validation.js
 │   │   │   └── user.validation.js
+|   |   |   └── taller.validation.js
 │   │   └── index.js
 │   ├── .gitignore
 │   ├── .prettierrc.json
@@ -189,7 +188,7 @@ cd backend
 npm install
 ```
 
-3. Renombra el archivo `.env.example` a `.env` y configura las variables de entorno necesarias.
+3. Crea el archivo `.env` y configura las variables de entorno necesarias.
 
 ```bash
 HOST= localhost (Proyecto en local) o IP servidor (Proyecto en producción)
@@ -291,7 +290,11 @@ Este proyecto utiliza el stack **PERN**, que incluye las siguientes tecnologías
   - **Enlace**: [bcrypt.js](https://www.npmjs.com/package/bcryptjs)
 - **dotenv**: Carga variables de entorno desde un archivo `.env`.
   - **Enlace**: [dotenv](https://www.npmjs.com/package/dotenv)
+  - **date-fns**: Cambia el formato a dd/MM/yyyy
+  - **Enlace**: [date-fns] (https://date-fns.org/docs/Getting-Started)
+  - **Dayjs**: Permite que al validar el taller permita el formato dd/MM/yyyy
+  - **Enlace**: [Dayjs] https://day.js.org/
+  - 
 
 Estas tecnologías y herramientas forman la base de la aplicación y permiten su funcionamiento de forma correcta.
 
-⌨️ with ❤️ by [@Didudocl](https://github.com/Didudocl)
