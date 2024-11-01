@@ -118,3 +118,40 @@ export async function obtenerSesionesPorTallerService(tallerId, idProfesor) {
     return { error: "Error interno del servidor", statusCode: 500 };
   }
 }
+
+
+// Servicio para eliminar una sesión con validaciones adicionales
+export async function eliminarSesionService(sesionId, idProfesor) {
+  try {
+    const sesionRepository = AppDataSource.getRepository(Sesion);
+    const tallerRepository = AppDataSource.getRepository(Taller);
+
+    // Buscar la sesión por su ID
+    const sesion = await sesionRepository.findOne({ where: { id: sesionId }, relations: ["taller"] });
+    if (!sesion) {
+      return { error: "Sesión no encontrada", statusCode: 404 };
+    }
+
+    // Verificar si el taller existe y obtener el profesor asociado
+    const taller = await tallerRepository.findOne({
+      where: { id: sesion.taller.id },
+      relations: ["profesor"]
+    });
+    if (!taller) {
+      return { error: "Taller no encontrado", statusCode: 404 };
+    }
+
+    // Verificar si el profesor es el profesor asignado al taller
+    if (taller.profesor.id !== idProfesor) {
+      return { error: "No está autorizado para eliminar esta sesión", statusCode: 403 };
+    }
+
+    // Eliminar la sesión de la base de datos
+    await sesionRepository.remove(sesion);
+
+    return { success: true, message: "Sesión eliminada exitosamente" };
+  } catch (error) {
+    console.error("Error al eliminar la sesión:", error);
+    return { error: "Error interno del servidor", statusCode: 500 };
+  }
+}
