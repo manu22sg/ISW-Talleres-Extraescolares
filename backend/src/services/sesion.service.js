@@ -16,11 +16,15 @@ export async function crearSesionService(tallerId, fecha, estado = "pendiente", 
       relations: ["usuarios"],
     });
 
+
+
     // Si no se encuentra el taller o el profesor no está asignado
     if (!taller) {
       return { error: "No está autorizado para crear una sesión en este taller o el taller no existe",
          statusCode: 403 };
     }
+
+
 
     // Crear la nueva sesión
     const nuevaSesion = sesionRepository.create({
@@ -41,15 +45,28 @@ export async function crearSesionService(tallerId, fecha, estado = "pendiente", 
   }
 }
 
-// Servicio para actualizar una sesión
-export async function actualizarSesionService(sesionId, camposActualizados) {
+// Servicio para actualizar una sesión con validaciones adicionales
+export async function actualizarSesionService(sesionId, camposActualizados, idProfesor) {
   try {
     const sesionRepository = AppDataSource.getRepository(Sesion);
+    const tallerRepository = AppDataSource.getRepository(Taller);
 
     // Buscar la sesión por su ID
-    const sesion = await sesionRepository.findOne({ where: { id: sesionId } });
+    const sesion = await sesionRepository.findOne({ where: { id: sesionId }, relations: ["taller"] });
     if (!sesion) {
       return { error: "Sesión no encontrada", statusCode: 404 };
+    }
+
+    // Verificar si el taller existe
+    const taller = await tallerRepository.findOne({ where: { id: sesion.taller.id },
+      relations: ["profesor"]  });
+    if (!taller) {
+      return { error: "Taller no encontrado", statusCode: 404 };
+    }
+
+    // Verificar si el profesor es el profesor asignado al taller
+    if (taller.profesor.id !== idProfesor) {
+      return { error: "No está autorizado para actualizar esta sesión", statusCode: 403 };
     }
 
     // Actualizar los campos proporcionados
@@ -70,10 +87,23 @@ export async function actualizarSesionService(sesionId, camposActualizados) {
   }
 }
 
-// Servicio para obtener las sesiones de un taller
-export async function obtenerSesionesPorTallerService(tallerId) {
+// Servicio para obtener las sesiones de un taller con validaciones adicionales
+export async function obtenerSesionesPorTallerService(tallerId, idProfesor) {
   try {
     const sesionRepository = AppDataSource.getRepository(Sesion);
+    const tallerRepository = AppDataSource.getRepository(Taller);
+
+    // Verificar si el taller existe
+    const taller = await tallerRepository.findOne({ where: { id: tallerId },
+      relations: ["profesor"] });
+    if (!taller) {
+      return { error: "Taller no encontrado", statusCode: 404 };
+    }
+
+    // Verificar si el profesor es el profesor asignado al taller
+    if (taller.profesor.id !== idProfesor) {
+      return { error: "No está autorizado para ver las sesiones de este taller", statusCode: 403 };
+    }
 
     // Buscar todas las sesiones asociadas al taller
     const sesiones = await sesionRepository.find({ where: { taller: { id: tallerId } } });
