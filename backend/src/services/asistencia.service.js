@@ -6,18 +6,42 @@ import User from "../entity/user.entity.js"; // Importa la entidad de Usuario
 import { AppDataSource } from "../config/configDb.js"; // Fuente de datos de la BD
 
 // Obtener lista de estudiantes inscritos para una sesión específica
-export async function obtenerInscritosSesionService(tallerId, sesionId) {
+export async function obtenerInscritosSesionService(tallerId, sesionId, idProfesor) {
   try {
     const asistenciaRepository = AppDataSource.getRepository(Asistencia);
+    const sesionRepository = AppDataSource.getRepository(Sesion);
+    const tallerRepository = AppDataSource.getRepository(Taller);
+
+    // Validar si el taller existe y obtener el profesor asociado
+    const taller = await tallerRepository.findOne({
+      where: { id: tallerId },
+      relations: ["profesor"]
+    });
+    if (!taller) {
+      return { error: "Taller no encontrado", statusCode: 404 };
+    }
+
+    // Verificar si el profesor es el profesor asignado al taller
+    if (taller.profesor.id !== idProfesor) {
+      return { error: "No está autorizado para acceder a los inscritos de este taller", statusCode: 403 };
+    }
+
+    // Validar si la sesión existe y está asociada con el taller
+    const sesion = await sesionRepository.findOne({
+      where: { id: sesionId, taller: { id: tallerId } }
+    });
+    if (!sesion) {
+      return { error: "Sesión no encontrada o no asociada con el taller", statusCode: 404 };
+    }
 
     // Buscar todos los registros de asistencia para esta sesión
     const asistencias = await asistenciaRepository.find({
-      where: { tallerId, sesionId },
+      where: { sesionId, tallerId },
       relations: ["usuario"]
     });
 
     // Formatear la respuesta
-    const estudiantes = asistencias.map((asistencia) => ({
+    const estudiantes = asistencias.map(asistencia => ({
       id: asistencia.usuario.id,
       nombreCompleto: asistencia.usuario.nombreCompleto,
       estado: asistencia.estado,
@@ -30,42 +54,64 @@ export async function obtenerInscritosSesionService(tallerId, sesionId) {
     return { error: "Error interno del servidor", statusCode: 500 };
   }
 }
-
-
-// Registrar o actualizar asistencia para una sesión
-export async function registrarAsistenciaService(tallerId, sesionId, asistencias) {
+export async function registrarAsistenciaService(tallerId, sesionId, asistencias, idProfesor) {
   try {
     const sesionRepository = AppDataSource.getRepository(Sesion);
     const asistenciaRepository = AppDataSource.getRepository(Asistencia);
+    const tallerRepository = AppDataSource.getRepository(Taller);
+    const userRepository = AppDataSource.getRepository(User);
 
-    // Verificar que la sesión pertenece al taller especificado
+    // Validar si el taller existe y obtener el profesor asociado
+    const taller = await tallerRepository.findOne({
+      where: { id: tallerId },
+      relations: ["profesor"],
+    });
+    if (!taller) {
+      return { error: "Taller no encontrado", statusCode: 404 };
+    }
+
+    // Verificar si el profesor es el profesor asignado al taller
+    if (taller.profesor.id !== idProfesor) {
+      console.log("ID del Profesor en el Token:", idProfesor);
+      console.log("ID del Profesor Asignado al Taller:", taller.profesor.id);
+      return { error: "No está autorizado para registrar asistencia en este taller", statusCode: 403 };
+    }
+
+    // Validar si la sesión existe y está asociada con el taller
     const sesion = await sesionRepository.findOne({
       where: { id: sesionId, taller: { id: tallerId } },
     });
-    if (!sesion) return { error: "Sesión o taller no encontrado", statusCode: 404 };
+    if (!sesion) {
+      return { error: "Sesión no encontrada o no asociada con el taller", statusCode: 404 };
+    }
 
     // Procesar cada registro de asistencia
     for (const { usuarioId, estado, comentarios } of asistencias) {
-      // Buscar si ya existe un registro de asistencia para esta sesión y usuario
-      let registroAsistencia = await asistenciaRepository.findOne({
+      // Validar si el estudiante existe y tiene el rol adecuado
+      const usuario = await userRepository.findOne({
+        where: { id: usuarioId, rol: "estudiante" },
+      });
+      if (!usuario) {
+        return { error: "Estudiante no encontrado o no tiene el rol de estudiante", statusCode: 404 };
+      }
+
+      // Verificar si ya existe un registro de asistencia para esta sesión y usuario
+      const registroExistente = await asistenciaRepository.findOne({
         where: { sesionId, usuarioId },
       });
-
-      if (registroAsistencia) {
-        // Actualizar el registro existente
-        registroAsistencia.estado = estado;
-        registroAsistencia.comentarios = comentarios;
-      } else {
-        // Crear un nuevo registro de asistencia
-        registroAsistencia = asistenciaRepository.create({
-          tallerId,
-          sesionId,
-          usuarioId,
-          estado,
-          comentarios,
-        });
+      if (registroExistente) {
+        return { error: "La asistencia para este estudiante ya ha sido registrada", statusCode: 400 };
       }
-      await asistenciaRepository.save(registroAsistencia);
+
+      // Crear un nuevo registro de asistencia
+      const nuevoRegistroAsistencia = asistenciaRepository.create({
+        tallerId,
+        sesionId,
+        usuarioId,
+        estado,
+        comentarios,
+      });
+      await asistenciaRepository.save(nuevoRegistroAsistencia);
     }
 
     return { success: true, message: "Asistencia registrada correctamente" };
@@ -76,12 +122,14 @@ export async function registrarAsistenciaService(tallerId, sesionId, asistencias
 }
 
 // Servicio para actualizar el estado de la asistencia de un estudiante con validaciones adicionales
-export async function actualizarEstadoAsistenciaService(tallerId, sesionId, 
-  usuarioId, nuevoEstado, comentarios, idProfesor) {
+export async function actualizarEstadoAsistenciaService(
+  tallerId, sesionId, usuarioId, nuevoEstado, comentarios, idProfesor
+) {
   try {
     const tallerRepository = AppDataSource.getRepository(Taller);
     const sesionRepository = AppDataSource.getRepository(Sesion);
     const asistenciaRepository = AppDataSource.getRepository(Asistencia);
+    const userRepository = AppDataSource.getRepository(User);
 
     // Validar si el taller existe y obtener el profesor asociado
     const taller = await tallerRepository.findOne({
@@ -103,6 +151,14 @@ export async function actualizarEstadoAsistenciaService(tallerId, sesionId,
     });
     if (!sesion) {
       return { error: "Sesión no encontrada o no asociada con el taller", statusCode: 404 };
+    }
+
+    // Validar si el usuario (estudiante) existe y tiene el rol adecuado
+    const usuario = await userRepository.findOne({
+      where: { id: usuarioId, rol: "estudiante" }
+    });
+    if (!usuario) {
+      return { error: "Estudiante no encontrado o no tiene el rol de estudiante", statusCode: 404 };
     }
 
     // Buscar el registro de asistencia correspondiente
