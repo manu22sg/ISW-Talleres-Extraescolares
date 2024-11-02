@@ -19,4 +19,8 @@ router.get("/talleres/:tallerId/sesiones", authenticateJwt, obtenerSesionesPorTa
 // Ruta para eliminar una sesión
 router.delete("/sesiones/:sesionId", authenticateJwt, isTeacher, eliminarSesion);
 
+
+
+
+
 export default router;

@@ -30,16 +30,25 @@ const SesionSchema = new EntitySchema({
       onUpdate: "CURRENT_TIMESTAMP",
       nullable: false,
     },
+    tokenAsistencia: {
+      type: "int",
+      nullable: true,
+    },
+    expiracionToken: {
+      type: "timestamp with time zone",
+      nullable: true,
+    },
   },
   relations: {
     taller: {
       type: "many-to-one",
       target: "Taller",
-      joinColumn: { name: "taller_id" }, // ID del taller al que pertenece la sesión
+      joinColumn: { name: "taller_id" },
       nullable: false,
       onDelete: "CASCADE",
     },
   },
 });
 
+// Asegúrate de exportar por defecto
 export default SesionSchema;

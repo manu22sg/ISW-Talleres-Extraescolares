@@ -72,8 +72,7 @@ export async function registrarAsistenciaService(tallerId, sesionId, asistencias
 
     // Verificar si el profesor es el profesor asignado al taller
     if (taller.profesor.id !== idProfesor) {
-      console.log("ID del Profesor en el Token:", idProfesor);
-      console.log("ID del Profesor Asignado al Taller:", taller.profesor.id);
+
       return { error: "No está autorizado para registrar asistencia en este taller", statusCode: 403 };
     }
 
@@ -181,6 +180,66 @@ export async function actualizarEstadoAsistenciaService(
     return { success: true, message: "Estado de asistencia actualizado correctamente" };
   } catch (error) {
     console.error("Error al actualizar el estado de asistencia:", error);
+    return { error: "Error interno del servidor", statusCode: 500 };
+  }
+}
+
+
+// Servicio para que los estudiantes registren asistencia usando el token
+export async function registrarAsistenciaConTokenService(tallerId, sesionId, usuarioId, tokenAsistencia) {
+  try {
+    const sesionRepository = AppDataSource.getRepository(Sesion);
+    const asistenciaRepository = AppDataSource.getRepository(Asistencia);
+    const userRepository = AppDataSource.getRepository(User);
+
+    // Validar si la sesión existe y está asociada con el taller
+    const sesion = await sesionRepository.findOne({
+      where: { id: sesionId, taller: { id: tallerId } },
+    });
+    if (!sesion) {
+      return { error: "Sesión no encontrada o no asociada con el taller", statusCode: 404 };
+    }
+
+    // Verificar si el token de asistencia es válido
+    if (sesion.tokenAsistencia !== parseInt(tokenAsistencia, 10)) {
+      return { error: "Token de asistencia inválido", statusCode: 403 };
+    }
+
+    // Verificar si el token de asistencia ha expirado
+    const now = new Date();
+    if (now > new Date(sesion.expiracionToken)) {
+      return { error: "El token de asistencia ha expirado", statusCode: 403 };
+    }
+
+    // Validar si el estudiante existe y tiene el rol adecuado
+    const usuario = await userRepository.findOne({
+      where: { id: usuarioId, rol: "estudiante" },
+    });
+    if (!usuario) {
+      return { error: "Estudiante no encontrado o no tiene el rol de estudiante", statusCode: 404 };
+    }
+
+    // Verificar si ya existe un registro de asistencia para esta sesión y usuario
+    const registroExistente = await asistenciaRepository.findOne({
+      where: { sesionId, usuarioId },
+    });
+    if (registroExistente) {
+      return { error: "La asistencia para este estudiante ya ha sido registrada", statusCode: 400 };
+    }
+
+    // Crear un nuevo registro de asistencia
+    const nuevoRegistroAsistencia = asistenciaRepository.create({
+      tallerId,
+      sesionId,
+      usuarioId,
+      estado: "presente",
+      comentarios: "Asistencia registrada con token",
+    });
+    await asistenciaRepository.save(nuevoRegistroAsistencia);
+
+    return { success: true, message: "Asistencia registrada correctamente" };
+  } catch (error) {
+    console.error("Error al registrar asistencia con token:", error);
     return { error: "Error interno del servidor", statusCode: 500 };
   }
 }

@@ -3,6 +3,7 @@
 import Sesion from "../entity/sesion.entity.js";
 import Taller from "../entity/taller.entity.js";
 import { AppDataSource } from "../config/configDb.js";
+import { addMinutes } from "date-fns"; // Importar para manejar la fecha de expiración
 
 // Servicio para crear una nueva sesión en un taller
 export async function crearSesionService(tallerId, fecha, estado = "pendiente", idProfesor) {
@@ -10,27 +11,34 @@ export async function crearSesionService(tallerId, fecha, estado = "pendiente", 
     const sesionRepository = AppDataSource.getRepository(Sesion);
     const tallerRepository = AppDataSource.getRepository(Taller);
 
-    // Verificar si el taller existe y está asignado al profesor
+    // Validar si el taller existe y obtener el profesor asociado
     const taller = await tallerRepository.findOne({
-      where: { id: tallerId, profesor: { id: idProfesor } }, // Verificar el ID del taller y del profesor
-      relations: ["usuarios"],
+      where: { id: tallerId },
+      relations: ["profesor"],
     });
 
-
-
-    // Si no se encuentra el taller o el profesor no está asignado
     if (!taller) {
-      return { error: "No está autorizado para crear una sesión en este taller o el taller no existe",
-         statusCode: 403 };
+      return { error: "Taller no encontrado", statusCode: 404 };
     }
 
+    // Verificar si el profesor que intenta crear la sesión es el profesor asignado al taller
+    if (taller.profesor.id !== idProfesor) {
+      return { error: "No está autorizado para crear una sesión en este taller", statusCode: 403 };
+    }
 
+    // Generar un token de asistencia de 4 dígitos
+    const tokenAsistencia = Math.floor(1000 + Math.random() * 9000); // Genera un número aleatorio de 4 dígitos
+
+    // Calcular la fecha de expiración del token (1 hora y 30 minutos después de la fecha de creación)
+    const expiracionToken = addMinutes(new Date(), 90);
 
     // Crear la nueva sesión
     const nuevaSesion = sesionRepository.create({
       taller: { id: tallerId },
       fecha,
       estado,
+      tokenAsistencia,
+      expiracionToken,
       createdAt: new Date(),
       updatedAt: new Date(),
     });

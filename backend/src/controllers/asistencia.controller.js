@@ -1,6 +1,7 @@
 "use strict";
 import { obtenerInscritosSesionService, registrarAsistenciaService } from "../services/asistencia.service.js";
 import { actualizarEstadoAsistenciaService } from "../services/asistencia.service.js";
+import { registrarAsistenciaConTokenService } from "../services/asistencia.service.js";
 
 
 // Controlador para obtener la lista de estudiantes inscritos en una sesión específica
@@ -76,6 +77,24 @@ export async function actualizarEstadoAsistencia(req, res) {
     res.json(result);
   } catch (error) {
     console.error("Error al actualizar el estado de asistencia:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
+
+// Controlador para que los estudiantes registren asistencia usando el token
+export async function registrarAsistenciaConToken(req, res) {
+  const { tallerId, sesionId } = req.params;
+  const { usuarioId, tokenAsistencia } = req.body;
+
+  try {
+    const result = await registrarAsistenciaConTokenService(tallerId, sesionId, usuarioId, tokenAsistencia);
+    if (result.error) {
+      return res.status(result.statusCode).json({ error: result.error });
+    }
+    res.json(result);
+  } catch (error) {
+    console.error("Error al registrar asistencia con token:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 }
