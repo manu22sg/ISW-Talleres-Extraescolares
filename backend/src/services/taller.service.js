@@ -312,10 +312,11 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
 // es mio, que vendria siendo la base del resto
 
 export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => {
-   // Inscribir a un alumno en un taller siendo un profesor o administrador
   try {
     const tallerRepository = AppDataSource.getRepository(Taller);
     const userRepository = AppDataSource.getRepository(User);
+    const sesionRepository = AppDataSource.getRepository(Sesion);
+    const asistenciaRepository = AppDataSource.getRepository(Asistencia);
 
     // Buscar el taller
     const taller = await tallerRepository.findOne({
@@ -324,14 +325,16 @@ export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => {
     });
     if (!taller) return { error: "Taller no encontrado", statusCode: 404 };
 
-    
-    const user = await userRepository.findOne({ where: { id: userId } }); //verificar si existe el usuario
+    // Verificar si el usuario existe
+    const user = await userRepository.findOne({ where: { id: userId } });
     if (!user) return { error: "Usuario no encontrado", statusCode: 404 };
 
-    const alumno = await userRepository.findOne({ where: { id: alumnoId } }); // Buscar al alumno por su ID
+    // Verificar si el alumno existe
+    const alumno = await userRepository.findOne({ where: { id: alumnoId } });
     if (!alumno) return { error: "Alumno no encontrado", statusCode: 404 };
 
-    if (alumno.rol !== "estudiante") { // Verificar si el usuario es un estudiante
+    // Verificar si el usuario tiene el rol de estudiante
+    if (alumno.rol !== "estudiante") {
       return { error: "El usuario no tiene el rol de estudiante", statusCode: 400 };
     }
 
@@ -339,23 +342,38 @@ export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => {
     const isAlreadyEnrolled = taller.usuarios.some((u) => u.id === alumnoId);
     if (isAlreadyEnrolled) return { error: "El alumno ya está inscrito en este taller", statusCode: 400 };
 
+    // Verificar capacidad del taller
     if (taller.usuarios.length >= taller.capacidad) {
       return { error: "No hay más cupos disponibles", statusCode: 400 };
     }
-       if(taller.estado === "eliminado") {
+
+    // Verificar si el taller está eliminado
+    if (taller.estado === "eliminado") {
       return { error: "No se puede inscribir en un taller eliminado", statusCode: 400 };
-       }
-    // Inscribir al alumno
+    }
+
+    // Inscribir al alumno en el taller
     taller.usuarios.push(alumno);
     taller.inscritos += 1;
     await tallerRepository.save(taller);
 
-    const mensajeProfesor = `Se inscribió al taller "${taller.nombre}" el alumno ${alumno.nombreCompleto}.
-     La cantidad de inscritos es: ${taller.inscritos}.`;
-    enviarCorreo(taller.profesor.email, "Nuevo alumno inscrito en tu taller", mensajeProfesor);
+    // Obtener todas las sesiones del taller
+    const sesiones = await sesionRepository.find({ where: { taller: { id: tallerId } } });
 
-    const mensajeAlumno = `Te has inscrito con éxito al taller "${taller.nombre}".`;
-    enviarCorreo(alumno.email, "Inscripción exitosa al taller", mensajeAlumno);
+    // Crear un registro de asistencia para cada sesión del taller para este alumno
+    for (const sesion of sesiones) {
+      const nuevaAsistencia = asistenciaRepository.create({
+        tallerId,
+        sesionId: sesion.id,
+        usuarioId: alumno.id,
+        estado: "pendiente",
+        comentarios: ""
+      });
+      await asistenciaRepository.save(nuevaAsistencia);
+    }
+
+    // Enviar correos de confirmación
+    
 
     return { success: true, taller };
   } catch (error) {
@@ -363,6 +381,8 @@ export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => {
     return { error: "Error interno del servidor", statusCode: 500 };
   }
 };
+
+
 
 
 

@@ -4,6 +4,7 @@ import {
   handleErrorClient,
   handleErrorServer,
   } from "../handlers/responseHandlers.js";
+  
 
 export function authenticateJwt(req, res, next) {
   passport.authenticate("jwt", { session: false }, (err, user, info) => {
@@ -28,3 +29,4 @@ export function authenticateJwt(req, res, next) {
     next();
   })(req, res, next);
 }
+
