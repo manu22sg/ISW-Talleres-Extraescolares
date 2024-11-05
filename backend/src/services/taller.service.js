@@ -1,5 +1,6 @@
 "use strict";
 import Taller from "../entity/taller.entity.js";
+import ListaDeEspera from "../entity/listaDeEspera.entity.js";
 import { parse } from "date-fns"; //
 import { enviarCorreo } from "../helpers/nodemailer.helper.js";
 import { Not } from "typeorm";
@@ -317,6 +318,7 @@ export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => {
     const userRepository = AppDataSource.getRepository(User);
     const sesionRepository = AppDataSource.getRepository(Sesion);
     const asistenciaRepository = AppDataSource.getRepository(Asistencia);
+    const listaDeEsperaRepository = AppDataSource.getRepository(ListaDeEspera);
 
     // Buscar el taller
     const taller = await tallerRepository.findOne({
@@ -344,7 +346,18 @@ export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => {
 
     // Verificar capacidad del taller
     if (taller.usuarios.length >= taller.capacidad) {
-      return { error: "No hay más cupos disponibles", statusCode: 400 };
+      // Agregar a la lista de espera
+      const nuevaEntrada = listaDeEsperaRepository.create({
+        alumno,
+        taller,
+        estado: "espera",
+      });
+      await listaDeEsperaRepository.save(nuevaEntrada);
+      return handleSuccess(
+        res,
+        200,
+        "El taller está lleno. El alumno ha sido agregado a la lista de espera."
+      );
     }
 
     // Verificar si el taller está eliminado
