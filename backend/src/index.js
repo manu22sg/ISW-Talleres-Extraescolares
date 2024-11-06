@@ -11,6 +11,7 @@ import { connectDB } from "./config/configDb.js";
 import { createUsers } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
 import { createTalleres } from "./config/talleresSetup.js";
+import "./tasks/scheduler.js"; //verificarListaDeEspera
 
 
 async function setupServer() {

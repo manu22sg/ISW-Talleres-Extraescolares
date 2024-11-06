@@ -8,6 +8,7 @@ import reportRoutes from "./reports.routes.js";
 import AsistenciaRoutes from "./asistencia.routes.js";
 import SesionRoutes from "./sesion.routes.js";
 import listaDeEsperaRoutes from "./listaDeEspera.routes.js"; // Importa las rutas de lista de espera
+import roleRoutes from "./role.routes.js"; // Nueva ruta de roles
 
 
 const router = Router();
@@ -20,7 +21,8 @@ router
     .use("/report", reportRoutes)
     .use("/asistencia", AsistenciaRoutes)
     .use("/sesion", SesionRoutes)
-    .use("/lista-de-espera", listaDeEsperaRoutes); // Añade las rutas de lista de espera;
+    .use("/lista-de-espera", listaDeEsperaRoutes) // Añade las rutas de lista de espera;
+    .use("/role", roleRoutes); // Rutas de roles
     
 
     
