@@ -21,7 +21,7 @@ router
     .use("/report", reportRoutes)
     .use("/asistencia", AsistenciaRoutes)
     .use("/sesion", SesionRoutes)
-    .use("/lista-de-espera", listaDeEsperaRoutes) // Añade las rutas de lista de espera;
+    .use("/listaEspera", listaDeEsperaRoutes) // Añade las rutas de lista de espera;
     .use("/role", roleRoutes); // Rutas de roles
     
 

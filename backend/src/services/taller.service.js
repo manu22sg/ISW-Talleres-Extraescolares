@@ -253,9 +253,10 @@ export async function deleteTallerService(id) { // Eliminar un taller
 
 export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => { 
   // Inscribir a un alumno en un taller siendo un estudiante autenticado
-  try {
+  try {//--------------
     const tallerRepository = AppDataSource.getRepository(Taller);
     const userRepository = AppDataSource.getRepository(User);
+    const Lista = AppDataSource.getRepository(ListaDeEspera)
 
     // Buscar el taller
     const taller = await tallerRepository.findOne({
@@ -278,14 +279,23 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
       return { success: false, statusCode: 400, message: "Ya estás inscrito en este taller" };
     }
 
-    // Verificar si hay cupos disponibles
+    // Verificar si hay cupos disponibles y agregar a la lista de espera si el taller está lleno
     if (taller.usuarios.length >= taller.capacidad) {
-      return { success: false, statusCode: 400, message: "No hay más cupos disponibles" };
+      // Agregar a la lista de espera si el taller está lleno
+      const nuevaEntrada = Lista.create({
+        alumno: user,
+        taller,
+        estado: "espera",
+      });
+      await Lista.save(nuevaEntrada);
+      return { success: true, message: "El taller está lleno. El alumno ha sido agregado a la lista de espera.", taller: null };
     }
 
-    if(taller.estado === "eliminado") {
-      return { success: false, statusCode: 400, message: "No se puede inscribir en un taller eliminado" };
-    }
+// Verificar si el taller está en estado "eliminado"
+if (taller.estado === "eliminado") {
+  return { success: false, statusCode: 400, message: "No se puede inscribir en un taller eliminado" };
+}
+
 
     // Inscribir al usuario
     taller.usuarios.push(user);
@@ -310,13 +320,13 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
   }
 };
 
-// es mio, que vendria siendo la base del resto
+// es mio, que vendria siendo la base del resto------------------------------------------
 
 export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => {
   try {
     const tallerRepository = AppDataSource.getRepository(Taller);
     const userRepository = AppDataSource.getRepository(User);
-    const listaDeEsperaRepository = AppDataSource.getRepository(ListaDeEspera);
+    const Lista = AppDataSource.getRepository(ListaDeEspera);
 
     // Buscar el taller
     const taller = await tallerRepository.findOne({
@@ -345,12 +355,12 @@ export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => {
     // Verificar capacidad del taller
     if (taller.usuarios.length >= taller.capacidad) {
       // Agregar a la lista de espera si el taller está lleno
-      const nuevaEntrada = listaDeEsperaRepository.create({
-        alumno,
+      const nuevaEntrada = Lista.create({
+        alumno: user,
         taller,
         estado: "espera",
       });
-      await listaDeEsperaRepository.save(nuevaEntrada);
+      await Lista.save(nuevaEntrada);
       return { success: true, message: "El taller está lleno. El alumno ha sido agregado a la lista de espera.", taller: null };
     }
 

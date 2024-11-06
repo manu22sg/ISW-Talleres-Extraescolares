@@ -154,7 +154,7 @@ export const inscribirAlumnoAutenticadoController = async (req, res) => {
     }
 
     // Respuesta exitosa
-    return handleSuccess(res, 200, { taller, message: "Alumno inscrito correctamente" });
+    return handleSuccess(res, 200, { taller, message});
   } catch (error) {
     console.error("Error al inscribir alumno:", error);
     return handleErrorServer(res, 500, "Error interno del servidor");

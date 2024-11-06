@@ -1,6 +1,6 @@
 // scheduler.js
 import cron from "node-cron";
-import { verificarListaDeEspera } from "../controllers/listaDeEspera.controller.js";
+import { anadirAutomaticoUser } from "../controllers/listaDeEspera.controller.js";
 
 
 // Programar la tarea para que se ejecute cada hora

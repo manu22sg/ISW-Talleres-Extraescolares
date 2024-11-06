@@ -4,6 +4,11 @@ import ListaDeEspera from "../entity/listaDeEspera.entity.js";
 import Taller from "../entity/taller.entity.js";
 import User from "../entity/user.entity.js";
 import { enviarCorreo } from "../helpers/nodemailer.helper.js";
+import {
+  handleErrorClient,
+  handleErrorServer,
+  handleSuccess,
+} from "../handlers/responseHandlers.js";
 
 export const inscribirEnListaDeEspera = async (req, res) => {
   const { tallerId, alumnoId } = req.body;
@@ -89,22 +94,22 @@ export const inscribirEnListaDeEspera = async (req, res) => {
   }
 };
 
-export const verificarListaDeEspera = async () => {
+export const anadirAutomaticoUser = async (req,res) => {
   try {
     const listaDeEsperaRepository = AppDataSource.getRepository(ListaDeEspera);
     const tallerRepository = AppDataSource.getRepository(Taller);
-
+    
     const entradasEnEspera = await listaDeEsperaRepository.find({
       where: { estado: "espera" },
       relations: ["alumno", "taller"],
     });
-
+    
     for (const entrada of entradasEnEspera) {
       const taller = await tallerRepository.findOne({
         where: { id: entrada.taller.id },
         relations: ["usuarios"],
       });
-
+      console.log("pase por aqui");
       if (taller.usuarios.length < taller.capacidad) {
         taller.usuarios.push(entrada.alumno);
         taller.inscritos += 1;
@@ -113,10 +118,13 @@ export const verificarListaDeEspera = async () => {
         entrada.estado = "inscrito";
         await listaDeEsperaRepository.save(entrada);
 
-        const mensajeAlumno = `Estimado(a) ${entrada.alumno.nombreCompleto},\n\nSe ha liberado un cupo en el taller "${taller.nombre}" y has sido inscrito(a) automáticamente. Por favor, verifica los detalles del taller en tu perfil.\n\nSaludos,\nEquipo de Talleres`;
+        const mensajeAlumno = `Estimado(a) ${entrada.alumno.nombreCompleto},\n\nSe ha liberado un cupo en el taller "${taller.nombre}" y has sido inscrito(a) automáticamente. Por favor, verifica los detalles del taller en tu perfil.\n\nSaludos,\nUBB Talleres`;
         enviarCorreo(entrada.alumno.email, "Inscripción al taller", mensajeAlumno);
+        handleSuccess(res, 200, "Usuario añadido de lista de espera a taller", mensajeAlumno);
       }
     }
+    handleSuccess(res, 200, "Sin usuarios añadidos a taller automaticamente");
+    return res.status(400);
   } catch (error) {
     console.error("Error en verificarListaDeEspera:", error);
   }
