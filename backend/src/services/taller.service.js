@@ -1,5 +1,6 @@
 "use strict";
 import Taller from "../entity/taller.entity.js";
+import ListaDeEspera from "../entity/listaDeEspera.entity.js";
 import { parse } from "date-fns"; //
 import { enviarCorreo } from "../helpers/nodemailer.helper.js";
 import { Not } from "typeorm";
@@ -252,9 +253,10 @@ export async function deleteTallerService(id) { // Eliminar un taller
 
 export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => { 
   // Inscribir a un alumno en un taller siendo un estudiante autenticado
-  try {
+  try {//--------------
     const tallerRepository = AppDataSource.getRepository(Taller);
     const userRepository = AppDataSource.getRepository(User);
+    const Lista = AppDataSource.getRepository(ListaDeEspera)
 
     // Buscar el taller
     const taller = await tallerRepository.findOne({
@@ -277,14 +279,23 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
       return { success: false, statusCode: 400, message: "Ya estás inscrito en este taller" };
     }
 
-    // Verificar si hay cupos disponibles
+    // Verificar si hay cupos disponibles y agregar a la lista de espera si el taller está lleno
     if (taller.usuarios.length >= taller.capacidad) {
-      return { success: false, statusCode: 400, message: "No hay más cupos disponibles" };
+      // Agregar a la lista de espera si el taller está lleno
+      const nuevaEntrada = Lista.create({
+        alumno: user,
+        taller,
+        estado: "espera",
+      });
+      await Lista.save(nuevaEntrada);
+      return { success: true, message: "El taller está lleno. El alumno ha sido agregado a la lista de espera.", taller: null };
     }
 
-    if(taller.estado === "eliminado") {
-      return { success: false, statusCode: 400, message: "No se puede inscribir en un taller eliminado" };
-    }
+// Verificar si el taller está en estado "eliminado"
+if (taller.estado === "eliminado") {
+  return { success: false, statusCode: 400, message: "No se puede inscribir en un taller eliminado" };
+}
+
 
     // Inscribir al usuario
     taller.usuarios.push(user);
@@ -310,19 +321,18 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
 };
 
 
-
 export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => {
-   // Inscribir a un alumno en un taller siendo un profesor o administrador
   try {
     const tallerRepository = AppDataSource.getRepository(Taller);
     const userRepository = AppDataSource.getRepository(User);
+    const Lista = AppDataSource.getRepository(ListaDeEspera);
 
     // Buscar el taller
     const taller = await tallerRepository.findOne({
       where: { id: tallerId },
       relations: ["usuarios", "profesor"],
     });
-    if (!taller) return { error: "Taller no encontrado", statusCode: 404 };
+    if (!taller) return { success: false, error: "Taller no encontrado", statusCode: 404 };
 
     
     const user = await userRepository.findOne({ where: { id: userId } }); // Verificar si el usuario es un profesor o administrador
@@ -332,41 +342,68 @@ export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => {
       }
     }
 
-    const alumno = await userRepository.findOne({ where: { id: alumnoId } }); // Buscar al alumno por su ID
-    if (!alumno) return { error: "Alumno no encontrado", statusCode: 404 };
+    // Verificar si el alumno existe
+    const alumno = await userRepository.findOne({ where: { id: alumnoId } });
+    if (!alumno) return { success: false, error: "Alumno no encontrado", statusCode: 404 };
 
-    if (alumno.rol !== "estudiante") { // Verificar si el usuario es un estudiante
-      return { error: "El usuario no tiene el rol de estudiante", statusCode: 400 };
+    // Verificar si el usuario tiene el rol de estudiante
+    if (alumno.rol !== "estudiante") {
+      return { success: false, error: "El usuario no tiene el rol de estudiante", statusCode: 400 };
     }
 
     // Verificar si el alumno ya está inscrito
     const isAlreadyEnrolled = taller.usuarios.some((u) => u.id === alumnoId);
-    if (isAlreadyEnrolled) return { error: "El alumno ya está inscrito en este taller", statusCode: 400 };
+    if (isAlreadyEnrolled) return { success: false, error: "El alumno ya está inscrito en este taller", statusCode: 400 };
 
+    // Verificar capacidad del taller
     if (taller.usuarios.length >= taller.capacidad) {
-      return { error: "No hay más cupos disponibles", statusCode: 400 };
+      // Agregar a la lista de espera si el taller está lleno
+      const nuevaEntrada = Lista.create({
+        alumno: user,
+        taller,
+        estado: "espera",
+      });
+      await Lista.save(nuevaEntrada);
+      return { success: true, message: "El taller está lleno. El alumno ha sido agregado a la lista de espera.", taller: null };
     }
-       if(taller.estado === "eliminado") {
-      return { error: "No se puede inscribir en un taller eliminado", statusCode: 400 };
-       }
-    // Inscribir al alumno
+
+    // Verificar si el taller está eliminado
+    if (taller.estado === "eliminado") {
+      return { success: false, error: "No se puede inscribir en un taller eliminado", statusCode: 400 };
+    }
+
+    // Inscribir al alumno en el taller
     taller.usuarios.push(alumno);
     taller.inscritos += 1;
     await tallerRepository.save(taller);
 
-    const mensajeProfesor = `Se inscribió al taller "${taller.nombre}" el alumno ${alumno.nombreCompleto}.
-     La cantidad de inscritos es: ${taller.inscritos}.`;
-    enviarCorreo(taller.profesor.email, "Nuevo alumno inscrito en tu taller", mensajeProfesor);
+    // Obtener todas las sesiones del taller
+    const sesiones = await sesionRepository.find({ where: { taller: { id: tallerId } } });
 
-    const mensajeAlumno = `Te has inscrito con éxito al taller "${taller.nombre}".`;
-    enviarCorreo(alumno.email, "Inscripción exitosa al taller", mensajeAlumno);
+    // Crear un registro de asistencia para cada sesión del taller para este alumno
+    for (const sesion of sesiones) {
+      const nuevaAsistencia = asistenciaRepository.create({
+        tallerId,
+        sesionId: sesion.id,
+        usuarioId: alumno.id,
+        estado: "pendiente",
+        comentarios: ""
+      });
+      await asistenciaRepository.save(nuevaAsistencia);
+    }
 
-    return { success: true, taller };
+    // Enviar correos de confirmación
+    
+///
+ // Retornar éxito con el mensaje correcto
+    return { success: true, message: "Alumno inscrito correctamente en el taller", taller };
   } catch (error) {
     console.error("Error en inscribirAlumnoService:", error);
-    return { error: "Error interno del servidor", statusCode: 500 };
+    return { success: false, error: "Error interno del servidor", statusCode: 500 };
   }
 };
+
+
 
 
 
