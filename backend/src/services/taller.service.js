@@ -309,7 +309,7 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
   }
 };
 
-// es mio, que vendria siendo la base del resto
+
 
 export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => {
    // Inscribir a un alumno en un taller siendo un profesor o administrador
@@ -325,8 +325,12 @@ export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => {
     if (!taller) return { error: "Taller no encontrado", statusCode: 404 };
 
     
-    const user = await userRepository.findOne({ where: { id: userId } }); //verificar si existe el usuario
-    if (!user) return { error: "Usuario no encontrado", statusCode: 404 };
+    const user = await userRepository.findOne({ where: { id: userId } }); // Verificar si el usuario es un profesor o administrador
+    if(user.rol==="profesor"){
+      if (taller.profesor.id !== userId) {
+        return { error: "No tienes permisos para inscribir alumnos en este taller", statusCode: 403 };
+      }
+    }
 
     const alumno = await userRepository.findOne({ where: { id: alumnoId } }); // Buscar al alumno por su ID
     if (!alumno) return { error: "Alumno no encontrado", statusCode: 404 };
