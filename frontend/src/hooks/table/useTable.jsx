@@ -47,9 +47,18 @@ function useTable({ data, columns, filter, dataToFilter, initialSortName, onSele
             });
             tabulatorTable.on("rowSelectionChanged", function(selectedData) {
                 if (onSelectionChange) {
-                    onSelectionChange(selectedData);
+                    const selectedRow = selectedData.length > 0 ? selectedData[0] : null; // Selecciona la primera fila o null
+                    if (selectedRow !== null) {
+                        console.log("Fila seleccionada en Table:", selectedRow);
+                        onSelectionChange(selectedRow);
+                    } else {
+                        console.log("No hay fila seleccionada");
+                        onSelectionChange(null); // Desmarca la selección
+                    }
                 }
             });
+            
+            
             tabulatorTable.on("tableBuilt", function() {
                 setIsTableBuilt(true);
             });

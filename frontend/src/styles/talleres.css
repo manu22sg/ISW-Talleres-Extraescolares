@@ -1,0 +1,68 @@
+
+
+.taller-details-container, .edit-taller-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f4f4f9;
+}
+
+.taller-details-content, .edit-taller-content {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  max-width: 500px;
+  width: 100%;
+}
+
+.taller-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.taller-field label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.taller-field input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.taller-button-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.taller-back-button, .taller-save-button, .taller-cancel-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #3085d6;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.taller-cancel-button {
+  background-color: #ff6961;
+}
+
+.taller-back-button:hover, .taller-save-button:hover, .taller-cancel-button:hover {
+  background-color: #2568b5;
+}
+
+.taller-cancel-button:hover {
+  background-color: #d9534f;
+}

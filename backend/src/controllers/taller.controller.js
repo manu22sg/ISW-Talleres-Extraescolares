@@ -78,6 +78,7 @@ export async function createTallerController(req, res) { // Crear un nuevo talle
 // Actualizar un taller
 export async function updateTallerController(req, res) { // Actualizar un taller por su id
  try {
+  
   const { error, value } = tallerPatchValidation.validate(req.body); // Validación de los datos del taller
 
   if (error) {
@@ -135,7 +136,7 @@ try {
 
 
 
-// Inscribir a un alumno en un taller
+// Inscribir a un alumno en un taller siendo el alumno autenticado
 
 export const inscribirAlumnoAutenticadoController = async (req, res) => {
   try {

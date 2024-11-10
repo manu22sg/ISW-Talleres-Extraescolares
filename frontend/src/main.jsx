@@ -6,6 +6,10 @@ import Users from '@pages/Users';
 import Register from '@pages/Register';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
+import Talleres from '@pages/Talleres';
+import EditTaller from '@pages/EditTaller'; // Ajusta la ruta si es necesario
+import TallerDetails from '@pages/TallerDetails';
+
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
 
@@ -26,6 +30,17 @@ const router = createBrowserRouter([
           <Users />
         </ProtectedRoute>
         ),
+    },{
+      path: '/talleres', // Ruta para la página de Talleres
+      element: <Talleres />
+    },
+    {
+      path: '/talleres/editar/:id', // Ruta para editar un taller
+      element: <EditTaller />
+    },
+    {
+      path: '/talleres/detalles/:id',
+      element: <TallerDetails/> // Ruta para ver los detalles de un taller
     }
     ]
   },

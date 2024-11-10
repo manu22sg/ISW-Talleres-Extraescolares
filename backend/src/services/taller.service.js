@@ -155,9 +155,7 @@ export async function updateTallerService(id, body) {
     }
     if (body.fecha_fin) {
       tallerFound.fecha_fin = convertirFecha(body.fecha_fin);
-      if (tallerFound.fecha_fin < tallerFound.fecha_inicio) {
-        return [null, "La fecha de fin no puede ser menor a la fecha de inicio"];
-      }
+      
     }
     
 
@@ -321,7 +319,7 @@ if (taller.estado === "eliminado") {
 };
 
 
-export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => {
+export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => { // inscribir a un alumno en un taller
   try {
     const tallerRepository = AppDataSource.getRepository(Taller);
     const userRepository = AppDataSource.getRepository(User);
@@ -377,24 +375,18 @@ export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => {
     taller.inscritos += 1;
     await tallerRepository.save(taller);
 
-    // Obtener todas las sesiones del taller
-    const sesiones = await sesionRepository.find({ where: { taller: { id: tallerId } } });
+    // Enviar correos de confirmaciónr
+    const mensajeProfesor = `Se inscribió al taller "${taller.nombre}" el alumno ${alumno.nombreCompleto}.
+    La cantidad de inscritos es: ${taller.inscritos}.`;
+   enviarCorreo(taller.profesor.email, "Nuevo alumno inscrito en tu taller", mensajeProfesor);
 
-    // Crear un registro de asistencia para cada sesión del taller para este alumno
-    for (const sesion of sesiones) {
-      const nuevaAsistencia = asistenciaRepository.create({
-        tallerId,
-        sesionId: sesion.id,
-        usuarioId: alumno.id,
-        estado: "pendiente",
-        comentarios: ""
-      });
-      await asistenciaRepository.save(nuevaAsistencia);
-    }
+   const mensajeAlumno = `Te has inscrito con éxito al taller "${taller.nombre}".`;
+   enviarCorreo(alumno.email, "Inscripción exitosa al taller", mensajeAlumno);
 
-    // Enviar correos de confirmación
+
     
-///
+    
+
  // Retornar éxito con el mensaje correcto
     return { success: true, message: "Alumno inscrito correctamente en el taller", taller };
   } catch (error) {

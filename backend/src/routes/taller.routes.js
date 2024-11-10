@@ -24,8 +24,8 @@ router.delete("/:tallerId/alumno/:alumnoId", isAdmin,deleteStudentController); /
 router.patch("/:id", isAdmin, updateTallerController); // Actualizar un taller por su id 
 router.patch("/:id/eliminar", isAdmin, deleteTallerController); // Cambiar el estado de un taller a eliminado
 router.post("/inscripcion", isAdminorTeacher, inscribirAlumnoPorProfesorOAdminController); // Inscribir alumno a taller
-router.get("/profesor/Tallerprofesor",isTeacher,talleresInscritosProfesorController ); 
-router.get("/profesor/taller",isTeacher,talleresInscritosProfesor1Controller);
+router.get("/profesor/Tallerprofesor",isTeacher,talleresInscritosProfesorController );  // Obtener talleres inscritos siendo profesor
+router.get("/profesor/taller",isTeacher,talleresInscritosProfesor1Controller); // Obtener talleres inscritos como profesor con tallerId
 
 // Obtener talleres inscritos siendo profesor
 
