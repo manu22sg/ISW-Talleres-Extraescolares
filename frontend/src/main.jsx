@@ -9,6 +9,7 @@ import Root from '@pages/Root';
 import Talleres from '@pages/Talleres';
 import EditTaller from '@pages/EditTaller'; // Ajusta la ruta si es necesario
 import TallerDetails from '@pages/TallerDetails';
+import ManageAlumnos from '@pages/ManageAlumnos'; 
 
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
@@ -41,7 +42,9 @@ const router = createBrowserRouter([
     {
       path: '/talleres/detalles/:id',
       element: <TallerDetails/> // Ruta para ver los detalles de un taller
-    }
+    },
+    { path: '/talleres/gestionar/:id', 
+      element: <ManageAlumnos /> } // Ruta para gestionar los alumnos de un taller
     ]
   },
   {

@@ -5,7 +5,6 @@ import Table from '@components/Table';
 import { deleteTaller } from '@services/taller.service';
 import { deleteDataAlert, showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
 
-
 const Talleres = () => {
   const { talleres, fetchTalleres } = useGetTalleres();
   const [dataTaller, setDataTaller] = useState(null);
@@ -20,6 +19,7 @@ const Talleres = () => {
     })),
     [talleres]
   );
+
   const filteredTalleres = useMemo(() => {
     return talleresConProfesorId.filter(taller =>
       taller.nombre.toLowerCase().includes(filterName.toLowerCase())
@@ -34,15 +34,16 @@ const Talleres = () => {
     { title: "Profesor ID", field: "profesorId" },
     { title: "Inscritos", field: "inscritos" }
   ];
+
   const handleShowDetails = () => {
     if (dataTaller) {
       navigate(`/talleres/detalles/${dataTaller.id}`);
     }
   };
+
   const handleNameFilterChange = (e) => {
     setFilterName(e.target.value);
   };
-
 
   const handleSelectionChange = (selectedData) => {
     setDataTaller(selectedData || null);
@@ -56,6 +57,12 @@ const Talleres = () => {
     if (dataTaller) {
       // Redirigir a la página de edición con el ID del taller seleccionado
       navigate(`/talleres/editar/${dataTaller.id}`);
+    }
+  };
+
+  const handleManageAlumnos = () => {
+    if (dataTaller) {
+      navigate(`/talleres/gestionar/${dataTaller.id}`);
     }
   };
 
@@ -73,13 +80,11 @@ const Talleres = () => {
           // Muestra alerta de éxito
           showSuccessAlert("¡Eliminado!", "El estado del taller ha sido cambiado exitosamente.");
         } catch (error) {
-          
           showErrorAlert("Error", error.response.data.message); // Muestra alerta de error
         }
       }
     }
   };
-  
 
   useEffect(() => {
     fetchTalleres();
@@ -105,11 +110,11 @@ const Talleres = () => {
           <button onClick={handleEdit}>Editar Taller</button>
           <button onClick={handleDelete}>Eliminar Taller</button>
           <button onClick={handleShowDetails}>Ver Detalles</button>
+          <button onClick={handleManageAlumnos}>Gestionar Alumnos</button>
         </div>
       )}
     </div>
   );
 };
-
 
 export default Talleres;

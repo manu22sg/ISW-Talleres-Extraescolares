@@ -47,19 +47,30 @@ export const deleteTaller = async (id) => {
 
 export const getTaller = async(id) => {
     try{
-        const responde = await axios.get(`/taller/${id}`);
-        return responde;
+        const response = await axios.get(`/taller/${id}`);
+        return response;
     }
     catch(error){
         throw new Error("Error al obtener el taller.");
     }
 }
 
-export const inscribirAlumno = async (idTaller, idAlumno) => {
+export const inscribirAlumno = async (tallerId, alumnoId) => {
     try {
-        const response = await axios.post(`/taller/${idTaller}/inscripcion`, { alumnoId: idAlumno });
-        return response;
+      const response = await axios.post('/taller/inscripcion', { tallerId, alumnoId });
+      return response.data;
     } catch (error) {
-        throw error;
+      throw error;
     }
-};
+  };
+
+  export const borrarAlumno = async (tallerId, alumnoId) => {
+    try {
+      console.log(tallerId, alumnoId);
+      const response = await axios.delete(`/taller/${tallerId}/alumno/${alumnoId}`);
+      
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }

@@ -353,6 +353,8 @@ export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => { //
     const isAlreadyEnrolled = taller.usuarios.some((u) => u.id === alumnoId);
     if (isAlreadyEnrolled) return { success: false, error: "El alumno ya está inscrito en este taller", statusCode: 400 };
 
+    
+
     // Verificar capacidad del taller
     if (taller.usuarios.length >= taller.capacidad) {
       // Agregar a la lista de espera si el taller está lleno

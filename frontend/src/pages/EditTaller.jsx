@@ -28,7 +28,7 @@ const EditTaller = () => {
           estado: taller.estado || '',
           fecha_inicio: taller.fecha_inicio ? format(parseISO(taller.fecha_inicio), 'dd/MM/yyyy') : '',
           fecha_fin: taller.fecha_fin ? format(parseISO(taller.fecha_fin), 'dd/MM/yyyy') : '',
-          capacidad: taller.capacidad || 0,
+          capacidad: taller.capacidad,
         };
         setFormData(initialData);
         setOriginalData(initialData);
