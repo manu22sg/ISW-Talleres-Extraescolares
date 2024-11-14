@@ -38,7 +38,7 @@ const TallerDetails = () => {
         <p><strong>Estado:</strong> {taller.estado}</p>
         <p><strong>Profesor ID:</strong> {taller.profesor?.id}</p>
         <p><strong>Capacidad:</strong> {taller.capacidad}</p>
-        <button onClick={() => navigate(-1)} className="taller-back-button">Volver</button>
+        <button onClick={() => navigate("/talleres")} className="taller-back-button">Volver</button>
       </div>
     </div>
   );

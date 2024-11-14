@@ -87,7 +87,7 @@ const EditTaller = () => {
   return (
     <div className="edit-taller-container">
       <div className="edit-taller-content">
-        <h2>Editar Taller</h2>
+        <h2>Editar Taller {id}</h2>
         <div className="taller-field">
           <label>Nombre:</label>
           <input
@@ -145,8 +145,9 @@ const EditTaller = () => {
           />
         </div>
         <div className="taller-button-container">
-          <button onClick={handleSaveEdit} className="taller-save-button">Guardar Cambios</button>
+          
           <button onClick={() => navigate('/talleres')} className="taller-cancel-button">Cancelar</button>
+          <button onClick={handleSaveEdit} className="taller-save-button">Guardar Cambios</button>
         </div>
       </div>
     </div>

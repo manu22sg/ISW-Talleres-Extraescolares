@@ -4,13 +4,17 @@ import useGetTalleres from '@hooks/talleres/useGetTalleres';
 import Table from '@components/Table';
 import { deleteTaller } from '@services/taller.service';
 import { deleteDataAlert, showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
+import { useAuth } from '@context/AuthContext';
 
 const Talleres = () => {
   const { talleres, fetchTalleres } = useGetTalleres();
   const [dataTaller, setDataTaller] = useState(null);
   const [filterName, setFilterName] = useState('');
-
+  const { user } = useAuth();
   const navigate = useNavigate();
+
+  const esProfesorOEstudiante = user.rol === 'profesor' || user.rol === 'estudiante';
+
 
   const talleresConProfesorId = useMemo(() => 
     talleres.map(taller => ({
@@ -55,7 +59,6 @@ const Talleres = () => {
 
   const handleEdit = () => {
     if (dataTaller) {
-      // Redirigir a la página de edición con el ID del taller seleccionado
       navigate(`/talleres/editar/${dataTaller.id}`);
     }
   };
@@ -68,19 +71,15 @@ const Talleres = () => {
 
   const handleDelete = async () => {
     if (dataTaller) {
-      // Muestra la alerta de confirmación
       const result = await deleteDataAlert();
-  
       if (result.isConfirmed) {
         try {
           await deleteTaller(dataTaller.id);
           clearSelection();
           fetchTalleres();
-          
-          // Muestra alerta de éxito
           showSuccessAlert("¡Eliminado!", "El estado del taller ha sido cambiado exitosamente.");
         } catch (error) {
-          showErrorAlert("Error", error.response.data.message); // Muestra alerta de error
+          showErrorAlert("Error", error.response.data.message);
         }
       }
     }
@@ -107,10 +106,16 @@ const Talleres = () => {
 
       {dataTaller && (
         <div>
-          <button onClick={handleEdit}>Editar Taller</button>
-          <button onClick={handleDelete}>Eliminar Taller</button>
-          <button onClick={handleShowDetails}>Ver Detalles</button>
-          <button onClick={handleManageAlumnos}>Gestionar Alumnos</button>
+          {esProfesorOEstudiante ? (
+            <button onClick={handleShowDetails}>Ver Detalles</button>
+          ) : (
+            <>
+              <button onClick={handleEdit}>Editar Taller</button>
+              <button onClick={handleDelete}>Eliminar Taller</button>
+              <button onClick={handleShowDetails}>Ver Detalles</button>
+              <button onClick={handleManageAlumnos}>Gestionar Alumnos</button>
+            </>
+          )}
         </div>
       )}
     </div>

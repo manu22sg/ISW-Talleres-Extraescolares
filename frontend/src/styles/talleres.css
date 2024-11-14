@@ -66,3 +66,88 @@
 .taller-cancel-button:hover {
   background-color: #d9534f;
 }
+
+
+/* Contenedor de la página y contenido central */
+.taller-details-container, .edit-taller-container, .manage-alumnos-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f4f4f9;
+}
+
+.taller-details-content, .edit-taller-content, .manage-alumnos-content {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  max-width: 500px;
+  width: 100%;
+}
+
+/* Campo de entrada */
+.taller-field, .alumno-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.taller-field label, .alumno-field label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.taller-field input, .alumno-field input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* Contenedor de botones */
+.taller-button-container, .alumno-button-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+/* Botones de acción */
+.taller-back-button, .taller-save-button, .taller-cancel-button, 
+.alumno-inscribir-button, .alumno-eliminar-button, .alumno-back-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* Estilos específicos para cada botón */
+.alumno-inscribir-button {
+  background-color: #4CAF50; /* Verde */
+}
+
+.alumno-eliminar-button {
+  background-color: #f44336; /* Rojo */
+}
+
+.alumno-back-button, .taller-back-button {
+  background-color: #2196F3; /* Azul */
+}
+
+.alumno-inscribir-button:hover {
+  background-color: #388E3C;
+}
+
+.alumno-eliminar-button:hover {
+  background-color: #d9534f;
+}
+
+.alumno-back-button:hover, .taller-back-button:hover {
+  background-color: #2568b5;
+}

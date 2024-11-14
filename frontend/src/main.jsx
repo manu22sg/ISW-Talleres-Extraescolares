@@ -37,14 +37,21 @@ const router = createBrowserRouter([
     },
     {
       path: '/talleres/editar/:id', // Ruta para editar un taller
-      element: <EditTaller />
+      element:( 
+        <ProtectedRoute allowedRoles={['administrador']}>
+          <EditTaller />
+        </ProtectedRoute>
+        )
     },
     {
       path: '/talleres/detalles/:id',
       element: <TallerDetails/> // Ruta para ver los detalles de un taller
     },
     { path: '/talleres/gestionar/:id', 
-      element: <ManageAlumnos /> } // Ruta para gestionar los alumnos de un taller
+      element: (<ProtectedRoute allowedRoles={['administrador']}>
+       <ManageAlumnos />
+      </ProtectedRoute>
+       ),} // Ruta para gestionar los alumnos de un taller
     ]
   },
   {

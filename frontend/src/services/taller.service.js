@@ -58,6 +58,7 @@ export const getTaller = async(id) => {
 export const inscribirAlumno = async (tallerId, alumnoId) => {
     try {
       const response = await axios.post('/taller/inscripcion', { tallerId, alumnoId });
+      console.log (response);
       return response.data;
     } catch (error) {
       throw error;
