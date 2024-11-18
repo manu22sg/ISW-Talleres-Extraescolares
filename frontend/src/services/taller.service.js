@@ -14,10 +14,11 @@ export const getTalleres = async () => {
 
 export const createTaller = async (taller) => {
     try {
-        const response = await axios.post('/taller/', taller);
+        const response = await axios.post('/taller', taller);
+        console.log(response.data.data);
         return response.data.data;
     } catch (error) {
-        throw new Error("Error al crear el taller.");
+        console.log(error.response.data.message);
     }
 };
 
@@ -70,6 +71,36 @@ export const inscribirAlumno = async (tallerId, alumnoId) => {
       console.log(tallerId, alumnoId);
       const response = await axios.delete(`/taller/${tallerId}/alumno/${alumnoId}`);
       
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  export const getTalleresProfesor = async () => {
+    try {
+      const response = await axios.get('/taller/profesor/Tallerprofesor');
+      console.log(response.data.message.talleres);
+      return response.data.message.talleres;
+    } catch (error) {
+      throw new Error("Error al obtener los talleres.");
+    }
+  }
+
+  export const getTalleresEstudiante = async () => {
+    try {
+      const response = await axios.get('estudiante/mis-talleres');
+      console.log(response.data.message.talleres);
+      return response.data.message.talleres;
+    } catch (error) {
+      throw new Error("Error al obtener los talleres.");
+    }
+  }
+  
+  export const inscribirComoEstudiante = async (tallerId) => {
+    try {
+      const response = await axios.post('/estudiante', { tallerId });
+      console.log(response.data);
       return response.data;
     } catch (error) {
       throw error;

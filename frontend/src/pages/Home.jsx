@@ -9,7 +9,11 @@ const Home = () => {
       <nav>
         <Link to="/talleres">Ver Todos los Talleres</Link>
         <br />
-        <Link to="/mis-talleres">Mis Talleres (para profesores)</Link>
+        <Link to="/mis-talleres/Profesor">Mis Talleres (para profesores)</Link>
+        <br />
+        <Link to="/mis-talleres/Estudiante">Mis Talleres (para Alumnos)</Link>
+        <br />
+        <Link to="/CreateTaller">Crear Taller</Link>
       </nav>
     </div>
   );

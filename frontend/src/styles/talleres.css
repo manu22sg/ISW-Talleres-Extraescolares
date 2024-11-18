@@ -151,3 +151,57 @@
 .alumno-back-button:hover, .taller-back-button:hover {
   background-color: #2568b5;
 }
+
+.create-taller-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Espacio entre los elementos del formulario */
+  max-width: 500px; /* Puedes ajustar el ancho máximo */
+  margin: 0 auto; /* Centra el formulario en la página */
+  padding: 20px;
+  border: 1px solid #ccc; /* Opcional: para añadir un borde alrededor */
+  border-radius: 8px; /* Opcional: para bordes redondeados */
+  background-color: #f9f9f9;
+}
+
+/* Estilo para las etiquetas y campos */
+label {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+input, textarea, select {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+
+/* Estilo para el textarea (campo de descripción) */
+textarea {
+  resize: vertical;
+  min-height: 100px; /* Ajuste para que el campo de descripción sea más grande */
+}
+
+/* Estilo de los botones */
+button {
+  padding: 12px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Estilo para los mensajes de éxito/error */
+p {
+  font-size: 16px;
+  color: #333;
+}

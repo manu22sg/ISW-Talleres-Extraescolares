@@ -9,8 +9,10 @@ import Root from '@pages/Root';
 import Talleres from '@pages/Talleres';
 import EditTaller from '@pages/EditTaller'; // Ajusta la ruta si es necesario
 import TallerDetails from '@pages/TallerDetails';
-import ManageAlumnos from '@pages/ManageAlumnos'; 
-
+import ManageAlumnos from '@pages/ManageAlumnos';
+import VerTalleresProfesor from '@pages/VerTalleresProfesor'; 
+import TalleresEstudiante from '@pages/VerTalleresEstudiante';
+import CreateTaller from '@pages/CreateTaller';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
 
@@ -51,7 +53,21 @@ const router = createBrowserRouter([
       element: (<ProtectedRoute allowedRoles={['administrador']}>
        <ManageAlumnos />
       </ProtectedRoute>
-       ),} // Ruta para gestionar los alumnos de un taller
+       ),},
+        {path: '/mis-talleres/Profesor',
+          element: <VerTalleresProfesor/>
+        },
+        {path: '/mis-talleres/Estudiante',
+          element: <TalleresEstudiante/>
+        },
+        {
+          path: '/CreateTaller',
+          element: (
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <CreateTaller />
+            </ProtectedRoute>)
+        },
+        
     ]
   },
   {

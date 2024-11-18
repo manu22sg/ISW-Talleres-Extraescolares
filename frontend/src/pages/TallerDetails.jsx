@@ -38,7 +38,17 @@ const TallerDetails = () => {
         <p><strong>Estado:</strong> {taller.estado}</p>
         <p><strong>Profesor ID:</strong> {taller.profesor?.id}</p>
         <p><strong>Capacidad:</strong> {taller.capacidad}</p>
-        <button onClick={() => navigate("/talleres")} className="taller-back-button">Volver</button>
+        <p> Inscritos: </p>
+        <ul>
+              {taller.usuarios.length > 0 ? (
+                taller.usuarios.map(usuario => (
+                  <li key={usuario.id}>{usuario.nombreCompleto}</li>
+                ))
+              ) : (
+                <p>No hay usuarios inscritos.</p>
+              )}
+            </ul>
+        <button onClick={() => navigate(-1)} className="taller-back-button">Volver</button>
       </div>
     </div>
   );

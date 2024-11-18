@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useGetTalleres from '@hooks/talleres/useGetTalleres';
 import Table from '@components/Table';
-import { deleteTaller } from '@services/taller.service';
+import { deleteTaller,inscribirComoEstudiante } from '@services/taller.service';
 import { deleteDataAlert, showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
 import { useAuth } from '@context/AuthContext';
 
@@ -68,6 +68,21 @@ const Talleres = () => {
       navigate(`/talleres/gestionar/${dataTaller.id}`);
     }
   };
+  const handleInscribirAlumno = async () => {
+    if (dataTaller) {
+      try {
+        await inscribirComoEstudiante(dataTaller.id); // Enviar el ID del taller seleccionado
+        showSuccessAlert('Te has inscrito con exito al taller',dataTaller.nombre);
+      } catch (error) {
+        showErrorAlert(
+          'Error interno del servidor',
+          error.response?.data?.message || 'Ocurrió un problema al inscribirte.'
+        );
+      }
+    }
+  };
+
+
 
   const handleDelete = async () => {
     if (dataTaller) {
@@ -107,7 +122,10 @@ const Talleres = () => {
       {dataTaller && (
         <div>
           {esProfesorOEstudiante ? (
-            <button onClick={handleShowDetails}>Ver Detalles</button>
+            <>
+              <button onClick={handleShowDetails}>Ver Detalles</button>
+              <button onClick={handleInscribirAlumno}>Inscribirme</button>
+            </>
           ) : (
             <>
               <button onClick={handleEdit}>Editar Taller</button>
@@ -121,5 +139,4 @@ const Talleres = () => {
     </div>
   );
 };
-
 export default Talleres;
