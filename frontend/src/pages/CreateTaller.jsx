@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createTaller } from '@services/taller.service';
 import { format, parse } from 'date-fns';
-import '@styles/Talleres.css';  // Asegúrate de importar el archivo CSS
+import '@styles/Talleres.css';
 
 const CreateTallerForm = () => {
   const [formData, setFormData] = useState({
@@ -122,6 +122,7 @@ const CreateTallerForm = () => {
           </select>
         </label>
         <button type="submit">Crear Taller</button>
+        
       </form>
       {message && <p>{message}</p>}
     </div>

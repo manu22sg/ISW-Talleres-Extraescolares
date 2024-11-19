@@ -26,6 +26,9 @@ const TalleresProfesor = () => {
   const handleShowDetails = (id) => {
     navigate(`/talleres/detalles/${id}`);
   };
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   if (loading) return <p>Cargando talleres...</p>;
   if (error) return <p>{error}</p>;
@@ -44,6 +47,9 @@ const TalleresProfesor = () => {
           </li>
         ))}
       </ul>
+      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+        <button className="taller-back-button" onClick={handleBack}>Volver</button>
+      </div>
     </div>
   );
 };

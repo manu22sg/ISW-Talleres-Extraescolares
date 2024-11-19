@@ -13,7 +13,6 @@ const Talleres = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const esProfesorOEstudiante = user.rol === 'profesor' || user.rol === 'estudiante';
 
 
   const talleresConProfesorId = useMemo(() => 
@@ -73,6 +72,7 @@ const Talleres = () => {
       try {
         await inscribirComoEstudiante(dataTaller.id); // Enviar el ID del taller seleccionado
         showSuccessAlert('Te has inscrito con exito al taller',dataTaller.nombre);
+        fetchTalleres();
       } catch (error) {
         showErrorAlert(
           'Error interno del servidor',
@@ -119,23 +119,31 @@ const Talleres = () => {
         onSelectionChange={handleSelectionChange}
       />
 
-      {dataTaller && (
-        <div>
-          {esProfesorOEstudiante ? (
-            <>
-              <button onClick={handleShowDetails}>Ver Detalles</button>
-              <button onClick={handleInscribirAlumno}>Inscribirme</button>
-            </>
-          ) : (
-            <>
-              <button onClick={handleEdit}>Editar Taller</button>
-              <button onClick={handleDelete}>Eliminar Taller</button>
-              <button onClick={handleShowDetails}>Ver Detalles</button>
-              <button onClick={handleManageAlumnos}>Gestionar Alumnos</button>
-            </>
-          )}
-        </div>
-      )}
+{dataTaller && (
+  <div>
+    {user.rol === 'estudiante' && (
+      <>
+        <button onClick={handleShowDetails}>Ver Detalles</button>
+        <button onClick={handleInscribirAlumno}>Inscribirme</button>
+      </>
+    )}
+    
+    {user.rol === 'profesor' && (
+      <>
+        <button onClick={handleShowDetails}>Ver Detalles</button>
+      </>
+    )}
+    
+    {user.rol === 'administrador' && (
+      <>
+        <button onClick={handleShowDetails}>Ver Detalles</button>
+        <button onClick={handleEdit}>Editar Taller</button>
+        <button onClick={handleDelete}>Eliminar Taller</button>
+        <button onClick={handleManageAlumnos}>Gestionar Alumnos</button>
+      </>
+    )}
+  </div>
+)}
     </div>
   );
 };

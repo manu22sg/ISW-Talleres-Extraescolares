@@ -12,7 +12,7 @@ const TalleresEstudiante = () => {
     const fetchTalleres = async () => {
       try {
         const data = await getTalleresEstudiante();
-        setTalleres(data); 
+        setTalleres(data);
       } catch (error) {
         setError("No se pudieron cargar los talleres.");
       } finally {
@@ -27,12 +27,16 @@ const TalleresEstudiante = () => {
     navigate(`/talleres/detalles/${id}`);
   };
 
+  const handleBack = () => {
+    navigate(-1); // Navega a la página anterior
+  };
+
   if (loading) return <p>Cargando talleres...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <div>
-      <h1>Talleres </h1>
+      <h1>Talleres</h1>
       <ul>
         {talleres.map(taller => (
           <li key={taller.id}>
@@ -44,6 +48,9 @@ const TalleresEstudiante = () => {
           </li>
         ))}
       </ul>
+      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+        <button className="taller-back-button" onClick={handleBack}>Volver</button>
+      </div>
     </div>
   );
 };
