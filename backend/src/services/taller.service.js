@@ -416,7 +416,10 @@ export const obtenerTalleresInscritosService = async (userId) => { // Obtener lo
     }
 
     // Verificar si el alumno está inscrito en algún taller
-    const talleresInscritos = alumno.talleres;
+    const talleresInscritos = alumno.talleres.filter(
+      (taller) => taller.estado !== "eliminado"
+    );
+
     if (talleresInscritos.length === 0) {
       return { message: "No estás inscrito en ningún taller", talleres: [] };
     }
@@ -436,7 +439,7 @@ export const obtenerTalleresInscritosProfesorService = async (profesorId) => {
 
     // Obtener los talleres asignados al profesor
     const talleresAsignados = await tallerRepository.find({
-      where: { profesor: { id: profesorId } }, // Buscar por el ID del profesor
+      where: { estado : Not ("eliminado"), profesor: { id: profesorId } }, // Buscar por el ID del profesor
       relations: ["usuarios"],
     });
 
