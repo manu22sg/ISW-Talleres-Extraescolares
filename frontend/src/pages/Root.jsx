@@ -2,21 +2,21 @@ import { Outlet } from 'react-router-dom';
 import Navbar from '@components/Navbar';
 import { AuthProvider } from '@context/AuthContext';
 
-function Root()  {
-return (
+function Root() {
+  return (
     <AuthProvider>
-        <PageRoot/>
+         <PageRoot />
     </AuthProvider>
-);
+  );
 }
 
 function PageRoot() {
-return (
+  return (
     <>
-        <Navbar />
-        <Outlet />
+      <Navbar />
+      <Outlet /> {/* Renderiza las rutas anidadas como Home y Users */}
     </>
-);
+  );
 }
 
 export default Root;

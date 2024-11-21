@@ -96,6 +96,7 @@ export const inscribirEnListaDeEspera = async (req, res) => {
 
 export const anadirAutomaticoUser = async (req,res) => {
   try {
+    console.log("Verificando lista de espera");
     const listaDeEsperaRepository = AppDataSource.getRepository(ListaDeEspera);
     const tallerRepository = AppDataSource.getRepository(Taller);
     
@@ -109,7 +110,7 @@ export const anadirAutomaticoUser = async (req,res) => {
         where: { id: entrada.taller.id },
         relations: ["usuarios"],
       });
-      console.log("pase por aqui");
+ 
       if (taller.usuarios.length < taller.capacidad) {
         taller.usuarios.push(entrada.alumno);
         taller.inscritos += 1;
@@ -118,14 +119,13 @@ export const anadirAutomaticoUser = async (req,res) => {
         entrada.estado = "inscrito";
         await listaDeEsperaRepository.save(entrada);
 
-        const mensajeAlumno = `Estimado(a) ${entrada.alumno.nombreCompleto},\n\nSe ha liberado un cupo en el taller "${taller.nombre}" y has sido inscrito(a) automáticamente. Por favor, verifica los detalles del taller en tu perfil.\n\nSaludos,\nUBB Talleres`;
-        enviarCorreo(entrada.alumno.email, "Inscripción al taller", mensajeAlumno);
-        handleSuccess(res, 200, "Usuario añadido de lista de espera a taller", mensajeAlumno);
+        //const mensajeAlumno = `Estimado(a) ${entrada.alumno.nombreCompleto},\n\nSe ha liberado un cupo en el taller "${taller.nombre}" y has sido inscrito(a) automáticamente. Por favor, verifica los detalles del taller en tu perfil.\n\nSaludos,\nUBB Talleres`;
+        //enviarCorreo(entrada.alumno.email, "Inscripción al taller", mensajeAlumno);
+        return ("Usuario añadido de lista de espera a taller");
       }
     }
-    handleSuccess(res, 200, "Sin usuarios añadidos a taller automaticamente");
-    return res.status(400);
+    return ("no hay taller con capacidad para agregar usuario");
   } catch (error) {
-    console.error("Error en verificarListaDeEspera:", error);
+    return ("Error en verificarListaDeEspera:", error);
   }
 };

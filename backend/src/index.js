@@ -68,10 +68,7 @@ async function setupServer() {
 
     app.listen(PORT, () => {
       console.log(`=> Servidor corriendo en ${HOST}:${PORT}/api`);
-      cron.schedule("0 * * * *", () => {
-        console.log("Verificando lista de espera...");
-        anadirAutomaticoUser();
-      });
+      
     });
   } catch (error) {
     console.log("Error en index.js -> setupServer(), el error es: ", error);

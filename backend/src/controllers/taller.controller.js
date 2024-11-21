@@ -78,6 +78,7 @@ export async function createTallerController(req, res) { // Crear un nuevo talle
 // Actualizar un taller
 export async function updateTallerController(req, res) { // Actualizar un taller por su id
  try {
+  
   const { error, value } = tallerPatchValidation.validate(req.body); // Validación de los datos del taller
 
   if (error) {
@@ -101,6 +102,7 @@ export async function updateTallerController(req, res) { // Actualizar un taller
 
 export const deleteStudentController = async (req, res) => { // Eliminar alumno de un taller
   try {
+   
     const taller = await deleteStudentService(req); // Llamada al servicio para eliminar el alumno del taller
     return handleSuccess(res, 200, "Alumno eliminado correctamente del taller", { taller });
   } catch (error) {
@@ -135,7 +137,7 @@ try {
 
 
 
-// Inscribir a un alumno en un taller
+// Inscribir a un alumno en un taller siendo el alumno autenticado
 
 export const inscribirAlumnoAutenticadoController = async (req, res) => {
   try {
