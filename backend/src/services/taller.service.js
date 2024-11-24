@@ -319,7 +319,7 @@ if (taller.estado === "eliminado") {
 };
 
 
-export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => { // inscribir a un alumno en un taller
+export const inscribirAlumnoService = async (tallerId, alumnoId) => { // inscribir a un alumno en un taller
   try {
     const tallerRepository = AppDataSource.getRepository(Taller);
     const userRepository = AppDataSource.getRepository(User);
@@ -331,14 +331,6 @@ export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => { //
       relations: ["usuarios", "profesor"],
     });
     if (!taller) return { success: false, error: "Taller no encontrado", statusCode: 404 };
-
-    
-    const user = await userRepository.findOne({ where: { id: userId } }); // Verificar si el usuario es un profesor o administrador
-    if(user.rol==="profesor"){
-      if (taller.profesor.id !== userId) {
-        return { error: "No tienes permisos para inscribir alumnos en este taller", statusCode: 403 };
-      }
-    }
 
     // Verificar si el alumno existe
     const alumno = await userRepository.findOne({ where: { id: alumnoId } });

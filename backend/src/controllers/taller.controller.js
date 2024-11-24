@@ -141,11 +141,11 @@ try {
 export const inscribirAlumnoAutenticadoController = async (req, res) => {
   try {
     const { tallerId } = req.body; // ID del taller a inscribir en el cuerpo de la solicitud
-    const userId = req.user.id; // ID del alumno autenticado en el token
+     // ID del alumno autenticado en el token
 
     
 
-    const { success, statusCode, message, taller } = await inscribirAlumnoAutenticadoService(userId, tallerId);
+    const { success, statusCode, message, taller } = await inscribirAlumnoAutenticadoService(tallerId);
 
     if (!success) {
       if (statusCode >= 400 && statusCode < 500) {
