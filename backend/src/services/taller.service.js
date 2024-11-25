@@ -319,11 +319,7 @@ if (taller.estado === "eliminado") {
 };
 
 
-<<<<<<< HEAD
-export const inscribirAlumnoService = async (tallerId, alumnoId, userId) => { // inscribir a un alumno en un taller
-=======
 export const inscribirAlumnoService = async (tallerId, alumnoId) => { // inscribir a un alumno en un taller
->>>>>>> 844109447014aa53c289daf3150dfd7c2539b5b7
   try {
     const tallerRepository = AppDataSource.getRepository(Taller);
     const userRepository = AppDataSource.getRepository(User);
@@ -335,17 +331,6 @@ export const inscribirAlumnoService = async (tallerId, alumnoId) => { // inscrib
       relations: ["usuarios", "profesor"],
     });
     if (!taller) return { success: false, error: "Taller no encontrado", statusCode: 404 };
-<<<<<<< HEAD
-
-    
-    const user = await userRepository.findOne({ where: { id: userId } }); // Verificar si el usuario es un profesor o administrador
-    if(user.rol==="profesor"){
-      if (taller.profesor.id !== userId) {
-        return { error: "No tienes permisos para inscribir alumnos en este taller", statusCode: 403 };
-      }
-    }
-=======
->>>>>>> 844109447014aa53c289daf3150dfd7c2539b5b7
 
     // Verificar si el alumno existe
     const alumno = await userRepository.findOne({ where: { id: alumnoId } });
@@ -359,11 +344,8 @@ export const inscribirAlumnoService = async (tallerId, alumnoId) => { // inscrib
     // Verificar si el alumno ya está inscrito
     const isAlreadyEnrolled = taller.usuarios.some((u) => u.id === alumnoId);
     if (isAlreadyEnrolled) return { success: false, error: "El alumno ya está inscrito en este taller", statusCode: 400 };
-<<<<<<< HEAD
-=======
 
     
->>>>>>> 844109447014aa53c289daf3150dfd7c2539b5b7
 
     // Verificar capacidad del taller
     if (taller.usuarios.length >= taller.capacidad) {
@@ -387,14 +369,6 @@ export const inscribirAlumnoService = async (tallerId, alumnoId) => { // inscrib
     taller.inscritos += 1;
     await tallerRepository.save(taller);
 
-<<<<<<< HEAD
-    
-
-
-    
-    
-
-=======
     // Enviar correos de confirmaciónr
     const mensajeProfesor = `Se inscribió al taller "${taller.nombre}" el alumno ${alumno.nombreCompleto}.
     La cantidad de inscritos es: ${taller.inscritos}.`;
@@ -407,18 +381,12 @@ export const inscribirAlumnoService = async (tallerId, alumnoId) => { // inscrib
     
     
 
->>>>>>> 844109447014aa53c289daf3150dfd7c2539b5b7
  // Retornar éxito con el mensaje correcto
     return { success: true, message: "Alumno inscrito correctamente en el taller", taller };
   } catch (error) {
     console.error("Error en inscribirAlumnoService:", error);
-<<<<<<< HEAD
-    return { success: false, error: "Error interno del servidor", statusCode: 500 };
-  }
-=======
     return { success: false, error: "Error interno del servidor", statusCode: 500 };
   }
->>>>>>> 844109447014aa53c289daf3150dfd7c2539b5b7
 };
 
 

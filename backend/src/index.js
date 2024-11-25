@@ -11,7 +11,7 @@ import { connectDB } from "./config/configDb.js";
 import { createUsers } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
 import { createTalleres } from "./config/talleresSetup.js";
-
+import cron from "node-cron";
 import { anadirAutomaticoUser } from "./controllers/listaDeEspera.controller.js";
 
 
