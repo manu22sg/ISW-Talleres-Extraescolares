@@ -33,6 +33,7 @@ const Users = () => {
   const handleSelectionChange = useCallback((selectedUsers) => {
     setDataUser(selectedUsers);
   }, [setDataUser]);
+  console.log(dataUser);
 
   const columns = [
     { title: "Nombre", field: "nombreCompleto", width: 350, responsive: 0 },

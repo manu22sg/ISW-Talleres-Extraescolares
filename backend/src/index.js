@@ -11,6 +11,9 @@ import { connectDB } from "./config/configDb.js";
 import { createUsers } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
 import { createTalleres } from "./config/talleresSetup.js";
+import "./tasks/scheduler.js"; //verificarListaDeEspera
+import cron from "node-cron";
+import { anadirAutomaticoUser } from "./controllers/listaDeEspera.controller.js";
 import "./config/dayjsConfig.js"; // Importar la configuración de dayjs
 
 
@@ -67,6 +70,10 @@ async function setupServer() {
 
     app.listen(PORT, () => {
       console.log(`=> Servidor corriendo en ${HOST}:${PORT}/api`);
+      cron.schedule("0 * * * *", () => {
+        console.log("Verificando lista de espera...");
+        anadirAutomaticoUser();
+      });
     });
   } catch (error) {
     console.log("Error en index.js -> setupServer(), el error es: ", error);

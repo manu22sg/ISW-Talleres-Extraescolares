@@ -78,6 +78,7 @@ export async function createTallerController(req, res) { // Crear un nuevo talle
 // Actualizar un taller
 export async function updateTallerController(req, res) { // Actualizar un taller por su id
  try {
+  
   const { error, value } = tallerPatchValidation.validate(req.body); // Validación de los datos del taller
 
   if (error) {
@@ -135,14 +136,16 @@ try {
 
 
 
-// Inscribir a un alumno en un taller
+// Inscribir a un alumno en un taller siendo el alumno autenticado
 
 export const inscribirAlumnoAutenticadoController = async (req, res) => {
   try {
     const { tallerId } = req.body; // ID del taller a inscribir en el cuerpo de la solicitud
-    const userId = req.user.id; // ID del alumno autenticado en el token
+     // ID del alumno autenticado en el token
 
-    const { success, statusCode, message, taller } = await inscribirAlumnoAutenticadoService(userId, tallerId);
+    
+
+    const { success, statusCode, message, taller } = await inscribirAlumnoAutenticadoService(tallerId);
 
     if (!success) {
       if (statusCode >= 400 && statusCode < 500) {
@@ -152,7 +155,7 @@ export const inscribirAlumnoAutenticadoController = async (req, res) => {
     }
 
     // Respuesta exitosa
-    return handleSuccess(res, 200, { taller, message: "Alumno inscrito correctamente" });
+    return handleSuccess(res, 200, { taller, message});
   } catch (error) {
     console.error("Error al inscribir alumno:", error);
     return handleErrorServer(res, 500, "Error interno del servidor");
@@ -164,25 +167,24 @@ export const inscribirAlumnoAutenticadoController = async (req, res) => {
 // Controlador para profesores y administradores
 export const inscribirAlumnoPorProfesorOAdminController = async (req, res) => {
   const { tallerId, alumnoId } = req.body;
-  
   const userId = req.user.id; // ID del profesor o administrador
 
-  const { success, error, statusCode, taller } = await inscribirAlumnoService(tallerId, alumnoId, userId);
+  // Llamada al servicio de inscripción de alumnos
+  const { success, error, statusCode, taller, message } = await inscribirAlumnoService(tallerId, alumnoId, userId);
 
+  // Manejo de errores
   if (!success) {
-    
     if (statusCode >= 400 && statusCode < 500) {
       return handleErrorClient(res, statusCode, error);
     }
-    
     return handleErrorServer(res, statusCode, error);
   }
 
-  // Respuesta exitosa
-  return handleSuccess(res, 200, { taller, message: "Alumno inscrito correctamente" });
-
-
+  // Respuesta exitosa con el mensaje adecuado
+  return handleSuccess(res, 200, { taller, message });
 };
+
+
 
 
 
