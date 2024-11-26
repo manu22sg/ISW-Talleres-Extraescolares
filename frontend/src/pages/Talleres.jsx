@@ -70,8 +70,9 @@ const Talleres = () => {
   const handleInscribirAlumno = async () => {
     if (dataTaller) {
       try {
-        await inscribirComoEstudiante(dataTaller.id); // Enviar el ID del taller seleccionado
-        showSuccessAlert('Te has inscrito con exito al taller',dataTaller.nombre);
+        const respuesta = await inscribirComoEstudiante(dataTaller.id); // Enviar el ID del taller seleccionado
+        console.log(respuesta);
+        showSuccessAlert(respuesta,dataTaller.nombre);
         fetchTalleres();
       } catch (error) {
         showErrorAlert(

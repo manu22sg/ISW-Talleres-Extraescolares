@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@context/AuthContext';
- import '@styles/Home.css'; 
+import '@styles/Home.css'; 
 
 const Home = () => {
   const { user } = useAuth(); 
@@ -17,7 +17,10 @@ const Home = () => {
         <Link className="home-link" to="/talleres">Ver Todos los Talleres</Link>
 
         {esAdministrador && (
+          <> 
           <Link className="home-link" to="/CreateTaller">Crear Taller</Link>
+          <Link className="home-link" to="/ListadeEspera">Ver Lista de espera</Link>
+          </>
         )}
 
         {esProfesor && (

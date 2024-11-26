@@ -15,12 +15,12 @@ import TalleresEstudiante from '@pages/VerTalleresEstudiante';
 import CreateTaller from '@pages/CreateTaller';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
+import Espera from '@pages/ListaEspera';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Root/>,
-    errorElement: <Error404/>,
     children: [
       {
         path: '/home',
@@ -64,8 +64,12 @@ const router = createBrowserRouter([
           path: '/CreateTaller',
           element: (
             <ProtectedRoute allowedRoles={['administrador']}>
-              <CreateTaller />
+              <CreateTaller/>
             </ProtectedRoute>)
+        },
+        {
+          path: '/ListadeEspera',
+          element: <Espera/>
         },
         
     ]
