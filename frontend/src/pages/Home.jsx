@@ -27,6 +27,9 @@ const Home = () => {
         {esEstudiante && (
           <Link className="home-link" to="/mis-talleres/Estudiante">Mis Talleres</Link>
         )}
+        {esProfesor && (
+          <Link className="home-link" to="/crear-sesion">Crear Sesión</Link> 
+        )}
       </nav>
     </div>
   );

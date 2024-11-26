@@ -14,6 +14,7 @@ import VerTalleresProfesor from '@pages/VerTalleresProfesor';
 import TalleresEstudiante from '@pages/VerTalleresEstudiante';
 import CreateTaller from '@pages/CreateTaller';
 import ProtectedRoute from '@components/ProtectedRoute';
+import CrearSesion from './pages/CrearSesion'; 
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -67,7 +68,10 @@ const router = createBrowserRouter([
               <CreateTaller />
             </ProtectedRoute>)
         },
+        {path: '/crear-sesion',
+        element: <CrearSesion/>
         
+        }
     ]
   },
   {
