@@ -14,9 +14,9 @@ export const inscribirEnListaDeEspera = async (req, res) => {
   const { tallerId, alumnoId } = req.body;
 
   try {
-    const tallerRepository = AppDataSource.getRepository(Taller);
-    const userRepository = AppDataSource.getRepository(User);
-    const listaDeEsperaRepository = AppDataSource.getRepository(ListaDeEspera);
+    const tallerRepository = AppDataSource.getRepository(Taller); // trae toda la tabla lista de espera
+    const userRepository = AppDataSource.getRepository(User); // trae toda la tabla usurios
+    const listaDeEsperaRepository = AppDataSource.getRepository(ListaDeEspera); // trae la tabla lista de espera
 
     const taller = await tallerRepository.findOne({
       where: { id: tallerId },
@@ -129,3 +129,32 @@ export const anadirAutomaticoUser = async (req,res) => {
     return ("Error en verificarListaDeEspera:", error);
   }
 };
+
+export const verListaDeEspera = async (req, res) => {
+  try {
+    const listaDeEsperaRepository = AppDataSource.getRepository(ListaDeEspera);
+    const listaDeEspera = await listaDeEsperaRepository.find({
+      relations: ["alumno", "taller"],
+    });
+    if (!listaDeEspera) {
+      return res.status(404).json({
+        status: "Client error",
+        message: "Lista de espera no encontrada",
+        details: {},
+      });
+    }
+    
+    return res.status(200).json({
+      status: "Success",
+      message: "Lista de espera obtenida con éxito",
+      details: listaDeEspera,
+    });
+  } catch (error) {
+    console.error("Error en verListaDeEspera:", error);
+    return res.status(500).json({
+      status: "Server error",
+      message: "Error interno del servidor",
+      details: {},
+    });
+  }
+}
