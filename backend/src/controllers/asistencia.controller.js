@@ -39,7 +39,6 @@ export async function registrarAsistencia(req, res) {
   const { tallerId, sesionId } = req.params;
   const { asistencias } = req.body; // Array de { usuarioId, estado, comentarios }
   const idProfesor = req.user.id; // Obteniendo el ID del profesor desde el token
-
   const result = await registrarAsistenciaService(tallerId, sesionId, asistencias, idProfesor);
   if (result.error) {
     return res.status(result.statusCode).json({ error: result.error });

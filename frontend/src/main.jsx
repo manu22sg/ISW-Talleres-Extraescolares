@@ -4,7 +4,7 @@ import Login from '@pages/Login';
 import Home from '@pages/Home';
 import Users from '@pages/Users';
 import Register from '@pages/Register';
-import Error404 from '@pages/Error404';
+//import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import Talleres from '@pages/Talleres';
 import EditTaller from '@pages/EditTaller'; // Ajusta la ruta si es necesario
@@ -13,6 +13,9 @@ import ManageAlumnos from '@pages/ManageAlumnos';
 import VerTalleresProfesor from '@pages/VerTalleresProfesor'; 
 import TalleresEstudiante from '@pages/VerTalleresEstudiante';
 import CreateTaller from '@pages/CreateTaller';
+import Report from '@pages/report';
+import ReportPrincipal from '@pages/ReportPrincipal';
+import ReportAlumno from '@pages/ReportAlumno';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
 
@@ -20,7 +23,7 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <Root/>,
-    errorElement: <Error404/>,
+    //errorElement: <Error404/>,
     children: [
       {
         path: '/home',
@@ -66,6 +69,25 @@ const router = createBrowserRouter([
             <ProtectedRoute allowedRoles={['administrador']}>
               <CreateTaller />
             </ProtectedRoute>)
+        },
+        {
+          path: '/report',
+          element: (
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <Report />
+            </ProtectedRoute>)
+        },
+        {
+          path: '/ReportPrincipal',
+          element:(
+            <ReportPrincipal/>
+          )
+        },
+        {
+          path: '/ReportAlumno',
+          element:(
+              <ReportAlumno/>
+          )
         },
         
     ]
