@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '@context/AuthContext';
+// import { Link } from 'react-router-dom';
+// import { useAuth } from '@context/AuthContext';
 import '@styles/Home.css'; 
 import { getListadeespera } from '../services/listaEspera.service';
 import ListaDinamica from '../components/Lista';

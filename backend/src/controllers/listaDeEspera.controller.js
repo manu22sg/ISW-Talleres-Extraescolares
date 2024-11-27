@@ -59,7 +59,9 @@ export const inscribirEnListaDeEspera = async (req, res) => {
       });
       await listaDeEsperaRepository.save(nuevaEntrada);
 
-      const mensajeAlumno = `Estimado(a) ${alumno.nombreCompleto},\n\nEl taller "${taller.nombre}" está actualmente lleno. Has sido agregado(a) a la lista de espera. Te notificaremos cuando haya un cupo disponible.\n\nSaludos,\nEquipo de Talleres`;
+      const mensajeAlumno = `Estimado(a) ${alumno.nombreCompleto},\nz\n
+      El taller "${taller.nombre}" está actualmente lleno. Has sido agregado(a) a la lista de espera. 
+      Te notificaremos cuando haya un cupo disponible.\n\nSaludos,\nEquipo de Talleres`;
       enviarCorreo(alumno.email, "Agregado a la lista de espera", mensajeAlumno);
 
       return res.status(200).json({
@@ -73,7 +75,8 @@ export const inscribirEnListaDeEspera = async (req, res) => {
     taller.inscritos += 1;
     await tallerRepository.save(taller);
 
-    const mensajeProfesor = `Se ha inscrito al taller "${taller.nombre}" el alumno ${alumno.nombreCompleto}. La cantidad de inscritos es: ${taller.inscritos}.`;
+    const mensajeProfesor = `Se ha inscrito al taller "${taller.nombre}" el alumno ${alumno.nombreCompleto}.
+     La cantidad de inscritos es: ${taller.inscritos}.`;
     enviarCorreo(taller.profesor.email, "Nuevo alumno inscrito en tu taller", mensajeProfesor);
 
     const mensajeAlumno = `Te has inscrito con éxito al taller "${taller.nombre}".`;
@@ -119,7 +122,7 @@ export const anadirAutomaticoUser = async (req,res) => {
         entrada.estado = "inscrito";
         await listaDeEsperaRepository.save(entrada);
 
-        //const mensajeAlumno = `Estimado(a) ${entrada.alumno.nombreCompleto},\n\nSe ha liberado un cupo en el taller "${taller.nombre}" y has sido inscrito(a) automáticamente. Por favor, verifica los detalles del taller en tu perfil.\n\nSaludos,\nUBB Talleres`;
+        
         //enviarCorreo(entrada.alumno.email, "Inscripción al taller", mensajeAlumno);
         return ("Usuario añadido de lista de espera a taller");
       }
