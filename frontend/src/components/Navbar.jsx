@@ -30,11 +30,8 @@ const Navbar = () => {
                         <NavLink 
                             to="/home" 
                             onClick={() => setMenuOpen(false)} 
-<<<<<<< HEAD
                             className={({ isActive }) => (isActive ? "active" : "")}
-=======
                             activeClassName="active"
->>>>>>> guidoReal
                         >
                             Inicio
                         </NavLink>
@@ -45,11 +42,8 @@ const Navbar = () => {
                             <NavLink 
                                 to="/users" 
                                 onClick={() => setMenuOpen(false)} 
-<<<<<<< HEAD
                                 className={({ isActive }) => (isActive ? "active" : "")}
-=======
                                 activeClassName="active"
->>>>>>> guidoReal
                             >
                                 Usuarios
                             </NavLink>
@@ -60,16 +54,12 @@ const Navbar = () => {
                         <NavLink 
                             to="/talleres" 
                             onClick={() => setMenuOpen(false)} 
-<<<<<<< HEAD
                             className={({ isActive }) => (isActive ? "active" : "")}
-=======
                             activeClassName="active"
->>>>>>> guidoReal
                         >
                             Talleres
                         </NavLink>
                     </li>
-<<<<<<< HEAD
 
                     {userRole === 'profesor' && (
                         <li>
@@ -83,9 +73,7 @@ const Navbar = () => {
                         </li>
                     )}
 
-=======
                     
->>>>>>> guidoReal
                     <li>
                         <NavLink 
                             to="/auth" 
