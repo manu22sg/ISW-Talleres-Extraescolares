@@ -59,7 +59,7 @@ const CrearSesion = () => {
         idProfesor: user?.id  // Usar el ID del profesor desde el contexto o autenticación
       });
       
-      setSuccessMessage(`Sesión creada exitosamente: Token Creado : ${response.sesion.tokenAsistencia}`);
+      setSuccessMessage("Sesión creada exitosamente: Token Creado: " + response.sesion.tokenAsistencia + ", ID de la sesión: " + response.sesion.id);
       setError(null);
 
       // Limpiar formulario
