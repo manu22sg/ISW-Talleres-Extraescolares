@@ -9,6 +9,7 @@ const Home = () => {
   const esProfesor = user?.rol === 'profesor';
   const esEstudiante = user?.rol === 'estudiante';
 
+
   return (
     <div className="home-container">
       <h1 className="home-title">Bienvenido a la Plataforma de Talleres</h1>
@@ -20,6 +21,7 @@ const Home = () => {
           <>
             <Link className="home-link" to="/CreateTaller">Crear Taller</Link>
             <Link className="home-link" to="/Report">Report</Link>
+            <Link className="home-link" to="/ListadeEspera">Ver Lista de espera</Link>
           </>
         )}
 
@@ -36,9 +38,8 @@ const Home = () => {
 
           </>
         )}
-
         {esEstudiante && (
-          <Link className="home-link" to="/mis-talleres/estudiante">Mis Talleres</Link>
+          <Link className="home-link" to="/mis-talleres/Estudiante">Mis Talleres</Link>
         )}
       </nav>
     </div>

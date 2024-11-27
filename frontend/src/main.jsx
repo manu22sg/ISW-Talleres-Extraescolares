@@ -21,6 +21,7 @@ import CrearSesion from './pages/CrearSesion';
 import RegistrarAsistencia from '@pages/RegistrarAsistencia';
 import VerInscritos from '@pages/VerInscritos';
 import '@styles/styles.css';
+import Espera from '@pages/ListaEspera';
 
 const router = createBrowserRouter([
   {
@@ -107,7 +108,12 @@ const router = createBrowserRouter([
         {
         path : 'Ver-inscritos',
         element: <VerInscritos/>
-        }
+        },
+        {
+          path: '/ListadeEspera',
+          element: <Espera/>
+        },
+        
     ]
   },
   {

@@ -101,6 +101,7 @@ export async function updateTallerController(req, res) { // Actualizar un taller
 
 export const deleteStudentController = async (req, res) => { // Eliminar alumno de un taller
   try {
+   
     const taller = await deleteStudentService(req); // Llamada al servicio para eliminar el alumno del taller
     return handleSuccess(res, 200, "Alumno eliminado correctamente del taller", { taller });
   } catch (error) {
