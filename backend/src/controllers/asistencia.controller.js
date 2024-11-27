@@ -8,24 +8,26 @@ import { registrarAsistenciaConTokenService } from "../services/asistencia.servi
 export async function obtenerInscritosSesion(req, res) {
   const { tallerId, sesionId } = req.params;
 
-  // Asegúrate de que req.user existe y contiene el id del profesor
-  if (!req.user || !req.user.id) {
-    return res.status(401).json({ error: "Usuario no autorizado" });
-  }
+  console.log("Recibiendo solicitud para obtener inscritos en sesión.");
+  console.log("Parámetros recibidos:", { tallerId, sesionId });
+
+  
 
   const idProfesor = req.user.id; // Obtener el ID del profesor desde el token
+  console.log("ID del profesor autenticado:", idProfesor);
 
   try {
-    // Llamar al servicio para obtener los estudiantes inscritos con las validaciones necesarias
     const result = await obtenerInscritosSesionService(tallerId, sesionId, idProfesor);
 
-    if (result.error) {
-      return res.status(result.statusCode).json({ error: result.error });
+    if (!result || result.error) {
+      console.error("Error al obtener inscritos del servicio:", result.error);
+      return res.status(result.statusCode || 500).json({ error: result.error || "Error desconocido" });
     }
 
+    console.log("Lista de inscritos obtenida exitosamente:", result);
     res.json(result);
   } catch (error) {
-    console.error("Error al obtener inscritos para la sesión:", error);
+    console.error("Error interno del servidor al obtener inscritos:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 }

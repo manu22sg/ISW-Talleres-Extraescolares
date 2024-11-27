@@ -17,6 +17,9 @@ import Report from '@pages/report';
 import ReportPrincipal from '@pages/ReportPrincipal';
 import ReportAlumno from '@pages/ReportAlumno';
 import ProtectedRoute from '@components/ProtectedRoute';
+import CrearSesion from './pages/CrearSesion'; 
+import RegistrarAsistencia from '@pages/RegistrarAsistencia';
+import VerInscritos from '@pages/VerInscritos';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -89,7 +92,22 @@ const router = createBrowserRouter([
               <ReportAlumno/>
           )
         },
+        {path: '/crear-sesion',
+        element: <CrearSesion/>
         
+        },
+        {
+          path: '/registrar-asistencia',
+          element: (
+            <ProtectedRoute allowedRoles={['profesor']}>
+              <RegistrarAsistencia />
+            </ProtectedRoute>
+          ),
+        },
+        {
+        path : 'Ver-inscritos',
+        element: <VerInscritos/>
+        }
     ]
   },
   {
@@ -100,6 +118,8 @@ const router = createBrowserRouter([
     path: '/register',
     element: <Register/>
   }
+
+
 ])
 
 ReactDOM.createRoot(document.getElementById('root')).render(
