@@ -7,9 +7,8 @@ import {
   getTallerService,
   inscribirAlumnoAutenticadoService,
   inscribirAlumnoService,
-  
-  obtenerTalleresInscritosProfesorService,
   obtenerTalleresInscritosProfesor1Service,
+  obtenerTalleresInscritosProfesorService,
   obtenerTalleresInscritosService,
   updateTallerService
 } from "../services/taller.service.js";
@@ -232,7 +231,7 @@ export const talleresInscritosProfesor1Controller = async (req, res) => {
   const profesorId = req.user.id; // ID del profesor obtenido del token
   const { tallerId } = req.body; // ID del taller a inscribir en el cuerpo de la solicitud
 
-  const { success, error, statusCode = 500, taller } = await obtenerTalleresInscritosProfesor1Service(profesorId, tallerId);
+  const{ success, error, statusCode=500, taller } = await obtenerTalleresInscritosProfesor1Service(profesorId,tallerId);
 
   if (!success) {
     // Si es un error de cliente (4xx), usar handleErrorClient

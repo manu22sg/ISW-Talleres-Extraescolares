@@ -17,11 +17,15 @@ const Home = () => {
         <Link className="home-link" to="/talleres">Ver Todos los Talleres</Link>
 
         {esAdministrador && (
-          <Link className="home-link" to="/CreateTaller">Crear Taller</Link>
+          <>
+            <Link className="home-link" to="/CreateTaller">Crear Taller</Link>
+            <Link className="home-link" to="/Report">Report</Link>
+          </>
         )}
 
         {esProfesor && (
           <Link className="home-link" to="/mis-talleres/Profesor">Mis Talleres</Link>
+          
         )}
 
         {esEstudiante && (

@@ -5,7 +5,7 @@ import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers
 export const cambiarRolController = async (req, res) => {
   try {
     const { userId, nuevoRol } = req.body;
-
+    console.log(nuevoRol);
     // Validación de roles (opcional)
     if (!["administrador", "profesor", "estudiante"].includes(nuevoRol)) {
       return handleErrorClient(res, 400, "Rol inválido");
