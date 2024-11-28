@@ -98,7 +98,7 @@ const router = createBrowserRouter([
         
         },
         {
-          path: '/registrar-asistencia',
+          path: '/Registrar-asistencia',
           element: (
             <ProtectedRoute allowedRoles={['profesor']}>
               <RegistrarAsistencia />

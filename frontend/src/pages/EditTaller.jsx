@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
 import { updateTaller, getTaller } from '@services/taller.service';
 import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
-import '@styles/Talleres.css';
+import '@styles/talleres.css';
 
 const EditTaller = () => {
   const { id } = useParams();

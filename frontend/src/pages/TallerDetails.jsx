@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
 import { getTaller } from '@services/taller.service';
-import '@styles/Talleres.css';
+import '@styles/talleres.css';
 
 const TallerDetails = () => {
   const { id } = useParams();

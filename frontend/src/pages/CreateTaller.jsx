@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { createTaller } from '@services/taller.service';
 import { format, parse } from 'date-fns';
-import '@styles/Talleres.css';
+import '@styles/talleres.css';
+import { deleteDataAlert, showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
+ 
 
 const CreateTallerForm = () => {
   const [formData, setFormData] = useState({
@@ -35,7 +37,8 @@ const CreateTallerForm = () => {
       };
 
       const response = await createTaller(dataToSend);
-      setMessage(`Taller creado exitosamente: ${response.nombre}`);
+      
+      showSuccessAlert('Haz creado con exito el taller', response.nombre);
       setFormData({
         nombre: '',
         descripcion: '',

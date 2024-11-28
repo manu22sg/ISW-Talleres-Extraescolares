@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams,useNavigate } from 'react-router-dom';
 import { inscribirAlumno, borrarAlumno } from '@services/taller.service';
 import { deleteDataAlert, showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
-import '@styles/Talleres.css';
+import '@styles/talleres.css';
 
 
 const ManageAlumnos = () => {

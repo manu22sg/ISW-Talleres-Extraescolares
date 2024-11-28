@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import validarRut  from "../fuctions/validarRut";
 //import ReportPrincial from "./ReportPrincipal";
 import '@styles/Home.css';
-import '@styles/Table.css';
+import '@styles/table.css';
 //import { deleteDataAlert, showErrorAlert, showSuccessAlert } from "@helpers/sweetAlert";
 
 const Report = () => {

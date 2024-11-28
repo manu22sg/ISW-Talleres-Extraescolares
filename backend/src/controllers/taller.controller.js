@@ -142,10 +142,10 @@ export const inscribirAlumnoAutenticadoController = async (req, res) => {
   try {
     const { tallerId } = req.body; // ID del taller a inscribir en el cuerpo de la solicitud
      // ID del alumno autenticado en el token
-
+    const userId = req.user.id;
     
 
-    const { success, statusCode, message, taller } = await inscribirAlumnoAutenticadoService(tallerId);
+    const { success, statusCode, message, taller } = await inscribirAlumnoAutenticadoService(userId,tallerId);
 
     if (!success) {
       if (statusCode >= 400 && statusCode < 500) {
@@ -167,10 +167,10 @@ export const inscribirAlumnoAutenticadoController = async (req, res) => {
 // Controlador para profesores y administradores
 export const inscribirAlumnoPorProfesorOAdminController = async (req, res) => {
   const { tallerId, alumnoId } = req.body;
-  const userId = req.user.id; // ID del profesor o administrador
+   // ID del profesor o administrador
 
   // Llamada al servicio de inscripción de alumnos
-  const { success, error, statusCode, taller, message } = await inscribirAlumnoService(tallerId, alumnoId, userId);
+  const { success, error, statusCode, taller, message } = await inscribirAlumnoService(tallerId, alumnoId);
 
   // Manejo de errores
   if (!success) {
