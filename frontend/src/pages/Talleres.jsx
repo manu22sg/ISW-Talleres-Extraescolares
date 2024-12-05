@@ -18,7 +18,7 @@ const Talleres = () => {
   const talleresConProfesorId = useMemo(() => 
     talleres.map(taller => ({
       ...taller,
-      profesorId: taller.profesor.id,
+      profesorId: taller.profesor.nombreCompleto,
     })),
     [talleres]
   );
@@ -34,7 +34,7 @@ const Talleres = () => {
     { title: "Nombre", field: "nombre" },
     { title: "Descripción", field: "descripcion" },
     { title: "Estado", field: "estado" },
-    { title: "Profesor ID", field: "profesorId" },
+    { title: "Profesor", field: "profesorId" },
     { title: "Inscritos", field: "inscritos" }
   ];
 
@@ -70,12 +70,18 @@ const Talleres = () => {
   const handleInscribirAlumno = async () => {
     if (dataTaller) {
       try {
+        const result = await deleteDataAlert({
+          title: "¿Estás seguro?",
+          text: "¿Deseas inscribirte al taller" + dataTaller.nombre + "?",
+          confirmButtonText: "Sí, inscribirme",
+        });
+        if (result.isConfirmed) {
         await inscribirComoEstudiante(dataTaller.id); // Enviar el ID del taller seleccionado
         showSuccessAlert('Te has inscrito con exito al taller',dataTaller.nombre);
-        fetchTalleres();
+        fetchTalleres();}
       } catch (error) {
         showErrorAlert(
-          'Error interno del servidor',
+          'Error Al inscribirte',
           error.response?.data?.message || 'Ocurrió un problema al inscribirte.'
         );
       }
@@ -139,7 +145,7 @@ const Talleres = () => {
         <button onClick={handleShowDetails}>Ver Detalles</button>
         <button onClick={handleEdit}>Editar Taller</button>
         <button onClick={handleDelete}>Eliminar Taller</button>
-        <button onClick={handleManageAlumnos}>Gestionar Alumnos</button>
+        <button onClick={handleManageAlumnos}>Gestionar Estudiantes</button>
       </>
     )}
   </div>

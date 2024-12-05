@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { createTaller } from '@services/taller.service';
+import { createTaller,validarProfesorRut } from '@services/taller.service';
 import { format, parse } from 'date-fns';
-import '@styles/Talleres.css';
+import '@styles/talleres.css';
+import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
 
 const CreateTallerForm = () => {
   const [formData, setFormData] = useState({
@@ -10,11 +11,13 @@ const CreateTallerForm = () => {
     fecha_inicio: '',
     fecha_fin: '',
     capacidad: '',
-    profesorId: '',
+    profesorRut: '', 
     estado: 'enCurso',
   });
 
-  const [message, setMessage] = useState('');
+  
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,32 +26,52 @@ const CreateTallerForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
+      setLoading(true);
+  
+      // Validar el RUT del profesor
+      const profesorId = await validarProfesorRut(formData.profesorRut);
+      if (!profesorId) {
+        showErrorAlert('Error', 'El RUT del profesor no es válido o no corresponde al de un profesor.');
+        return;
+      }
+  
       const fechaInicioFormateada = format(parse(formData.fecha_inicio, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy');
       const fechaFinFormateada = format(parse(formData.fecha_fin, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy');
-
+  
+   
+      const { profesorRut, ...rest } = formData;
+  
       const dataToSend = {
-        ...formData,
+        ...rest,
         fecha_inicio: fechaInicioFormateada,
         fecha_fin: fechaFinFormateada,
+        profesorId, // Enviar solo el ID del profesor al backend
       };
-
+  
       const response = await createTaller(dataToSend);
-      setMessage(`Taller creado exitosamente: ${response.nombre}`);
+  
+      showSuccessAlert('Haz creado con éxito el taller', response.nombre);
       setFormData({
         nombre: '',
         descripcion: '',
         fecha_inicio: '',
         fecha_fin: '',
         capacidad: '',
-        profesorId: '',
+        profesorRut: '',
         estado: 'enCurso',
       });
     } catch (error) {
-      setMessage('Error: No se pudo crear el taller. Revisa los datos ingresados.');
+      showErrorAlert(
+        'Error interno del servidor',
+        error.message || 'Ocurrió un problema al crear el taller.'
+      );
+    } finally {
+      setLoading(false);
     }
   };
+  
 
   return (
     <div>
@@ -104,11 +127,11 @@ const CreateTallerForm = () => {
           />
         </label>
         <label>
-          Profesor ID:
+          RUT del Profesor:
           <input
             type="text"
-            name="profesorId"
-            value={formData.profesorId}
+            name="profesorRut"
+            value={formData.profesorRut}
             onChange={handleChange}
             required
           />
@@ -118,13 +141,13 @@ const CreateTallerForm = () => {
           <select name="estado" value={formData.estado} onChange={handleChange}>
             <option value="enCurso">en Curso</option>
             <option value="pendiente">pendiente</option>
-            <option value="finalizado">finalizado</option>
+            
           </select>
         </label>
-        <button type="submit">Crear Taller</button>
-        
+        <button type="submit" disabled={loading}>
+          {loading ? 'Creando...' : 'Crear Taller'}
+        </button>
       </form>
-      {message && <p>{message}</p>}
     </div>
   );
 };

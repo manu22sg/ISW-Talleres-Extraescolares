@@ -7,11 +7,10 @@ import {
   getTallerService,
   inscribirAlumnoAutenticadoService,
   inscribirAlumnoService,
-  
-  obtenerTalleresInscritosProfesorService,
   obtenerTalleresInscritosProfesor1Service,
+  obtenerTalleresInscritosProfesorService,
   obtenerTalleresInscritosService,
-  updateTallerService
+  updateTallerService,validarRutProfesorService, validarRutEstudianteService
 } from "../services/taller.service.js";
 import { tallerBodyValidation,tallerPatchValidation } from "../validations/taller.validation.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
@@ -102,6 +101,7 @@ export async function updateTallerController(req, res) { // Actualizar un taller
 
 export const deleteStudentController = async (req, res) => { // Eliminar alumno de un taller
   try {
+   
     const taller = await deleteStudentService(req); // Llamada al servicio para eliminar el alumno del taller
     return handleSuccess(res, 200, "Alumno eliminado correctamente del taller", { taller });
   } catch (error) {
@@ -142,10 +142,10 @@ export const inscribirAlumnoAutenticadoController = async (req, res) => {
   try {
     const { tallerId } = req.body; // ID del taller a inscribir en el cuerpo de la solicitud
      // ID del alumno autenticado en el token
-   const userId = req.user.id;
+
     
 
-    const { success, statusCode, message, taller } = await inscribirAlumnoAutenticadoService(userId, tallerId);
+    const { success, statusCode, message, taller } = await inscribirAlumnoAutenticadoService(userId,tallerId);
 
     if (!success) {
       if (statusCode >= 400 && statusCode < 500) {
@@ -167,10 +167,10 @@ export const inscribirAlumnoAutenticadoController = async (req, res) => {
 // Controlador para profesores y administradores
 export const inscribirAlumnoPorProfesorOAdminController = async (req, res) => {
   const { tallerId, alumnoId } = req.body;
-  const userId = req.user.id; // ID del profesor o administrador
+   // ID del profesor o administrador
 
   // Llamada al servicio de inscripción de alumnos
-  const { success, error, statusCode, taller, message } = await inscribirAlumnoService(tallerId, alumnoId, userId);
+  const { success, error, statusCode, taller, message } = await inscribirAlumnoService(tallerId, alumnoId);
 
   // Manejo de errores
   if (!success) {
@@ -232,7 +232,7 @@ export const talleresInscritosProfesor1Controller = async (req, res) => {
   const profesorId = req.user.id; // ID del profesor obtenido del token
   const { tallerId } = req.body; // ID del taller a inscribir en el cuerpo de la solicitud
 
-  const { success, error, statusCode = 500, taller } = await obtenerTalleresInscritosProfesor1Service(profesorId, tallerId);
+  const{ success, error, statusCode=500, taller } = await obtenerTalleresInscritosProfesor1Service(profesorId,tallerId);
 
   if (!success) {
     // Si es un error de cliente (4xx), usar handleErrorClient
@@ -246,6 +246,51 @@ export const talleresInscritosProfesor1Controller = async (req, res) => {
   // Respuesta exitosa
   return handleSuccess(res, 200, "Taller correspondiente encontrado", taller);
 };
+
+
+export async function validarRutProfesorController(req, res) {
+  try {
+    const { rut } = req.body; // Cambiar a req.body si usas POST
+
+    if (!rut) {
+      return handleErrorClient(res, 400, "El RUT es requerido.");
+    }
+
+    const [profesorId, error] = await validarRutProfesorService(rut);
+
+    if (error) {
+      return handleErrorClient(res, 404, error);
+    }
+
+    return handleSuccess(res, 200, "Profesor encontrado", { profesorId });
+  } catch (error) {
+    console.error("Error al validar el RUT del profesor:", error);
+    return handleErrorServer(res, 500, "Error interno del servidor al validar el RUT.");
+  }
+}
+
+export async function validarRutEstudianteController(req, res) {
+  try {
+    const { rut } = req.body; // Cambiar a req.body si usas POST
+
+    if (!rut) {
+      return handleErrorClient(res, 400, "El RUT es requerido.");
+    }
+
+    const [estudianteId, error] = await validarRutEstudianteService(rut);
+
+    if (error) {
+      return handleErrorClient(res, 404, error);
+    }
+
+    return handleSuccess(res, 200, "Estudiante encontrado", { estudianteId });
+  } catch (error) {
+    console.error("Error al validar el RUT del estudiante:", error);
+    return handleErrorServer(res, 500, "Error interno del servidor al validar el RUT.");
+  }
+}
+
+
 
 
 

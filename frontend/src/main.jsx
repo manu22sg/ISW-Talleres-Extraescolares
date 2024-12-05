@@ -4,7 +4,7 @@ import Login from '@pages/Login';
 import Home from '@pages/Home';
 import Users from '@pages/Users';
 import Register from '@pages/Register';
-import Error404 from '@pages/Error404';
+//import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import Talleres from '@pages/Talleres';
 import EditTaller from '@pages/EditTaller'; // Ajusta la ruta si es necesario
@@ -13,14 +13,21 @@ import ManageAlumnos from '@pages/ManageAlumnos';
 import VerTalleresProfesor from '@pages/VerTalleresProfesor'; 
 import TalleresEstudiante from '@pages/VerTalleresEstudiante';
 import CreateTaller from '@pages/CreateTaller';
+import Report from '@pages/report';
+import ReportPrincipal from '@pages/ReportPrincipal';
+import ReportAlumno from '@pages/ReportAlumno';
 import ProtectedRoute from '@components/ProtectedRoute';
+import CrearSesion from './pages/CrearSesion'; 
+import RegistrarAsistencia from '@pages/RegistrarAsistencia';
+import VerInscritos from '@pages/VerInscritos';
 import '@styles/styles.css';
+import Espera from '@pages/ListaEspera';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Root/>,
-    errorElement: <Error404/>,
+    //errorElement: <Error404/>,
     children: [
       {
         path: '/home',
@@ -67,6 +74,45 @@ const router = createBrowserRouter([
               <CreateTaller />
             </ProtectedRoute>)
         },
+        {
+          path: '/report',
+          element: (
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <Report />
+            </ProtectedRoute>)
+        },
+        {
+          path: '/ReportPrincipal',
+          element:(
+            <ReportPrincipal/>
+          )
+        },
+        {
+          path: '/ReportAlumno',
+          element:(
+              <ReportAlumno/>
+          )
+        },
+        {path: '/crear-sesion',
+        element: <CrearSesion/>
+        
+        },
+        {
+          path: '/Registrar-asistencia',
+          element: (
+            <ProtectedRoute allowedRoles={['profesor']}>
+              <RegistrarAsistencia />
+            </ProtectedRoute>
+          ),
+        },
+        {
+        path : 'Ver-inscritos',
+        element: <VerInscritos/>
+        },
+        {
+          path: '/ListadeEspera',
+          element: <Espera/>
+        },
         
     ]
   },
@@ -78,6 +124,8 @@ const router = createBrowserRouter([
     path: '/register',
     element: <Register/>
   }
+
+
 ])
 
 ReactDOM.createRoot(document.getElementById('root')).render(

@@ -30,6 +30,7 @@ const Navbar = () => {
                         <NavLink 
                             to="/home" 
                             onClick={() => setMenuOpen(false)} 
+                            className={({ isActive }) => (isActive ? "active" : "")}
                             activeClassName="active"
                         >
                             Inicio
@@ -41,6 +42,7 @@ const Navbar = () => {
                             <NavLink 
                                 to="/users" 
                                 onClick={() => setMenuOpen(false)} 
+                                className={({ isActive }) => (isActive ? "active" : "")}
                                 activeClassName="active"
                             >
                                 Usuarios
@@ -52,11 +54,25 @@ const Navbar = () => {
                         <NavLink 
                             to="/talleres" 
                             onClick={() => setMenuOpen(false)} 
+                            className={({ isActive }) => (isActive ? "active" : "")}
                             activeClassName="active"
                         >
                             Talleres
                         </NavLink>
                     </li>
+
+                    {userRole === 'profesor' && (
+                        <li>
+                            <NavLink 
+                                to="/crear-sesion" 
+                                onClick={() => setMenuOpen(false)} 
+                                className={({ isActive }) => (isActive ? "active" : "")}
+                            >
+                                Crear Sesión
+                            </NavLink>
+                        </li>
+                    )}
+
                     
                     <li>
                         <NavLink 
@@ -65,7 +81,7 @@ const Navbar = () => {
                                 logoutSubmit(); 
                                 setMenuOpen(false); 
                             }} 
-                            activeClassName="active"
+                            className={({ isActive }) => (isActive ? "active" : "")}
                         >
                             Cerrar sesión
                         </NavLink>
