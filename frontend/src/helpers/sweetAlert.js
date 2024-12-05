@@ -1,17 +1,17 @@
 import Swal from 'sweetalert2';
 
-export async function deleteDataAlert() {
+export async function deleteDataAlert({ title, text, confirmButtonText }) {
   return Swal.fire({
-    title: "¿Estás seguro?",
-    text: "¡No podrás revertir esto!",
+    title: title || "¿Estás seguro?",
+    text: text || "¡No podrás revertir esto!",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
-    confirmButtonText: "Si, eliminar!"
-  })
+    confirmButtonText: confirmButtonText || "Sí, eliminar",
+    cancelButtonText: "Cancelar",
+  });
 }
-
 export const showSuccessAlert = (titleMessage, message) => {
   Swal.fire(
     titleMessage,

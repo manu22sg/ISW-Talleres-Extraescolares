@@ -8,7 +8,8 @@ import {
   inscribirAlumnoPorProfesorOAdminController,
   talleresInscritosProfesor1Controller,
   talleresInscritosProfesorController,
-  updateTallerController
+  updateTallerController,
+  validarRutProfesorController,validarRutEstudianteController
 } from "../controllers/taller.controller.js";
 import { isAdmin, isAdminorTeacher, isTeacher } from "../middlewares/authorization.middleware.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
@@ -39,8 +40,8 @@ router.get("/profesor/taller",isTeacher,talleresInscritosProfesor1Controller);
 // Obtener talleres inscritos como profesor con tallerId
 
 
-// Obtener talleres inscritos siendo profesor
-
+router.post("/ValidarRutProfesor",isAdmin,validarRutProfesorController); // Validar rut profesor
+router.post("/ValidarRutEstudiante",isAdmin,validarRutEstudianteController); // Validar rut estudiante
 
 
 

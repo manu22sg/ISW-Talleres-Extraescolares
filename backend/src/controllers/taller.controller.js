@@ -10,7 +10,7 @@ import {
   obtenerTalleresInscritosProfesor1Service,
   obtenerTalleresInscritosProfesorService,
   obtenerTalleresInscritosService,
-  updateTallerService
+  updateTallerService,validarRutProfesorService, validarRutEstudianteService
 } from "../services/taller.service.js";
 import { tallerBodyValidation,tallerPatchValidation } from "../validations/taller.validation.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
@@ -246,6 +246,51 @@ export const talleresInscritosProfesor1Controller = async (req, res) => {
   // Respuesta exitosa
   return handleSuccess(res, 200, "Taller correspondiente encontrado", taller);
 };
+
+
+export async function validarRutProfesorController(req, res) {
+  try {
+    const { rut } = req.body; // Cambiar a req.body si usas POST
+
+    if (!rut) {
+      return handleErrorClient(res, 400, "El RUT es requerido.");
+    }
+
+    const [profesorId, error] = await validarRutProfesorService(rut);
+
+    if (error) {
+      return handleErrorClient(res, 404, error);
+    }
+
+    return handleSuccess(res, 200, "Profesor encontrado", { profesorId });
+  } catch (error) {
+    console.error("Error al validar el RUT del profesor:", error);
+    return handleErrorServer(res, 500, "Error interno del servidor al validar el RUT.");
+  }
+}
+
+export async function validarRutEstudianteController(req, res) {
+  try {
+    const { rut } = req.body; // Cambiar a req.body si usas POST
+
+    if (!rut) {
+      return handleErrorClient(res, 400, "El RUT es requerido.");
+    }
+
+    const [estudianteId, error] = await validarRutEstudianteService(rut);
+
+    if (error) {
+      return handleErrorClient(res, 404, error);
+    }
+
+    return handleSuccess(res, 200, "Estudiante encontrado", { estudianteId });
+  } catch (error) {
+    console.error("Error al validar el RUT del estudiante:", error);
+    return handleErrorServer(res, 500, "Error interno del servidor al validar el RUT.");
+  }
+}
+
+
 
 
 

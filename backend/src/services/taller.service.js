@@ -479,3 +479,47 @@ export const obtenerTalleresInscritosProfesor1Service = async (profesorId, talle
     return { success: false, error: "Error interno del servidor", statusCode: 500 };
   }
 };
+
+export async function validarRutProfesorService(rut) {
+  try {
+    const userRepository = AppDataSource.getRepository("User"); // Asegúrate de usar el nombre correcto
+
+
+    // Buscar el profesor en la base de datos
+    const profesor = await userRepository.findOne({
+      where: { rut, rol: "profesor" }, // Búsqueda por RUT y rol
+    });
+
+    if (!profesor) {
+      console.log("Profesor no encontrado con RUT:", rut); // Log si no se encuentra
+      return [null, "Profesor no encontrado con ese RUT o no tiene el rol adecuado."];
+    }
+
+    return [profesor.id, null]; // Retornar el ID del profesor
+  } catch (error) {
+    console.error("Error al validar el RUT del profesor:", error);
+    return [null, "Error interno del servidor al validar el RUT del profesor."];
+  }
+}
+
+export async function validarRutEstudianteService(rut) {
+  try {
+    const userRepository = AppDataSource.getRepository("User"); // Asegúrate de usar el nombre correcto
+
+
+    // Buscar el profesor en la base de datos
+    const estudiante = await userRepository.findOne({
+      where: { rut, rol: "estudiante" }, // Búsqueda por RUT y rol
+    });
+
+    if (!estudiante) {
+      console.log("Estudiante no encontrado con RUT:", rut); // Log si no se encuentra
+      return [null, "Estudiante no encontrado con ese RUT o no tiene el rol adecuado."];
+    }
+
+    return [estudiante.id, null]; // Retornar el ID del estudiante
+  } catch (error) {
+    console.error("Error al validar el RUT del estudiante:", error);
+    return [null, "Error interno del servidor al validar el RUT del estudiante."];
+  }
+}

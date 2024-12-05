@@ -107,13 +107,17 @@ const EditTaller = () => {
           />
         </div>
         <div className="taller-field">
-          <label>Estado:</label>
-          <input
-            type="text"
+        <label>Estado:</label>
+          <select
             name="estado"
             value={formData.estado || ''}
             onChange={handleInputChange}
-          />
+          >
+            <option value="">Seleccione un estado</option>
+            <option value="enCurso">En Curso</option>
+            <option value="finalizado">Finalizado</option>
+            <option value="pendiente">Pendiente</option>
+          </select>
         </div>
         <div className="taller-field">
           <label>Fecha de Inicio:</label>

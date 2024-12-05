@@ -1,27 +1,28 @@
 import React, { useState } from 'react';
 import { useParams,useNavigate } from 'react-router-dom';
-import { inscribirAlumno, borrarAlumno } from '@services/taller.service';
+import { inscribirAlumno, borrarAlumno,validarEstudianteRut } from '@services/taller.service';
 import { deleteDataAlert, showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
 import '@styles/talleres.css';
 
 
 const ManageAlumnos = () => {
-  const { id } = useParams(); // Obtener el ID del taller desde la URL
-  const [alumnoId, setAlumnoId] = useState('');
+  const { id } = useParams(); 
+  const [alumnoRut, setAlumnoRut] = useState('');
   const navigate = useNavigate();
 
   
 
   const handleAlumnoIdChange = (e) => {
-    setAlumnoId(e.target.value);
+    setAlumnoRut(e.target.value);
   };
 
   const handleInscribir = async () => {
     try {
+      const alumnoId = await validarEstudianteRut(alumnoRut);
       await inscribirAlumno(id, alumnoId);
-       // Verifica si se llega a esta línea
+       
       showSuccessAlert('Alumno inscrito en el taller con éxito');
-      setAlumnoId('');
+      setAlumnoRut('');
     } catch (error) {
       showErrorAlert('Error al inscribir al alumno', error.response?.data?.message || "Ocurrió un error");
     }
@@ -34,11 +35,13 @@ const ManageAlumnos = () => {
      const result = await deleteDataAlert();
   
      if (result.isConfirmed) {
+      const alumnoId = await validarEstudianteRut(alumnoRut);
+    console.log(alumnoId);
         await borrarAlumno(id, alumnoId);
        showSuccessAlert('Alumno eliminado del taller con éxito');}
-      setAlumnoId('');
+      setAlumnoRut('');
     } catch (error) {
-        showErrorAlert('Error al eliminar al alumno', error.response.data.message);
+        showErrorAlert('Error al eliminar al alumno', error.response || "Ocurrió un error");
     }
   };
   const handleBack = () => {
@@ -47,23 +50,23 @@ const ManageAlumnos = () => {
   return (
     <div className="manage-alumnos-container">
   <div className="manage-alumnos-content">
-    <h1>Gestionar Alumnos del Taller {id}</h1>
+    <h1>Gestionar Estudiantes del Taller {id}</h1>
     
     <input
       type="text"
-      placeholder="ID del Alumno"
-      value={alumnoId}
+      placeholder="Rut del Alumno"
+      value={alumnoRut}
       onChange={handleAlumnoIdChange}
       className="alumno-field"
     />
     
     <div className="alumno-button-container">
       <button onClick={handleInscribir} className="alumno-inscribir-button">
-        Inscribir Alumno
+        Inscribir Estudiante
       </button>
       
       <button onClick={handleEliminar} className="alumno-eliminar-button">
-        Eliminar Alumno
+        Eliminar Estudiante
       </button>
     </div>
     
