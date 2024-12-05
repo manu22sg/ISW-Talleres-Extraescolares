@@ -129,7 +129,6 @@ export const inscribirAlumno = async (tallerId, alumnoId) => {
      
       return response.data.data.estudianteId; // Retorna el ID del estudiante si es válido
     } catch (error) {
-      console.error("Error al validar el RUT del estudiante:", error);
-      return null; 
+      throw error;
     }
   };

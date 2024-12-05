@@ -70,15 +70,9 @@ const Talleres = () => {
   const handleInscribirAlumno = async () => {
     if (dataTaller) {
       try {
-        const result = await deleteDataAlert({
-          title: "¿Estás seguro?",
-          text: "¿Deseas inscribirte al taller" + dataTaller.nombre + "?",
-          confirmButtonText: "Sí, inscribirme",
-        });
-        if (result.isConfirmed) {
         await inscribirComoEstudiante(dataTaller.id); // Enviar el ID del taller seleccionado
         showSuccessAlert('Te has inscrito con exito al taller',dataTaller.nombre);
-        fetchTalleres();}
+        fetchTalleres();
       } catch (error) {
         showErrorAlert(
           'Error Al inscribirte',
