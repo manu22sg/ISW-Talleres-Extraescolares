@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from '../services/root.service';
-
+import {validarRut} from '../function/validarRut';
 
 const RegistrarAsistencia = () => {
   const [tallerId, setTallerId] = useState('');
@@ -10,6 +10,39 @@ const RegistrarAsistencia = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  function setRutFormat(rut) {
+    // Convertir el RUT a string por si se ingresa como número
+    let rutString = rut.toString().replace(/\D/g, ''); // Eliminar cualquier carácter no numérico
+    // Validar largo máximo de 12 caracteres
+     if (rutString.length > 9) {
+      setError('Largo máximo de 9 caracteres');
+    }else{
+      setError('');
+    }
+    if(rutString.length > 8){
+      // Separar el dígito verificador
+      const dv = rutString.slice(-1);
+      const numero = rutString.slice(0, -1);
+    
+      // Formatear el número con puntos cada 3 dígitos
+      const formateado = numero
+        .split('')
+        .reverse()
+        .reduce((acc, digit, i) => {
+          return digit + (i > 0 && i % 3 === 0 ? '.' : '') + acc;
+        }, '');
+      
+      const rutValido = validarRut(rutString);
+      if(!rutValido){
+        setError('Rut inválido');
+      }
+
+      return `${formateado}-${dv}`;
+    }else{
+      return rutString
+    }
+  }
+
   const handleAddStudent = () => {
     setAsistencias([...asistencias, { usuarioId: '', estado: '', comentarios: '' }]);
   };
@@ -17,6 +50,7 @@ const RegistrarAsistencia = () => {
   const handleInputChange = (index, field, value) => {
     const newAsistencias = [...asistencias];
     newAsistencias[index][field] = value;
+    console.log(newAsistencias);
     setAsistencias(newAsistencias);
   };
 
@@ -70,9 +104,9 @@ const RegistrarAsistencia = () => {
             <label>Estudiante {index + 1}:</label>
             <input
               type="text"
-              placeholder="ID del Usuario"
+              placeholder="rut del Usuario"
               value={asistencia.usuarioId}
-              onChange={(e) => handleInputChange(index, 'usuarioId', e.target.value)}
+              onChange={(e) => handleInputChange(index, 'usuarioId', setRutFormat(e.target.value))}
               required
             />
             <select
@@ -90,6 +124,7 @@ const RegistrarAsistencia = () => {
               placeholder="Comentarios (opcional)"
               value={asistencia.comentarios}
               onChange={(e) => handleInputChange(index, 'comentarios', e.target.value)}
+              
             />
           </div>
         ))}
@@ -102,7 +137,7 @@ const RegistrarAsistencia = () => {
         </button>
       </form>
 
-      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       {success && <p style={{ color: 'green' }}>Éxito: {success}</p>}
     </div>
   );

@@ -8,7 +8,7 @@ const Home = () => {
   const esAdministrador = user?.rol === 'administrador';
   const esProfesor = user?.rol === 'profesor';
   const esEstudiante = user?.rol === 'estudiante';
-
+  console.log(user);
   return (
     <div className="home-container">
       <h1 className="home-title">Bienvenido a la Plataforma de Talleres</h1>
@@ -33,8 +33,10 @@ const Home = () => {
         )}
 
         {esEstudiante && (
+          <>
           <Link className="home-link" to="/mis-talleres/estudiante">Mis Talleres</Link>
-        )}
+          <Link className="home-link" to="/registrar-asistencia-token">Registrar Asistencia con Token</Link>
+        </>)}
       </nav>
     </div>
   );
