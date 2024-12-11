@@ -20,7 +20,7 @@ const Home = () => {
         {esAdministrador && (
           <>
             <Link className="home-link" to="/CreateTaller">Crear Taller</Link>
-            <Link className="home-link" to="/Report">Report</Link>
+            <Link className="home-link" to="/Report">Reportes</Link>
             <Link className="home-link" to="/ListadeEspera">Ver Lista de espera</Link>
           </>
         )}

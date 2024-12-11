@@ -57,7 +57,8 @@ export async function estadoTallerController(req, res) {
         const { estado } = req.params;
         
         const [Estado, errorEstado] = await estadoTallerService(estado);
-        
+        console.log("estado controller", Estado);
+        console.log("error controller", errorEstado);
 
         if (errorEstado) { return handleErrorClient(res, 400, errorEstado); }
 
@@ -84,9 +85,9 @@ export async function tallerProfesorController(req, res) { //mostrar los tallere
 //mostrar los talleres de un profesor en especifico
 export async function profesorTallerController(req, res) {
     try {
-        const { nombre } = req.body;
+        const { name } = req.params;
        
-        const [profesor, errorProfesor] = await profesorTallerService(nombre);
+        const [profesor, errorProfesor] = await profesorTallerService(name);
 
         if (errorProfesor) { return handleErrorClient(res, 400, errorProfesor); }
 

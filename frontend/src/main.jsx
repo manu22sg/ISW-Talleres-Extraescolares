@@ -13,9 +13,16 @@ import ManageAlumnos from '@pages/ManageAlumnos';
 import VerTalleresProfesor from '@pages/VerTalleresProfesor'; 
 import TalleresEstudiante from '@pages/VerTalleresEstudiante';
 import CreateTaller from '@pages/CreateTaller';
-import Report from '@pages/report';
+
+import Report from '@pages/Report';
 import ReportPrincipal from '@pages/ReportPrincipal';
 import ReportAlumno from '@pages/ReportAlumno';
+import RepCanInscritos from '@pages/RepCanInscritos';
+import RepAsistencia from '@pages/RepAsistencia';
+import RepEstado from '@pages/RepEstado';
+import RepTalleresProfesor from '@pages/RepTalleresProfesor';
+import RepProfesor from '@pages/RepProfesor';
+
 import ProtectedRoute from '@components/ProtectedRoute';
 import CrearSesion from './pages/CrearSesion'; 
 import RegistrarAsistencia from '@pages/RegistrarAsistencia';
@@ -76,10 +83,11 @@ const router = createBrowserRouter([
         },
         {
           path: '/report',
-          element: (
+          element: (            
             <ProtectedRoute allowedRoles={['administrador']}>
               <Report />
             </ProtectedRoute>)
+            
         },
         {
           path: '/ReportPrincipal',
@@ -93,6 +101,37 @@ const router = createBrowserRouter([
               <ReportAlumno/>
           )
         },
+        {
+          path: '/RepCanInscritos',
+          element:(
+              <RepCanInscritos/>
+          )
+        },
+        {
+          path: '/RepAsistencia',
+          element:(
+              <RepAsistencia/>
+          )
+        },
+        {
+          path: '/RepEstado',
+          element:(
+              <RepEstado/>
+          )
+        },
+        {
+          path: '/RepTalleresProfesor',
+          element:(
+              <RepTalleresProfesor/>  
+          )
+        },
+        {
+          path: '/RepProfesor',
+          element:(
+              <RepProfesor/>
+          )
+        },
+
         {path: '/crear-sesion',
         element: <CrearSesion/>
         
@@ -129,5 +168,5 @@ const router = createBrowserRouter([
 ])
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <RouterProvider router={router}/>
+    <RouterProvider router={router}/>
 )

@@ -2,6 +2,7 @@ import React from 'react';
 import '@styles/Table.css'; 
 
 
+
 const ListaDinamica = ({ items }) => {
   console.log(items.length);
   if (!items || items.length === 0) {

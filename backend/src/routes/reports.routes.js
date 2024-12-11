@@ -22,7 +22,7 @@ router.get("/asistencia/:id", isAdmin, asistenciaAlumnosController);//mostrar as
 router.get("/cantidadInscritos", isAdmin, cantidadInscritosController);//cantidad de inscritos en un taller
 router.get("/estado/:estado", isAdmin, estadoTallerController);//talleres con un estado en especifico
 router.get("/tallerProfesor", isAdmin, tallerProfesorController);//talleres con su respectivo profesor
-router.get("/profesorTaller", isAdmin, profesorTallerController);//de profesor mostrar los talleres que tiene asignados
+router.get("/profesorTaller/:name", isAdmin, profesorTallerController);//mostrar los talleres que tiene asignados
 
 export default router;
 

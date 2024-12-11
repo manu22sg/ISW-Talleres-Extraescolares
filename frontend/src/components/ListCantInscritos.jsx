@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import '@styles/table.css';
 
 const ListaDinamica = ({items}) => {
-    //console.log("items:", items);
+    // console.log("items:", items.length);
     // Validar que items no sea null o undefined
-    if (!items || !Array.isArray(items.alumnos) || !Array.isArray(items.alumnos[0])) {
+    if ( items.length === 0 ) {
         return (<div>
-            <p>No hay alumnos inscritos en el taller (items.nombre).</p>
+            <p>No hay talleres registrados.</p>
             <Link className="home-link" to="/Report">Volver</Link>
             </div>
         )
@@ -16,28 +16,25 @@ const ListaDinamica = ({items}) => {
     return (
         <div>
             <Link className="home-link" to="/Report">Volver</Link>
-            <h1>Lista del taller y sus alumnos inscritos</h1>
+            <h1>Lista de Talleres y cantidad de Inscritos </h1>
             <div >
                 <table className="table-container">
                     <thead>
                         <tr>
-                            <th className='col-id'>IdTaller</th>
+                            <th className='col-id'>Codigo Taller</th>
                             <th className='col-taller'>Nombre Taller</th>
                             <th className='col-descripcion'>Descripcion del taller</th>
-                            <th className='col-alumno'>Nombre Alumno</th>
-                            <th className='col-rut'>Rut</th>
-                            <th className='col-email'>Email</th>
+                            <th className='col-id'>Cantidad Inscritos</th>
                         </tr>
                     </thead>
                     <tbody>
-                    {items.alumnos[0].map((alumnos, index) => (
+                    {items.map((item, index) => (
                             <tr key={index}>
-                                <td>{items.idTaller}</td>
-                                <td>{items.nombre}</td>
-                                <td>{items.descripcion}</td>
-                                <td>{alumnos.nombre}</td>
-                                <td>{alumnos.rut}</td>
-                                <td>{alumnos.email}</td>
+                                <td>{item.id}</td>
+                                <td>{item.nombre}</td>
+                                <td>{item.descripcion}</td>
+                                <td>{item.cantidad}</td>
+                             
                             </tr>
                         ))}
                     </tbody>

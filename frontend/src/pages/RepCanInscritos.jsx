@@ -1,16 +1,16 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { tallerinscritos } from "../services/report.service.js";
-import ListaDinamica from "../components/ListAllStudtTalle.jsx";
+import { cantidadInscritos } from "../services/report.service.js";
+import ListaDinamica from "../components/ListCantInscritos.jsx";
 import { jsPDF } from "jspdf";
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import '@styles/Home.css';
 
-async function datos(id){
+async function datos(){
     try {
-        const response = await tallerinscritos(id);
+        const response = await cantidadInscritos();
         // console.log("respuesta de la api:", response);
         if(!response) {
             //console.error('Error en la respuesta del servidor');
@@ -25,16 +25,13 @@ async function datos(id){
 };
 
 const Report = () => {
-    const location = useLocation();
-    const {id} = location.state;
+    const [id, setId] = useState([]);
     const [info, setInfo] = useState([]);
 
     useEffect(() => {
-        if(!id)return;
-        
         const cargarDatos = async()=>{
             try {
-                const respuesta = await datos(id);
+                const respuesta = await datos();
                 setInfo(respuesta) ;
             } catch (error) {
                 console.error('Error al obtener los talleres:', error); 
@@ -52,44 +49,38 @@ const Report = () => {
         console.log("Generando PDF...");
        
         const doc = new jsPDF();
-        const tableColumn = ["Codigo", "Nombre Taller", "Descripcioin del Taller", "Nombre Alumno", "Rut", "Email"]; 
-        const tableRows = info.alumnos[0].map(item => [
-            info.idTaller, 
-            info.nombre,
-            info.descripcion, 
-            item.nombre,
-            item.rut,
-            item.email
+        const tableColumn = ["codigo taller", "Nombre Taller", "Descripcioin del Taller", "Inscritos"]; 
+        const tableRows = info.map(item => [
+            item.id, 
+            item.nombre, 
+            item.descripcion,
+            item.cantidad
         ]);
 
         doc.text("Alumnos Inscritos", 70, 20);
-        doc.text("Este documento contiene a los alumnos que se encuentran inscritos", 14, 30);
-        doc.text(`Nombre: ${info.nombre}`, 14, 40);
-        doc.text(`Descripción: ${info.descripcion}`, 14, 50);
+        doc.text("Este documento contiene la cantidad de inscritos que tienen los talleres", 14, 30);
 
         doc.autoTable({
-            startY: 60,// posicion en la que comienza la tabla en la pagina
+            startY: 50,// posicion en la que comienza la tabla en la pagina
             head: [tableColumn],
             body: tableRows,
         });
 
-        doc.save("All_Alumnos_Taller.pdf");
+        doc.save("cantidad_Inscritos.pdf");
     };
 
     const generateExcel = () => {
-        const ws = XLSX.utils.json_to_sheet(info.alumnos[0].map(item => ({
-            "Codigo": info.idTaller,
-            "Nombre Taller": info.nombre,
-            "Descripción del Taller": info.descripcion,
-            "Nombre Alumno": item.nombre,
-            "Rut": item.rut,
-            "Email": item.email
+        const ws = XLSX.utils.json_to_sheet(info.map(item => ({
+            "Codigo": item.id,
+            "Nombre Taller": item.nombre,
+            "Descripcion": item.descripcion,
+            "Cantidad Inscritos": item.cantidad
         })));
 
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Alumnos Inscritos");
+        XLSX.utils.book_append_sheet(wb, ws, "Cantidad Inscritos");
 
-        XLSX.writeFile(wb, "Alumnos_Inscritos.xlsx");
+        XLSX.writeFile(wb, "CantidadInscritos.xlsx");
     };
 
     return (

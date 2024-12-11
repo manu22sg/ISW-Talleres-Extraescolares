@@ -5,44 +5,45 @@ import '@styles/table.css';
 const ListaDinamica = ({items}) => {
     // console.log("items:", items);
     // Validar que items no sea null o undefined
-    if (!items || !Array.isArray(items.talleres) ||!Array.isArray(items.talleres[0])) {
+    if (items.length === 0 ) {
         return (<div>
-            <p>El alumno no esta inscrito enningun taller.</p>
+            <p>No hay talleres con el estado: .</p>
             <Link className="home-link" to="/Report">Volver</Link>
             </div>
         )
-    }
+    }   
 
     return (
         <div>
             <Link className="home-link" to="/Report">Volver</Link>
-            <h1>Registro de los talleres que se encuentra inscrito el alumno</h1>
+            <h1>Lista de talleres con el profesor {(items[0].profesor)} a cargo</h1>
             <div >
                 <table className="table-container">
                     <thead>
                         <tr>
-                            
-                            <th>Nombre alumno</th>
+                            <th className='col-alumno'>Profesor</th>
                             <th className='col-rut'>Rut</th>
-                            <th>Email</th>
-                            <th>Nombre Taller</th>
-                            <th>Descripcion Taller</th>
+                            <th className='col-email'>Email</th>
+                            <th className='col-id'>Codigo Taller</th>
+                            <th className='col-taller'>Nombre Taller</th>
+                            <th className='col-descripcion'>Descripcion del taller</th>
                         </tr>
                     </thead>
                     <tbody>
-                    {items.talleres[0].map((taller, index) => (
+                    {items.map((item, index) => (
                             <tr key={index}>
-                                <td>{items.nombre}</td>
-                                <td>{items.rut}</td>
-                                <td>{items.email}</td>
-                                <td>{taller.nombre}</td>
-                                <td>{taller.descripcion}</td>
-                                
+                                <td>{item.profesor}</td>
+                                <td>{item.rut}</td>
+                                <td>{item.email}</td>
+                                <td>{item.idTaller}</td>
+                                <td>{item.nombre}</td>
+                                <td>{item.descripcion}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
+            
         </div>
     );
 };
