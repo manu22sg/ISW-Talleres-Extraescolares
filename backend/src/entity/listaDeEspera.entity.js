@@ -12,7 +12,7 @@ const ListaDeEsperaSchema = new EntitySchema({
     },
     estado: {
       type: "enum",
-      enum: ["espera", "inscrito"],
+      enum: ["espera", "inscrito","desinscrito"],
       default: "espera",
       nullable: false,
     },

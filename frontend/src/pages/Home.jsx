@@ -26,10 +26,16 @@ const Home = () => {
         {esProfesor && (
           <Link className="home-link" to="/mis-talleres/Profesor">Mis Talleres</Link>
         )}
-
+      
         {esEstudiante && (
+          <>
+        
           <Link className="home-link" to="/mis-talleres/Estudiante">Mis Talleres</Link>
+          <Link className="home-link" to="/ListadeEspera">Ver Lista de espera</Link>
+          </>
         )}
+
+
       </nav>
     </div>
   );

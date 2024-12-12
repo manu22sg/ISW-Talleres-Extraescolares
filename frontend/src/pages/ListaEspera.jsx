@@ -23,16 +23,19 @@ const ListaEspera=  () => {
   useEffect(() => {
     const cargarListaDeEspera =  async () => {
       const respuesta = await datos();
-      //console.log(respuesta);
+      console.log(respuesta);
       setListaEspera(respuesta);
     };
     cargarListaDeEspera();
   }, []);
+  
 
   return (
+    
     <div>
       <ListaDinamica items={listaEspera} />
     </div>
   );
 };
 export default ListaEspera;
+
