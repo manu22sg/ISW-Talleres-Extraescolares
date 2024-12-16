@@ -4,9 +4,12 @@ export const tallerinscritos = async (id) => { //recolecta los alumnos inscritos
     try {
         const response = await axios.get(`/report/talleres/${id}`);
 
-        // console.log(response.data.data.nombre);
+        if(response.data.status === "Client error"){
+            return [ null ,response.data]
+        }
 
-    return response.data.data;
+        return [response.data.data, null];
+
     } catch (error) {
         return error.responce.data
     }
@@ -15,9 +18,12 @@ export const tallerinscritos = async (id) => { //recolecta los alumnos inscritos
 export const alumnosTaller = async (id) => {//recolecta los talleres inscritos por un alumno
     try {
         const response = await axios.get(`/report/alumnos/${id}`);
-        // console.log("content service",response.data.data);
 
-    return response.data.data;
+        if(response.data.status === "Client error"){
+            return [ null ,response.data]
+        }
+
+        return [response.data.data, null];
     } catch (error) {
         return error.responce.data
     }
@@ -29,7 +35,7 @@ export const cantidadInscritos = async () => {//mostrar la cantidad de inscritos
 
         // console.log(response.data.data);
 
-    return response.data.data;
+        return response.data.data;
     } catch (error) {
         return error.responce.data
     }
@@ -38,8 +44,12 @@ export const cantidadInscritos = async () => {//mostrar la cantidad de inscritos
 export const Asistencia = async (id) => { //recolecta la asistencia del taller
     try {
         const response = await axios.get(`/report/asistencia/${id}`);
-        // console.log("content service",response.data.data[0]);
-    return response.data.data[0];
+        
+        if(response.data.status === "Client error"){
+            return [ null ,response.data]
+        }
+
+        return [response.data.data[0], null];
     } catch (error) {
         return error.responce.data
     }
@@ -49,9 +59,7 @@ export const EstadoTaller = async (estado) => { //recolecta la asistencia del ta
     try {
         const response = await axios.get(`/report/estado/${estado}`);
 
-        // console.log("estado service",response.data);
-
-    return response.data.data;
+        return response.data.data;
     } catch (error) {
         return error.responce.data
     }
@@ -73,9 +81,11 @@ export const Profesor = async (nombre) => {//mostrar los talleres del profesor
     try {
         const response = await axios.get(`/report/profesorTaller/${nombre}`);//aqui ver como se envia un body
 
-        // console.log("respuesta de service",response);
+        if(response.data.status === "Client error"){
+            return [ null ,response.data]
+        }
 
-    return response.data.data;
+        return [response.data.data, null];
     } catch (error) {
         return error.responce.data
     }

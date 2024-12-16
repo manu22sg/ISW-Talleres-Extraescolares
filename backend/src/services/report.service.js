@@ -15,7 +15,7 @@ export async function inscritosTallerService(id) {// Obtener los alumnos inscrit
         });
 
         if (!taller) {
-            return [null, "No se encontró el taller"];
+            return [null, "El codigo del taller ingresado no existe"];
         }
 
         //crearemos un objeto con los datos que necesitamos para no mostrar todos los datos del taller e alumnos
@@ -46,6 +46,12 @@ export async function inscritosTallerService(id) {// Obtener los alumnos inscrit
 export async function inscritosAlumnosService(rut) { //funcion contraria por alumno en cuantos talleres esta inscrito
     try {
         const userRepository = AppDataSource.getRepository(User);
+        const usuario = await userRepository.find({
+            where: { rut: rut }
+        });
+        if(!usuario){
+            return [null , "sin coincidencia con el rut ingresado"];
+        }
 
         const alumnos = await userRepository.findOne({
             where: { rut: rut, rol: ("estudiante") },
@@ -180,6 +186,12 @@ export async function profesorTallerService(nombre){
         const talleres = await tallerRepository.find()
         if(!talleres){ return [null, "No se encontraron talleres "]; }
 
+        const usuariosRepository = AppDataSource.getRepository(User);
+        const usuario = await usuariosRepository.findOne({
+            where: { nombreCompleto: nombre }
+        })
+        if(!usuario){return[null, "no existe profesor con ese nombre"]}
+
         const profesor = [];
         for (let i = 1; i <= talleres.length; i++) {   
             const taller = await tallerRepository.findOne({
@@ -210,6 +222,12 @@ export async function profesorTallerService(nombre){
 }
 export async function asistenciaAlumnosService(id){
     try {
+        const tallerRepository = AppDataSource.getRepository(Taller);
+        const taller = await tallerRepository.findOne({
+            where: { id: id },
+        });
+        if(!taller){ return [null, "El codigo del taller no existe "]; }
+
         const asistencias = "asistencias";
         const asistenciaRepository = AppDataSource.getRepository(asistencias);
         

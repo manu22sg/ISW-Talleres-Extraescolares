@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import '@styles/table.css';
 
 const ListaDinamica = ({items}) => {
-    // console.log("items:", items);
+    //  console.log("items alumno:", items);
     // Validar que items no sea null o undefined
     if (!items || !Array.isArray(items.talleres) ||!Array.isArray(items.talleres[0])) {
         return (<div>

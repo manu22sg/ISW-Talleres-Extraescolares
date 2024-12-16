@@ -5,6 +5,7 @@ import validarRut  from "../fuctions/validarRut";
 import { Link } from 'react-router-dom';
 
 import '../styles/report.css';
+import '../styles/home.css';
 
 
 
@@ -99,12 +100,13 @@ const Report = () => {
 
     return (
         <div>
-            <div>
-            <Link className="home-link" to="/Home">Volver</Link>
+            <div className="home-conteiner" style={{padding: 70}}>
+                <h1 className="home-title">Reportes</h1>
+                <Link className="home-link" to="/Home">Volver</Link>
+            
             {/*alumnos inscritos en cierto taller*/}
-            </div>
             <div className="columns">
-                <div className="column">
+                <div className="column" style={{padding:5}}>
                     <h1 className="h1">Lista de Alumnos</h1>
                 </div>
                 <div className="column">
@@ -113,22 +115,22 @@ const Report = () => {
                     </h2>
                 </div>
 
-                <div className="column">
-                    <input 
+                <div className="column" style={{padding: 7}}>
+                    <input className="input"
                         type="text"
                         value={idTaller}
                         onChange={(e) => setidTaller(e.target.value)}
                         placeholder="Ingrese el código ...."
-                        className="input"
-                    />
-                    <button onClick={handleSubmitIdTaller} className="button">
+                        
+                    /> <button onClick={handleSubmitIdTaller} className="button">
                         Enviar IdTaller
-                    </button>
+                        </button>
+                    
                 </div>  
             </div>
             {/*lista de talleres que esta inscrito un alumno */}
             <div className="columns">
-                <div className="column">
+                <div className="column" style={{padding:5}}>
                     <h1 className="h1">Lista de Talleres</h1>
                 </div>
                 <div className="column">
@@ -137,7 +139,7 @@ const Report = () => {
                     </h2>
                 </div>
 
-                <div className="column">
+                <div className="column" style={{padding: 7}}>
                     <input
                         type="text"
                         value={idAlumno}
@@ -152,7 +154,7 @@ const Report = () => {
             </div>   
             {/*cantidad de inscritos en los talleres */}
             <div className="columns">
-                <div className="column">
+                <div className="column" style={{padding:5}}>
                     <h1 className="h1">Cantidad Inscritos</h1>
                 </div>
                 <div className="column">
@@ -161,7 +163,7 @@ const Report = () => {
                     </h2>
                 </div>
 
-                <div className="column">
+                <div className="column" style={{padding: 25}}>
                    
                     <button onClick={handleSubmitCantInscritos} className="button">
                         Enviar 
@@ -170,7 +172,7 @@ const Report = () => {
             </div> 
             {/*Litsa de asistencia de cierto taller */}
             <div className="columns">
-                <div className="column">
+                <div className="column" style={{padding:5}}>
                     <h1 className="h1">Lista de asistencia</h1>
                 </div>
                 <div className="column">
@@ -179,7 +181,7 @@ const Report = () => {
                     </h2>
                 </div>
 
-                <div className="column">
+                <div className="column" style={{padding: 7}}>
                     <input
                         type="text"
                         value={idAsistencia}
@@ -194,7 +196,7 @@ const Report = () => {
             </div>    
             {/*Lista de talleres con cierto estado */}
             <div className="columns">
-                <div className="column">
+                <div className="column" style={{padding:5}}>
                     <h1 className="h1">Lista Estado Taller</h1>
                 </div>
                 <div className="column">
@@ -203,7 +205,7 @@ const Report = () => {
                     </h2>
                 </div>
 
-                <div className="column">
+                <div className="column" style={{padding: 7}}>
                     <input
                         type="text"
                         value={idEstado}
@@ -218,7 +220,7 @@ const Report = () => {
             </div> 
             {/*lista de talleres con sus respectivos profesor  */}
             <div className="columns">
-                <div className="column">
+                <div className="column" style={{padding:5}}>
                     <h1 className="h1">talleres con sus profesor</h1>
                 </div>
                 <div className="column">
@@ -227,7 +229,7 @@ const Report = () => {
                     </h2>
                 </div>
 
-                <div className="column">
+                <div className="column" style={{padding: 25}}>
                    
                     <button onClick={handleSubmitTalleresProfesor} className="button">
                         Enviar 
@@ -236,7 +238,7 @@ const Report = () => {
             </div> 
             {/*Lista de profesor con sus talleres a cargo */}
             <div className="columns">
-                <div className="column">
+                <div className="column" style={{padding:5}}>
                     <h1 className="h1">Profesor</h1>
                 </div>
                 <div className="column">
@@ -245,7 +247,7 @@ const Report = () => {
                     </h2>
                 </div>
 
-                <div className="column">
+                <div className="column" style={{padding: 7}}>
                     <input
                         type="text"
                         value={idProfesor}
@@ -257,6 +259,7 @@ const Report = () => {
                         Enviar Nombre
                     </button>
                 </div>  
+            </div>
             </div>
         </div>
     )        

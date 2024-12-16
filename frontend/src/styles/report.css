@@ -19,31 +19,33 @@
   }
   
   .column {
-    margin-top: 30px;
+    margin-top: 10px;
     background-color: #bdc8cc; /* Color de fondo para distinguir */
     border: 1px solid #080808;
-    padding: 30px;
+    /* padding: 30px; */
     text-align: center; /* Centrar contenido */
     align-items: center ;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
     h1{
-    font-size: 20px;
-    position: relative;
-    margin: 0px;
+      padding: 30px;
+      font-size: 20px;
+      position: relative;
+      margin: 0px;
   }  
 
     h2{
-        font-size: 14px;
-        position: relative;
-        margin: 0px;
+      padding: 30px;
+      font-size: 14px;
+      position: relative;
+      margin: 0px;
     }
 
   input {
-    margin-top: 5px;
-    padding: 5px;
-    width: 90%;
+    
+    width: 100%;
+    margin: 0px;
     box-sizing: border-box;
   }
 

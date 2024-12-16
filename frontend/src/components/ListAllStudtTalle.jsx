@@ -3,20 +3,35 @@ import { Link } from 'react-router-dom';
 import '@styles/table.css';
 
 const ListaDinamica = ({items}) => {
-    //console.log("items:", items);
+     console.log("items:", items.alumnos);
+    // if(items.status === "Client error"){
+    //     return (<div>
+    //         <p>El codigo del taller ingresado no existe.</p>
+    //         <Link className="home-link" to="/Report">Volver</Link>
+    //         </div>
+    //     );
+    // }
     // Validar que items no sea null o undefined
     if (!items || !Array.isArray(items.alumnos) || !Array.isArray(items.alumnos[0])) {
         return (<div>
-            <p>No hay alumnos inscritos en el taller (items.nombre).</p>
+            <h1>No Existe el taller .</h1>
             <Link className="home-link" to="/Report">Volver</Link>
             </div>
         )
-    }   
+    }
+    // Validar que items.alumnos[0] no sea un arreglo vacío si es asi no hay alumnos inscritos
+    if(items.alumnos[0].length === 0){
+        return (<div>
+            <h1>No hay alumnos inscritos en el taller {(items.nombre)}.</h1>
+            <Link className="home-link" to="/Report">Volver</Link>
+            </div>
+        )
+    }
 
     return (
         <div>
             <Link className="home-link" to="/Report">Volver</Link>
-            <h1>Lista del taller y sus alumnos inscritos</h1>
+            <h1>Lista de Alumnos Inscritos en el taller: {(items.nombre)}</h1>
             <div >
                 <table className="table-container">
                     <thead>

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { EstadoTaller } from "../services/report.service.js";
@@ -33,6 +34,17 @@ const Report = () => {
         const cargarDatos = async()=>{
             try {
                 const respuesta = await datos(id);
+                console.log("respuesta de la api:", respuesta.length);
+                if(respuesta.length === 0) {
+                    return (
+                        <div>
+                            <p>No hay talleres con el estado: {id}
+                            </p>
+                            <Link className="home-link" to="/Report">Volver</Link>
+                        </div>
+                    );
+                }
+
                 setInfo(respuesta) ;
             } catch (error) {
                 console.error('Error al obtener los talleres:', error); 
@@ -98,8 +110,7 @@ const Report = () => {
                     //     transition: 'background-color 0.2s ease'}} 
                     onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f80b0b'}
                     onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#8d0303'}
-                    onClick={generatePDF}>Generar PDF</button>
-                        
+                    onClick={generatePDF}>Generar PDF</button>       
                 <button className="button-excel" 
                     // style={{
                     //     backgroundColor: '#006400', 

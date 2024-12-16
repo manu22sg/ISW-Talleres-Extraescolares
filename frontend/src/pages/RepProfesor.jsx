@@ -1,7 +1,8 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Profesor } from "../services/report.service.js";
+import { showErrorAlert } from "../helpers/sweetAlert.js";
 import ListaDinamica from "../components/ListProfesor.jsx";
 import { jsPDF } from "jspdf";
 import 'jspdf-autotable';
@@ -10,11 +11,10 @@ import '@styles/Home.css';
 
 async function datos(id){
     try {
-        const response = await Profesor(id);
+        const [response, errorResponse] = await Profesor(id);
         // console.log("respuesta de la api:", response);
-        if(!response) {
-            console.error('Error en la respuesta del servidor');
-            return [];
+        if(response == null){
+            return errorResponse;
         }
 
         return response;
@@ -28,6 +28,7 @@ const Report = () => {
     const location = useLocation();
     const {id} = location.state;
     const [info, setInfo] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if(!id)return;
@@ -35,6 +36,11 @@ const Report = () => {
         const cargarDatos = async()=>{
             try {
                 const respuesta = await datos(id);
+                if(respuesta.status === "Client error"){
+                    showErrorAlert("No existe Profesor con ese nombre");
+                    navigate('/Report');
+                    return;
+                }
                 setInfo(respuesta) ;
             } catch (error) {
                 console.error('Error al obtener los talleres:', error); 

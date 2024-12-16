@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import '@styles/table.css';
 
 const ListaDinamica = ({items}) => {
-    // console.log("items:", items.length);
+     console.log("items:", items.length);
     // Validar que items no sea null o undefined
     if ( items.length === 0 ) {
         return (<div>
@@ -16,7 +16,7 @@ const ListaDinamica = ({items}) => {
     return (
         <div>
             <Link className="home-link" to="/Report">Volver</Link>
-            <h1>Lista de Talleres y cantidad de Inscritos </h1>
+            <h1>Lista de Talleres y la cantidad de alumnos inscritos </h1>
             <div >
                 <table className="table-container">
                     <thead>

@@ -3,11 +3,19 @@ import { Link } from 'react-router-dom';
 import '@styles/table.css';
 
 const ListaDinamica = ({items}) => {
-    //  console.log("items:", items);
+      console.log("items:", items);
     // Validar que items no sea null o undefined
     if ( !items || !Array.isArray(items) ) {
         return (<div>
-            <p>No existe el taller con el codigo {items.idTaller} .</p>
+            <p>No existe el taller .</p>
+            <Link className="home-link" to="/Report">Volver</Link>
+            </div>
+        )
+    }
+
+    if(items.length === 0){
+        return (<div>
+            <h1>No hay registro de asistencia en el taller {(items.nombreTaller)} .</h1>
             <Link className="home-link" to="/Report">Volver</Link>
             </div>
         )

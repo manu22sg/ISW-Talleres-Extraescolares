@@ -1,7 +1,8 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Asistencia } from "../services/report.service.js";
+import { showErrorAlert } from "../helpers/sweetAlert.js";
 import ListaDinamica from "../components/ListRepAsistencia.jsx";
 import { jsPDF } from "jspdf";
 import 'jspdf-autotable';
@@ -10,11 +11,11 @@ import '@styles/Home.css';
 
 async function datos(id){
     try {
-        const response = await Asistencia(id);
+        const [response, errorResponse] = await Asistencia(id);
         // console.log("respuesta de la api:", response);
-        if(!response) {
-            //console.error('Error en la respuesta del servidor');
-            return [];
+        if(response === null) {
+            console.log("Error en la respuesta del servidor:", errorResponse);
+            return errorResponse;
         }
 
         return response;
@@ -28,6 +29,7 @@ const Report = () => {
     const location = useLocation();
     const {id} = location.state;
     const [info, setInfo] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if(!id)return;
@@ -35,6 +37,11 @@ const Report = () => {
         const cargarDatos = async()=>{
             try {
                 const respuesta = await datos(id);
+                if(respuesta.status === "Client error"){
+                    showErrorAlert("El codigo del taller ingresado no existe.");
+                    navigate('/Report');
+                    return;
+                }
                 setInfo(respuesta) ;
             } catch (error) {
                 console.error('Error al obtener los talleres:', error); 
