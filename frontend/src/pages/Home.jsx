@@ -1,3 +1,4 @@
+//import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@context/AuthContext';
 import '@styles/Home.css';
@@ -51,6 +52,8 @@ const Home = () => {
         
           <Link className="home-link" to="/mis-talleres/Estudiante">Mis Talleres</Link>
           <Link className="home-link" to="/ListadeEspera">Ver Lista de espera</Link>
+          <Link className="home-link" to="/registrar-asistencia-token">Registrar asistencia con Token</Link>
+          <Link className="home-link" to="/Mis-Inscritos">Mis Asistencias</Link>
           </>
         )}
 

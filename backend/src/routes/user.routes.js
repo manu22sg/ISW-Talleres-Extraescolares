@@ -9,6 +9,7 @@ import {
   updateUser,
 } from "../controllers/user.controller.js";
 
+
 const router = Router();
 
 router
@@ -19,5 +20,6 @@ router
   .get("/detail/:id", getUser)
   .patch("/detail/:id", updateUser)
   .delete("/detail/:id", deleteUser);
+ 
 
 export default router;

@@ -2,6 +2,9 @@
 import { obtenerInscritosSesionService, registrarAsistenciaService } from "../services/asistencia.service.js";
 import { actualizarEstadoAsistenciaService } from "../services/asistencia.service.js";
 import { registrarAsistenciaConTokenService } from "../services/asistencia.service.js";
+import { obtenermisSesionService } from "../services/asistencia.service.js";
+import { AppDataSource } from "../config/configDb.js";
+import User from "../entity/user.entity.js";
 
 
 // Controlador para obtener la lista de estudiantes inscritos en una sesión específica
@@ -32,6 +35,27 @@ export async function obtenerInscritosSesion(req, res) {
   }
 }
 
+export async function vermiAsistencia(req, res) {
+  const correo = req.user.email;
+  const userRepository = AppDataSource.getRepository(User);
+  const usuario = await userRepository.findOne({ where: { email: correo } });
+  if (!usuario) {
+    return res.status(404).json({ error: "Usuario no encontrado" });
+  }
+  try {
+    const result = await obtenermisSesionService(usuario.id);
+    if (result.error) {
+      return res.status(result.statusCode).json({ error: result.error });
+    }
+    res.json(result);
+    
+  } catch (error) {
+    console.error("Error al obtener inscritos del taller:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+
+  }
+}
+
 
 
 
@@ -53,8 +77,8 @@ export async function registrarAsistencia(req, res) {
 export async function actualizarEstadoAsistencia(req, res) {
   const { tallerId, sesionId, usuarioId } = req.params;
   const { nuevoEstado, comentarios } = req.body;
+  console.log("Recibiendo solicitud para actualizar estado de asistencia.");
 
-  // Asegúrate de que req.user existe
   if (!req.user || !req.user.id) {
     return res.status(401).json({ error: "Usuario no autorizado" });
   }
@@ -86,8 +110,12 @@ export async function actualizarEstadoAsistencia(req, res) {
 // Controlador para que los estudiantes registren asistencia usando el token
 export async function registrarAsistenciaConToken(req, res) {
   const { tallerId, sesionId } = req.params;
-  const { usuarioId, tokenAsistencia } = req.body;
+  const { usuarioRut, tokenAsistencia } = req.body;
 
+  const userRepository = AppDataSource.getRepository(User);
+  const persona = await userRepository.findOne({ where: { rut: usuarioRut } });
+  const usuarioId = persona.id; 
+  
   try {
     const result = await registrarAsistenciaConTokenService(tallerId, sesionId, usuarioId, tokenAsistencia);
     if (result.error) {
@@ -99,3 +127,4 @@ export async function registrarAsistenciaConToken(req, res) {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 }
+

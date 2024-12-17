@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { obtenerInscritosSesion } from '../services/asistencia.service';
+import Editar from '../components/Editar';
+import '../styles/VerInscritos.css';
 
 const VerInscritos = () => {
   const [tallerId, setTallerId] = useState('');
@@ -7,6 +9,17 @@ const VerInscritos = () => {
   const [estudiantes, setEstudiantes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [datos,setDatos] = useState({estado:''});
+
+  const abrirModal = (Estudiantes) => {
+    setMostrarModal(true);
+    setDatos(Estudiantes);
+  }
+
+  const cerrarModal = () => {
+    setMostrarModal(false);
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,12 +38,13 @@ const VerInscritos = () => {
     }
   };
 
+
   return (
-    <div>
+    <div className='div'>
       <h1>Ver Estudiantes Inscritos en la Sesión</h1>
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="tallerId">ID del Taller:</label>
+          <label htmlFor="tallerId">Codigo del Taller:</label>
           <input
             type="text"
             id="tallerId"
@@ -40,7 +54,7 @@ const VerInscritos = () => {
           />
         </div>
         <div>
-          <label htmlFor="sesionId">ID de la Sesión:</label>
+          <label htmlFor="sesionId">Codigo de la Sesión:</label>
           <input
             type="text"
             id="sesionId"
@@ -48,10 +62,11 @@ const VerInscritos = () => {
             onChange={(e) => setSesionId(e.target.value)}
             required
           />
-        </div>
-        <button type="submit" disabled={loading}>
+          <button type="submit" disabled={loading}>
           {loading ? 'Consultando...' : 'Consultar'}
-        </button>
+          </button>
+        </div>
+        
       </form>
 
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
@@ -75,16 +90,16 @@ const VerInscritos = () => {
                   <td>{estudiante.nombreCompleto}</td>
                   <td>{estudiante.estado}</td>
                   <td>{estudiante.comentarios || 'Sin comentarios'}</td>
+                  <button className='button-2' type="submit" onClick={()=>abrirModal(estudiante)}>Editar</button>
                 </tr>
+                
               ))}
             </tbody>
+            {mostrarModal && <Editar cerrarModal={cerrarModal} Estudiantes={datos} taller={tallerId} sesion={sesionId} />}
           </table>
         </div>
       )}
-
-      {estudiantes.length === 0 && !loading && !error && (
-        <p>No se encontraron estudiantes inscritos para esta sesión.</p>
-      )}
+      {estudiantes.length === 0 && loading && !error && (<p>No se encontraron estudiantes inscritos para esta sesión.</p>)}
     </div>
   );
 };

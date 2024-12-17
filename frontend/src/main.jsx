@@ -27,6 +27,9 @@ import ProtectedRoute from '@components/ProtectedRoute';
 import CrearSesion from './pages/CrearSesion'; 
 import RegistrarAsistencia from '@pages/RegistrarAsistencia';
 import VerInscritos from '@pages/VerInscritos';
+import RegistrarAsistenciaToken from "@pages/RegistrarAsistenciaToken"; // Importa el nuevo componente
+import UpdateAsistencia from "@pages/updateAsistencia";
+import VerAsistencia from '@pages/VerAsistencia';
 import '@styles/styles.css';
 import Espera from '@pages/ListaEspera';
 
@@ -36,38 +39,38 @@ const router = createBrowserRouter([
     element: <Root/>,
     //errorElement: <Error404/>,
     children: [
-      {
-        path: '/home',
-        element: <Home/>
+        {
+          path: '/home',
+          element: <Home/>
+        },
+        {
+          path: '/users',
+          element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <Users />
+          </ProtectedRoute>
+          ),
+      },{
+        path: '/talleres', // Ruta para la página de Talleres
+        element: <Talleres />
       },
       {
-        path: '/users',
-        element: (
-        <ProtectedRoute allowedRoles={['administrador']}>
-          <Users />
+        path: '/talleres/editar/:id', // Ruta para editar un taller
+        element:( 
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <EditTaller />
+          </ProtectedRoute>
+          )
+      },
+      {
+        path: '/talleres/detalles/:id',
+        element: <TallerDetails/> // Ruta para ver los detalles de un taller
+      },
+      { path: '/talleres/gestionar/:id', 
+        element: (<ProtectedRoute allowedRoles={['administrador']}>
+        <ManageAlumnos />
         </ProtectedRoute>
-        ),
-    },{
-      path: '/talleres', // Ruta para la página de Talleres
-      element: <Talleres />
-    },
-    {
-      path: '/talleres/editar/:id', // Ruta para editar un taller
-      element:( 
-        <ProtectedRoute allowedRoles={['administrador']}>
-          <EditTaller />
-        </ProtectedRoute>
-        )
-    },
-    {
-      path: '/talleres/detalles/:id',
-      element: <TallerDetails/> // Ruta para ver los detalles de un taller
-    },
-    { path: '/talleres/gestionar/:id', 
-      element: (<ProtectedRoute allowedRoles={['administrador']}>
-       <ManageAlumnos />
-      </ProtectedRoute>
-       ),},
+        ),},
         {path: '/mis-talleres/Profesor',
           element: <VerTalleresProfesor/>
         },
@@ -149,10 +152,22 @@ const router = createBrowserRouter([
         element: <VerInscritos/>
         },
         {
+          path : 'Mis-inscritos',
+          element: <VerAsistencia/>
+          },
+        {
+          path: "/registrar-asistencia-token",
+          element: <RegistrarAsistenciaToken />,
+        },
+        {
+          path: "/update-asistencia",
+          element: <UpdateAsistencia/>
+        },{
           path: '/ListadeEspera',
           element: <Espera/>
         },
-        
+       
+    
     ]
   },
   {
@@ -163,8 +178,6 @@ const router = createBrowserRouter([
     path: '/register',
     element: <Register/>
   }
-
-
 ])
 
 ReactDOM.createRoot(document.getElementById('root')).render(

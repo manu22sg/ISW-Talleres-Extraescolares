@@ -1,4 +1,4 @@
-import React from "react";
+
 import { useEffect, useState } from "react";
 import { TalleresProfesor } from "../services/report.service.js";
 import ListaDinamica from "../components/ListTalleresProfesor.jsx";
