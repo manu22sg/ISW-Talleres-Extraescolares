@@ -1,0 +1,64 @@
+.container {
+    padding: 100px;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;    /* Centra verticalmente */
+    display: flex;          
+    height: 90vh;          /* Ocupa toda la altura de la pantalla */
+    width: 100%;            /* Ocupa todo el ancho de la pantalla */
+    box-sizing: border-box;
+  }
+  
+  .columns {
+    margin-top: 20px;
+    display: grid; 
+    align-items: center ;
+    grid-template-columns: repeat(3, 1fr); /* Tres columnas iguales */
+    gap: 5px; /* Espacio entre columnas */
+    width: 90%; /* Ocupa un porcentaje del ancho de la pantalla */
+    max-width: 1200px; /* Máximo ancho */
+  }
+  
+  .column {
+    margin-top: 10px;
+    background-color: #bdc8cc; /* Color de fondo para distinguir */
+    border: 1px solid #080808;
+    /* padding: 30px; */
+    text-align: center; /* Centrar contenido */
+    align-items: center ;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+    h1{
+      padding: 30px;
+      font-size: 20px;
+      position: relative;
+      margin: 0px;
+  }  
+
+    h2{
+      padding: 30px;
+      font-size: 14px;
+      position: relative;
+      margin: 0px;
+    }
+
+  input {
+    
+    width: 100%;
+    margin: 0px;
+    box-sizing: border-box;
+  }
+
+  /* Estilos responsivos */
+  @media (max-width: 768px) {
+    .columns {
+      grid-template-columns: 1fr; /* Una columna en pantallas pequeñas */
+    }
+  }
+  
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .columns {
+      grid-template-columns: repeat(2, 1fr); /* Dos columnas en tablets */
+    }
+  }
+  

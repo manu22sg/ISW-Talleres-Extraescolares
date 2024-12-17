@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from '../services/root.service';
 import { showSuccessAlert } from '../helpers/sweetAlert.js';
+import '../styles/Editar.css';
 
 const Editar = ({ cerrarModal, Estudiantes , taller, sesion}) => {
   
@@ -24,45 +25,24 @@ const Editar = ({ cerrarModal, Estudiantes , taller, sesion}) => {
   }
   //editar estado presente o ausente
   return (
-    <div style={modalStyles}>
+    <div className="modal">
       <div className="modal-content">
         <span className="close" onClick={cerrarModal}>x</span>
         <h2>Editar Estudiante</h2>
-        <input placeholder={Estudiantes.nombreCompleto} disabled />
+        <input placeholder={Estudiantes.nombreCompleto} disabled  className="input-field"/>
         <select
           value={estado}
           onChange={(e) => setEstado(e.target.value)}
+          className="select-field"
         >
           <option value="Presente">Presente</option>
           <option value="Ausente">Ausente</option>
         </select>
-        <input type="textarea" value={comentarios} onChange={(e)=>setComentarios(e.target.value)}  />
-        <button onClick={handleSet}>Guardar</button>
+        <textarea type="textarea" value={comentarios} onChange={(e)=>setComentarios(e.target.value)} className="textarea-field"  />
+        <button onClick={handleSet} className="save-button">Guardar</button>
       </div>
     </div>
   );
 };
 
 export default Editar;
-  
-  const modalStyles = {
-    overlay: {
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    content: {
-      backgroundColor: "white",
-      padding: "20px",
-      borderRadius: "10px",
-      textAlign: "center",
-      maxWidth: "400px",
-      width: "100%",
-    },
-  };

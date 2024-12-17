@@ -7,9 +7,8 @@ import {
   getTallerService,
   inscribirAlumnoAutenticadoService,
   inscribirAlumnoService,
-  
-  obtenerTalleresInscritosProfesorService,
   obtenerTalleresInscritosProfesor1Service,
+  obtenerTalleresInscritosProfesorService,
   obtenerTalleresInscritosService,
   updateTallerService
 } from "../services/taller.service.js";
@@ -102,6 +101,7 @@ export async function updateTallerController(req, res) { // Actualizar un taller
 
 export const deleteStudentController = async (req, res) => { // Eliminar alumno de un taller
   try {
+   
     const taller = await deleteStudentService(req); // Llamada al servicio para eliminar el alumno del taller
     return handleSuccess(res, 200, "Alumno eliminado correctamente del taller", { taller });
   } catch (error) {
@@ -232,7 +232,7 @@ export const talleresInscritosProfesor1Controller = async (req, res) => {
   const profesorId = req.user.id; // ID del profesor obtenido del token
   const { tallerId } = req.body; // ID del taller a inscribir en el cuerpo de la solicitud
 
-  const { success, error, statusCode = 500, taller } = await obtenerTalleresInscritosProfesor1Service(profesorId, tallerId);
+  const{ success, error, statusCode=500, taller } = await obtenerTalleresInscritosProfesor1Service(profesorId,tallerId);
 
   if (!success) {
     // Si es un error de cliente (4xx), usar handleErrorClient

@@ -1,6 +1,7 @@
 import  { useState } from 'react';
 import { obtenerInscritosSesion } from '../services/asistencia.service';
 import Editar from '../components/Editar';
+import '../styles/VerInscritos.css';
 
 const VerInscritos = () => {
   const [tallerId, setTallerId] = useState('');
@@ -18,7 +19,6 @@ const VerInscritos = () => {
 
   const cerrarModal = () => {
     setMostrarModal(false);
-    handleSubmit();
   }
 
   const handleSubmit = async (e) => {
@@ -40,11 +40,11 @@ const VerInscritos = () => {
 
 
   return (
-    <div>
+    <div className='div'>
       <h1>Ver Estudiantes Inscritos en la Sesión</h1>
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="tallerId">ID del Taller:</label>
+          <label htmlFor="tallerId">Codigo del Taller:</label>
           <input
             type="text"
             id="tallerId"
@@ -54,7 +54,7 @@ const VerInscritos = () => {
           />
         </div>
         <div>
-          <label htmlFor="sesionId">ID de la Sesión:</label>
+          <label htmlFor="sesionId">Codigo de la Sesión:</label>
           <input
             type="text"
             id="sesionId"
@@ -62,10 +62,11 @@ const VerInscritos = () => {
             onChange={(e) => setSesionId(e.target.value)}
             required
           />
-        </div>
-        <button type="submit" disabled={loading}>
+          <button type="submit" disabled={loading}>
           {loading ? 'Consultando...' : 'Consultar'}
-        </button>
+          </button>
+        </div>
+        
       </form>
 
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
@@ -89,19 +90,16 @@ const VerInscritos = () => {
                   <td>{estudiante.nombreCompleto}</td>
                   <td>{estudiante.estado}</td>
                   <td>{estudiante.comentarios || 'Sin comentarios'}</td>
-                  <button type="submit" onClick={()=>abrirModal(estudiante)}>Editar</button>
+                  <button className='button-2' type="submit" onClick={()=>abrirModal(estudiante)}>Editar</button>
                 </tr>
                 
               ))}
             </tbody>
+            {mostrarModal && <Editar cerrarModal={cerrarModal} Estudiantes={datos} taller={tallerId} sesion={sesionId} />}
           </table>
-          {mostrarModal && <Editar cerrarModal={cerrarModal} Estudiantes={datos} taller={tallerId} sesion={sesionId} />}
         </div>
       )}
-
-      {estudiantes.length === 0 && !loading && !error && (
-        <p>No se encontraron estudiantes inscritos para esta sesión.</p>
-      )}
+      {estudiantes.length === 0 && loading && !error && (<p>No se encontraron estudiantes inscritos para esta sesión.</p>)}
     </div>
   );
 };

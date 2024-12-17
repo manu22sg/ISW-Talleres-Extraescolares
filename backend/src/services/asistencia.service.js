@@ -123,6 +123,18 @@ export async function registrarAsistenciaService(tallerId, sesionId, asistencias
   }
 }
 
+export async function obtenermisSesionService(userId) {
+  try {
+    const asistenciaRepository = AppDataSource.getRepository(Asistencia);
+    const asistencias = await asistenciaRepository.find({ where: { usuarioId: userId } ,
+       relations: ["taller", "usuario"] });
+    return { success: true, asistencias };
+  } catch (error) {
+    console.error("Error al registrar asistencia con token:", error);
+    return { error: "Error interno del servidor", statusCode: 500 };
+  }
+}
+
 
 // Servicio para actualizar el estado de la asistencia de un estudiante con validaciones adicionales
 export async function actualizarEstadoAsistenciaService(

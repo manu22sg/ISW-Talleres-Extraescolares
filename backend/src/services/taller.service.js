@@ -7,6 +7,7 @@ import { Not } from "typeorm";
 
 import User from "../entity/user.entity.js"; // Importar la entidad de usuarios
 import { AppDataSource } from "../config/configDb.js";
+import { anadirAutomaticoUser } from "../controllers/listaDeEspera.controller.js";
 
 const convertirFecha = (fechaStr) => {
   return parse(fechaStr, "dd/MM/yyyy", new Date());
@@ -79,16 +80,16 @@ export const createTallerService = async (tallerData) => {
   const tallerRepository = AppDataSource.getRepository(Taller);
 
   // Verificamos si el usuario con el profesorId existe
-  const profesor = await userRepository.findOne({ where: { id: profesorId } });
+   const profesor = await userRepository.findOne({ where: { id: profesorId } });
 
-  if (!profesor) {
-    throw new Error("El usuario no existe.");
-  }
-
+  // if (!profesor) {
+  //   throw new Error("El usuario no existe.");
+  // }
+// 
   // Verificamos si el usuario tiene el rol de "profesor"
-  if (profesor.rol !== "profesor") {
-    throw new Error("El usuario no tiene el rol de profesor.");
-  }
+  // if (profesor.rol !== "profesor") {
+  //   throw new Error("El usuario no tiene el rol de profesor.");
+  // }
   
 
   // Si todo está bien, creamos el taller
@@ -194,7 +195,7 @@ export async function updateTallerService(id, body) {
 export async function deleteStudentService(req) { 
   // Eliminar alumno de un taller
   const { tallerId, alumnoId } = req.params;
-
+  
   const tallerRepository = AppDataSource.getRepository(Taller);
 
   // Obtener el taller especificado con sus relaciones
@@ -206,12 +207,16 @@ export async function deleteStudentService(req) {
   if (!taller) throw { statusCode: 404, message: "Taller no encontrado" };
 
   // Buscar y eliminar al alumno del taller
+  
   const alumnoIndex = taller.usuarios.findIndex((u) => u.id === parseInt(alumnoId, 10));
   if (alumnoIndex === -1) throw { statusCode: 400, message: "El alumno no está inscrito en este taller" };
 
   taller.usuarios.splice(alumnoIndex, 1);
-  taller.inscritos -= 1;
-  await tallerRepository.save(taller);
+  taller.inscritos -= 1; 
+  await tallerRepository.save(taller);  
+
+  const mejs = await anadirAutomaticoUser();
+  console.log(mejs);  // Llamada a la función para inscribir automáticamente a un alumno de la lista de espera
 
   return taller; // Devuelve el taller actualizado
 }
@@ -286,7 +291,8 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
         estado: "espera",
       });
       await Lista.save(nuevaEntrada);
-      return { success: true, message: "El taller está lleno. El alumno ha sido agregado a la lista de espera.", taller: null };
+      return { success: true, 
+        message: "El taller está lleno. El alumno ha sido agregado a la lista de espera.", taller: null };
     }
 
 // Verificar si el taller está en estado "eliminado"
@@ -332,6 +338,15 @@ export const inscribirAlumnoService = async (tallerId, alumnoId) => { // inscrib
     });
     if (!taller) return { success: false, error: "Taller no encontrado", statusCode: 404 };
 
+    
+    const user = await userRepository.findOne({ where: { id: userId } }); 
+    // Verificar si el usuario es un profesor o administrador
+    if(user.rol==="profesor"){
+      if (taller.profesor.id !== userId) {
+        return { error: "No tienes permisos para inscribir alumnos en este taller", statusCode: 403 };
+      }
+    }
+
     // Verificar si el alumno existe
     const alumno = await userRepository.findOne({ where: { id: alumnoId } });
     if (!alumno) return { success: false, error: "Alumno no encontrado", statusCode: 404 };
@@ -343,7 +358,8 @@ export const inscribirAlumnoService = async (tallerId, alumnoId) => { // inscrib
 
     // Verificar si el alumno ya está inscrito
     const isAlreadyEnrolled = taller.usuarios.some((u) => u.id === alumnoId);
-    if (isAlreadyEnrolled) return { success: false, error: "El alumno ya está inscrito en este taller", statusCode: 400 };
+    if (isAlreadyEnrolled) return { success: false, 
+      error: "El alumno ya está inscrito en este taller", statusCode: 400 };
 
     
 
@@ -356,7 +372,8 @@ export const inscribirAlumnoService = async (tallerId, alumnoId) => { // inscrib
         estado: "espera",
       });
       await Lista.save(nuevaEntrada);
-      return { success: true, message: "El taller está lleno. El alumno ha sido agregado a la lista de espera.", taller: null };
+      return { success: true, 
+        message: "El taller está lleno. El alumno ha sido agregado a la lista de espera.", taller: null };
     }
 
     // Verificar si el taller está eliminado

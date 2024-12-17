@@ -26,7 +26,7 @@ async function createUsers() {
           rut: "21.151.897-9",
           email: "usuario1.2024@gmail.cl",
           password: await encryptPassword("user1234"),
-          rol: "usuario",
+          rol: "estudiante",
         })
       ),
         userRepository.save(
@@ -35,7 +35,7 @@ async function createUsers() {
             rut: "20.630.735-8",
             email: "usuario2.2024@gmail.cl",
             password: await encryptPassword("user1234"),
-            rol: "usuario",
+            rol: "estudiante",
           }),
       ),
       userRepository.save(
@@ -44,7 +44,7 @@ async function createUsers() {
           rut: "20.738.450-K",
           email: "usuario3.2024@gmail.cl",
           password: await encryptPassword("user1234"),
-          rol: "usuario",
+          rol: "profesor",
         }),
       ),
       userRepository.save(
@@ -74,6 +74,15 @@ async function createUsers() {
           rol: "profesor",
         }),
       ),
+      userRepository.save(
+        userRepository.create({
+          nombreCompleto: "Javier Andres Paredes Paredes",
+          rut: "20.738.450-1",
+          email: "estudiante.2024@gmail.cl",
+          password: await encryptPassword("user1234"),
+          rol: "estudiante",
+        }),
+      ),  
     ]);
     console.log("* => Usuarios creados exitosamente");
   } catch (error) {

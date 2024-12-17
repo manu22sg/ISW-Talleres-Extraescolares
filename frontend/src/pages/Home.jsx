@@ -8,7 +8,8 @@ const Home = () => {
   const esAdministrador = user?.rol === 'administrador';
   const esProfesor = user?.rol === 'profesor';
   const esEstudiante = user?.rol === 'estudiante';
-  console.log(user);
+
+
   return (
     <div className="home-container">
       <h1 className="home-title">Bienvenido a la Plataforma de Talleres</h1>
@@ -17,10 +18,16 @@ const Home = () => {
         <Link className="home-link" to="/talleres">Ver Todos los Talleres</Link>
 
         {esAdministrador && (
-          <Link className="home-link" to="/CreateTaller">Crear Taller</Link>
+          <>
+            <Link className="home-link" to="/CreateTaller">Crear Taller</Link>
+            <Link className="home-link" to="/Report">Reportes</Link>
+            <Link className="home-link" to="/ListadeEspera">Ver Lista de espera</Link>
+          </>
         )}
 
         {esProfesor && (
+          
+          
           <>
             <Link className="home-link" to="/mis-talleres/profesor">Mis Talleres</Link>
             <Link className="home-link" to="/crear-sesion">Crear Sesión</Link>
@@ -31,11 +38,11 @@ const Home = () => {
 
           </>
         )}
-
         {esEstudiante && (
           <>
           <Link className="home-link" to="/mis-talleres/estudiante">Mis Talleres</Link>
           <Link className="home-link" to="/registrar-asistencia-token">Registrar Asistencia con Token</Link>
+          <Link className="home-link" to="/Mis-inscritos">Mis Asistencias</Link>
         </>)}
       </nav>
     </div>

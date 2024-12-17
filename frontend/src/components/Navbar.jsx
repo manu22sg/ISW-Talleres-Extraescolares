@@ -31,6 +31,7 @@ const Navbar = () => {
                             to="/home" 
                             onClick={() => setMenuOpen(false)} 
                             className={({ isActive }) => (isActive ? "active" : "")}
+                            activeClassName="active"
                         >
                             Inicio
                         </NavLink>
@@ -42,6 +43,7 @@ const Navbar = () => {
                                 to="/users" 
                                 onClick={() => setMenuOpen(false)} 
                                 className={({ isActive }) => (isActive ? "active" : "")}
+                                activeClassName="active"
                             >
                                 Usuarios
                             </NavLink>
@@ -53,6 +55,7 @@ const Navbar = () => {
                             to="/talleres" 
                             onClick={() => setMenuOpen(false)} 
                             className={({ isActive }) => (isActive ? "active" : "")}
+                            activeClassName="active"
                         >
                             Talleres
                         </NavLink>
@@ -70,6 +73,7 @@ const Navbar = () => {
                         </li>
                     )}
 
+                    
                     <li>
                         <NavLink 
                             to="/auth" 

@@ -69,6 +69,17 @@ async function createTalleres() {
           inscritos: 0,
           profesor: { id: 5 }, // ID existente en la base de datos
         })),
+      tallerRepository.save(
+        tallerRepository.create({
+          nombre: "Taller de Física",
+          descripcion: "Clases de física para nivel medio",
+          fecha_inicio: new Date("2024-10-15"),
+          fecha_fin: new Date("2024-11-15"),
+          estado: "enCurso",
+          capacidad: 2,
+          inscritos: 0,
+          profesor: { id: 8 }, // ID existente en la base de datos
+        })),
     ]);
 
 

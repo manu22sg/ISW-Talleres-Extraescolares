@@ -23,8 +23,9 @@ export const createTaller = async (taller) => {
 };
 
 export const updateTaller = async (data, id) => {
+    // eslint-disable-next-line no-useless-catch
     try {
-        console.log(data) ;
+        console.log(data);
         const response = await axios.patch(`/taller/${id}`, data);
         return response;
         

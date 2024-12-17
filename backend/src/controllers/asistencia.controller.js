@@ -2,6 +2,7 @@
 import { obtenerInscritosSesionService, registrarAsistenciaService } from "../services/asistencia.service.js";
 import { actualizarEstadoAsistenciaService } from "../services/asistencia.service.js";
 import { registrarAsistenciaConTokenService } from "../services/asistencia.service.js";
+import { obtenermisSesionService } from "../services/asistencia.service.js";
 import { AppDataSource } from "../config/configDb.js";
 import User from "../entity/user.entity.js";
 
@@ -34,6 +35,27 @@ export async function obtenerInscritosSesion(req, res) {
   }
 }
 
+export async function vermiAsistencia(req, res) {
+  const correo = req.user.email;
+  const userRepository = AppDataSource.getRepository(User);
+  const usuario = await userRepository.findOne({ where: { email: correo } });
+  if (!usuario) {
+    return res.status(404).json({ error: "Usuario no encontrado" });
+  }
+  try {
+    const result = await obtenermisSesionService(usuario.id);
+    if (result.error) {
+      return res.status(result.statusCode).json({ error: result.error });
+    }
+    res.json(result);
+    
+  } catch (error) {
+    console.error("Error al obtener inscritos del taller:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+
+  }
+}
+
 
 
 
@@ -43,7 +65,6 @@ export async function registrarAsistencia(req, res) {
   const { tallerId, sesionId } = req.params;
   const { asistencias } = req.body; // Array de { usuarioId, estado, comentarios }
   const idProfesor = req.user.id; // Obteniendo el ID del profesor desde el token
-
   const result = await registrarAsistenciaService(tallerId, sesionId, asistencias, idProfesor);
   if (result.error) {
     return res.status(result.statusCode).json({ error: result.error });
