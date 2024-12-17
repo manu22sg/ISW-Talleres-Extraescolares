@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@context/AuthContext';
 import '@styles/Home.css';
@@ -38,12 +37,7 @@ const Home = () => {
         )}
 
         {esProfesor && (
-<<<<<<< HEAD
-<<<<<<< HEAD
-          
-          
-=======
->>>>>>> e7b3268a02aab0967c4bcbb88bb1ca21b7bc191b
+
           <>
             <Link className="home-link" to="/mis-talleres/profesor">Mis Talleres</Link>
             <Link className="home-link" to="/crear-sesion">Crear Sesión</Link>
@@ -51,17 +45,7 @@ const Home = () => {
             <Link className="home-link" to="/Ver-inscritos">Ver Inscritos</Link>
           </>
         )}
-<<<<<<< HEAD
-=======
-          <Link className="home-link" to="/mis-talleres/Profesor">Mis Talleres</Link>
-=======
 
-        {esEstudiante && (
-          <Link className="home-link" to="/mis-talleres/Estudiante">Mis Talleres</Link>
->>>>>>> e7b3268a02aab0967c4bcbb88bb1ca21b7bc191b
-        )}
-      
->>>>>>> 9e70b9a57ff692849f48a8ad86422d1488ff508a
         {esEstudiante && (
           <>
         

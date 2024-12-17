@@ -291,11 +291,6 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
     if (isAlreadyEnrolled) {
       return { success: false, statusCode: 400, message: "Ya estás inscrito en este taller" };
     }
-    //verrificae si esta inscrito en la lista de espera
-    const isAlreadyEnrolledLista = await Lista.findOne({ where: { alumno: user, taller, estado: "espera" } });
-    if (isAlreadyEnrolledLista) {
-      return { success: false, statusCode: 400, message: "Ya estás inscrito en la lista de espera de este taller" };
-    }
     // Verificar si hay cupos disponibles y agregar a la lista de espera si el taller está lleno
     if (taller.usuarios.length >= taller.capacidad) {
       // Agregar a la lista de espera si el taller está lleno
@@ -307,6 +302,11 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
       await Lista.save(nuevaEntrada);
       return { success: true,statusCode: 202, 
         message: "El taller está lleno. El alumno ha sido agregado a la lista de espera." };
+    }
+    //verrificae si esta inscrito en la lista de espera
+    const isAlreadyEnrolledLista = await Lista.findOne({ where: { alumno: user, taller, estado: "espera" } });
+    if (isAlreadyEnrolledLista) {
+      return { success: false, statusCode: 400, message: "Ya estás inscrito en la lista de espera de este taller" };
     }
 
 // Verificar si el taller está en estado "eliminado"

@@ -23,7 +23,6 @@ async function matarEstudiante(id){
     } 
 };
 
-
 const ListaDinamica = ({ items }) => {
   // const [idLista, setidListaEspera] = useState();
   
@@ -43,7 +42,7 @@ const ListaDinamica = ({ items }) => {
 
   //funcion que controla accion de boton dentro de la lista
   const handleEliminar = (id,alumno,taller) => {
-    const confirmacion = confirm(`Estas seguro que deseas eliminar al alumno ${alumno} del taller: ${taller}`,)
+    const confirmacion = confirm(`Estas seguro que deseas eliminar al alumno ${alumno} de la lista de espera del taller: ${taller}`,)
     // console.log(confirmacion);
     if(confirmacion){
       matar(id);
@@ -52,7 +51,7 @@ const ListaDinamica = ({ items }) => {
   }
 
   const handleUpdate = (id,taller) => {
-    const confirmacion = confirm(`Estas seguro que deseas desinscribirte del ${taller}`,)
+    const confirmacion = confirm(`Estas seguro que deseas desinscribirte de la lista de espera del ${taller}`,)
     // console.log(confirmacion);
     if(confirmacion){
       matarEstudiante(id);
