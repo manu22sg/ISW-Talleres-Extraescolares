@@ -35,7 +35,7 @@ const TalleresProfesor = () => {
 
   return (
     <div>
-      <h1>Talleres </h1>
+     <h1 style={{ marginTop: '130px', marginBottom: '20px', textAlign: 'center' }}>Talleres </h1>
       <ul>
         {talleres.map(taller => (
           <li key={taller.id}>
@@ -47,7 +47,7 @@ const TalleresProfesor = () => {
           </li>
         ))}
       </ul>
-      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+      <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '30px' }}>
         <button className="taller-back-button" onClick={handleBack}>Volver</button>
       </div>
     </div>

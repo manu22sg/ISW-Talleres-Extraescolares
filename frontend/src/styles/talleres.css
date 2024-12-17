@@ -16,6 +16,14 @@
   max-width: 500px;
   width: 100%;
 }
+.flex-container {
+  display: flex;
+  gap: 10px; /* Ajusta el valor según la separación deseada */
+}
+
+.button-group {
+  margin-bottom: 10px; /* Añade margen inferior si es necesario */
+}
 
 .taller-field {
   display: flex;

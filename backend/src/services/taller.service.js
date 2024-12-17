@@ -3,7 +3,7 @@ import Taller from "../entity/taller.entity.js";
 import ListaDeEspera from "../entity/listaDeEspera.entity.js";
 import { parse } from "date-fns"; //
 import { enviarCorreo } from "../helpers/nodemailer.helper.js";
-import { Not } from "typeorm";
+import { In,Not } from "typeorm";
 
 import User from "../entity/user.entity.js"; // Importar la entidad de usuarios
 import { AppDataSource } from "../config/configDb.js";
@@ -49,7 +49,9 @@ export async function getTalleresService(user) { // Obtener todos los talleres
     const tallerRepository = AppDataSource.getRepository(Taller);
 
     // Condición de búsqueda: si el usuario no es administrador, excluir los talleres eliminados
-    const condicion = user.rol !== "administrador" ? { estado: Not("eliminado") } : {};
+    //const condicion = user.rol !== "administrador" ? { estado: Not("eliminado","finalizado") } : {};
+    const condicion = user.rol !== "administrador" ? { estado: Not(In(["eliminado", "finalizado"])) } : {};
+
      // Si no es administrador, excluir los talleres eliminados
 
     // Obtener los talleres con la condición de búsqueda y relaciones
@@ -306,6 +308,9 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
 if (taller.estado === "eliminado") {
   return { success: false, statusCode: 400, message: "No se puede inscribir en un taller eliminado" };
 }
+if (taller.estado === "finalizado") {
+  return { success: false, statusCode: 400, message: "No se puede inscribir en un taller finalizado" };
+}
 
 
     // Inscribir al usuario
@@ -381,6 +386,8 @@ export const inscribirAlumnoService = async (tallerId, alumnoId) => { // inscrib
     if (taller.estado === "eliminado") {
       return { success: false, error: "No se puede inscribir en un taller eliminado", statusCode: 400 };
     }
+    if (taller.estado === "finalizado") {
+      return { success: false, error: "No se puede inscribir en un taller finalizado", statusCode: 400 };}
 
     // Inscribir al alumno en el taller
     taller.usuarios.push(alumno);

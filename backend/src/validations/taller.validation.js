@@ -1,4 +1,3 @@
-"use strict";
 import Joi from "joi";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
@@ -48,19 +47,18 @@ export const tallerBodyValidation = Joi.object({
       "string.max": "La descripción del taller debe tener como máximo 150 caracteres.",
       "string.pattern.base": "La descripción del taller solo puede contener letras y un solo espacio entre palabras.",
     }),
-    capacidad: Joi.number()
+  capacidad: Joi.number()
     .integer()
     .positive()
     .required()
     .less(50)
-    .empty("")
+    .empty(" ")
     .messages({
       "number.base": "La capacidad debe ser un número no decimal mayor a 0.",
       "number.positive": "La capacidad debe ser mayor a 0.",
       "number.integer": "La capacidad debe ser un número entero.",
       "number.less": "La capacidad debe ser menor a 50.",
-      "any.required": "La capacidad es obligatoria.", // Aparece cuando el campo está ausente o vacío
-       // Aparece cuando el campo está vacío
+      "any.required": "La capacidad es obligatoria.",
     }),
 
   fecha_inicio: Joi.string() // Cadena para el formato 'DD/MM/YYYY'
@@ -79,15 +77,15 @@ export const tallerBodyValidation = Joi.object({
       "any.invalid": "La fecha de fin debe ser válida, en formato 'DD/MM/YYYY', y no puede ser anterior a la fecha de inicio.",
       "any.required": "La fecha de fin es obligatoria.",
     }),
-    estado: Joi.string()
+  estado: Joi.string()
     .valid('pendiente', 'enCurso', 'finalizado', 'eliminado')
     .required()
-    .empty("")
+    .empty(" ")
     .messages({
       "any.only": "El estado debe ser uno de los siguientes valores: 'pendiente', 'enCurso', 'finalizado', 'eliminado'.",
       "any.required": "El estado es obligatorio."
     }),
-  
+
   profesorId: Joi.number()
     .integer()
     .positive()
@@ -103,21 +101,31 @@ export const tallerBodyValidation = Joi.object({
   const fechaInicio = dayjs(fecha_inicio, 'DD/MM/YYYY', true);
   const fechaFin = dayjs(fecha_fin, 'DD/MM/YYYY', true);
   const fechaActual = dayjs().startOf('day'); // Fecha actual sin hora
+  const fechaMaxima = dayjs().add(1, 'year'); // Fecha máxima: un año a partir de hoy
 
   // Validar que fecha_inicio no sea anterior a la fecha actual
   if (fechaInicio.isBefore(fechaActual)) {
-    return helpers.message("La fecha de inicio no puede ser anterior a la fecha actual."); // Mensaje específico
+    return helpers.message("La fecha de inicio no puede ser anterior a la fecha actual.");
+  }
+  if (fechaInicio.isAfter(fechaMaxima)) {
+    return helpers.message("La fecha de inicio no puede ser posterior a un año a partir de la fecha actual.");
   }
 
   // Validar que fecha_fin no sea anterior a fecha_inicio
   if (fechaFin.isBefore(fechaInicio)) {
-    return helpers.message("La fecha de fin debe ser mayor o igual a la fecha de inicio."); // Mensaje específico
+    return helpers.message("La fecha de fin debe ser mayor o igual a la fecha de inicio.");
   }
+
+  // Validar que fecha_fin no sea posterior a un año a partir de la fecha actual
+  if (fechaFin.isAfter(fechaMaxima)) {
+    return helpers.message("La fecha de fin no puede ser posterior a un año a partir de la fecha actual.");
+  }
+  
 
   return value;
 })
 .messages({
-  "any.invalid": "La validación de fechas falló. Verifica los valores ingresados.", // Este solo aparecerá si no hay mensajes específicos.
+  "any.invalid": "La validación de fechas falló. Verifica los valores ingresados.",
 });
 
 export const tallerPatchValidation = tallerBodyValidation.fork(
