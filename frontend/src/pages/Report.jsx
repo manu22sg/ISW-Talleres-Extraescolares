@@ -7,9 +7,10 @@ import { Link } from 'react-router-dom';
 import Accordion from "../components/Acordion";
 
 import '../styles/report.css';
-import '../styles/home.css';
-
-
+//import ReportPrincial from "./ReportPrincipal";
+import '@styles/Home.css';
+import '@styles/table.css';
+//import { deleteDataAlert, showErrorAlert, showSuccessAlert } from "@helpers/sweetAlert";
 
 const Report = () => {
 

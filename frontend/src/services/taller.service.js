@@ -18,17 +18,20 @@ export const createTaller = async (taller) => {
         console.log(response.data.data);
         return response.data.data;
     } catch (error) {
-        console.log(error.response.data.message);
+      if (error.response) {
+        throw new Error(error.response.data.message); // Lanzamos el error para que el catch de arriba lo maneje
+    } else {
+        throw new Error('Ocurrió un error inesperado');
+    }
     }
 };
 
 export const updateTaller = async (data, id) => {
-    // eslint-disable-next-line no-useless-catch
+    
     try {
         console.log(data);
         const response = await axios.patch(`/taller/${id}`, data);
         return response;
-        
     } catch (error) {
         
         throw error;
@@ -39,8 +42,7 @@ export const deleteTaller = async (id) => {
     try {
         console.log(id);
         const response = await axios.patch(`/taller/${id}/eliminar`);
-        
-        
+
         return response;
     } catch (error) {
         throw error;
@@ -71,10 +73,11 @@ export const inscribirAlumno = async (tallerId, alumnoId) => {
     try {
       console.log(tallerId, alumnoId);
       const response = await axios.delete(`/taller/${tallerId}/alumno/${alumnoId}`);
-      
+      console.log(response);
       return response.data;
     } catch (error) {
-      throw error;
+      throw error.response.data.message;
+      
     }
   }
 
@@ -107,3 +110,28 @@ export const inscribirAlumno = async (tallerId, alumnoId) => {
       throw error;
     }
   }
+
+  export const validarProfesorRut = async (rut) => {
+    try {
+      const response = await axios.post('/taller/ValidarRutProfesor', { rut });
+      return response.data.data.profesorId; // Retorna el ID si es válido
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.message) {
+        console.error("Error al validar el RUT del profesor:", error.response.data.message);
+        throw new Error(error.response.data.message); 
+      }
+      throw new Error("Error al conectar con el servidor.");
+    }
+  };
+  
+  
+  export const validarEstudianteRut = async (rut) => {
+    try {
+      
+      const response = await axios.post('/taller/ValidarRutEstudiante', { rut });
+     
+      return response.data.data.estudianteId; // Retorna el ID del estudiante si es válido
+    } catch (error) {
+      throw error;
+    }
+  };

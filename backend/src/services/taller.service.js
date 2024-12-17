@@ -3,7 +3,7 @@ import Taller from "../entity/taller.entity.js";
 import ListaDeEspera from "../entity/listaDeEspera.entity.js";
 import { parse } from "date-fns"; //
 import { enviarCorreo } from "../helpers/nodemailer.helper.js";
-import { Not } from "typeorm";
+import { In,Not } from "typeorm";
 
 import User from "../entity/user.entity.js"; // Importar la entidad de usuarios
 import { AppDataSource } from "../config/configDb.js";
@@ -49,7 +49,9 @@ export async function getTalleresService(user) { // Obtener todos los talleres
     const tallerRepository = AppDataSource.getRepository(Taller);
 
     // Condición de búsqueda: si el usuario no es administrador, excluir los talleres eliminados
-    const condicion = user.rol !== "administrador" ? { estado: Not("eliminado") } : {};
+    //const condicion = user.rol !== "administrador" ? { estado: Not("eliminado","finalizado") } : {};
+    const condicion = user.rol !== "administrador" ? { estado: Not(In(["eliminado", "finalizado"])) } : {};
+
      // Si no es administrador, excluir los talleres eliminados
 
     // Obtener los talleres con la condición de búsqueda y relaciones
@@ -83,12 +85,15 @@ export const createTallerService = async (tallerData) => {
    const profesor = await userRepository.findOne({ where: { id: profesorId } });
 
   if (!profesor) {
-    throw new Error("El usuario no existe.");
-   }
-
+    return { error: true, statusCode: 404, message: "Profesor no encontrado" };
+  }
+ 
   // Verificamos si el usuario tiene el rol de "profesor"
    if (profesor.rol !== "profesor") {
-    throw new Error("El usuario no tiene el rol de profesor.");
+    return { error: true, statusCode: 403, message: "El usuario no tiene el rol de profesor." };
+   }
+   if(tallerData.estado === "eliminado"){
+      return { error: true, statusCode: 400, message: "No se puede crear un taller con estado eliminado" };
    }
   
 
@@ -205,11 +210,14 @@ export async function deleteStudentService(req) {
   });
   
   if (!taller) throw { statusCode: 404, message: "Taller no encontrado" };
+  if (!alumnoId) throw { statusCode: 404, message: "Alumno no encontrado" };
 
   // Buscar y eliminar al alumno del taller
   
   const alumnoIndex = taller.usuarios.findIndex((u) => u.id === parseInt(alumnoId, 10));
   if (alumnoIndex === -1) throw { statusCode: 400, message: "El alumno no está inscrito en este taller" };
+  if (taller.estado === "eliminado") throw { statusCode: 400, 
+      message: "No se puede eliminar un alumno de un taller eliminado" };
 
   taller.usuarios.splice(alumnoIndex, 1);
   taller.inscritos -= 1; 
@@ -237,7 +245,9 @@ export async function deleteTallerService(id) { // Eliminar un taller
     if (tallerFound.estado === "enCurso") {
       return [null, "No se puede eliminar un taller en curso"];
     }
-
+    if (tallerFound.estado === "eliminado") {
+      return [null, "No se puede eliminar un taller ya eliminado"];
+    }
     
     
     tallerFound.estado = "eliminado"; // Cambiar el estado del taller a 'eliminado'
@@ -303,6 +313,9 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
 if (taller.estado === "eliminado") {
   return { success: false, statusCode: 400, message: "No se puede inscribir en un taller eliminado" };
 }
+if (taller.estado === "finalizado") {
+  return { success: false, statusCode: 400, message: "No se puede inscribir en un taller finalizado" };
+}
 
 
     // Inscribir al usuario
@@ -343,13 +356,7 @@ export const inscribirAlumnoService = async (tallerId, alumnoId) => { // inscrib
     if (!taller) return { success: false, error: "Taller no encontrado", statusCode: 404 };
 
     
-    const user = await userRepository.findOne({ where: { id: userId } }); 
-    // Verificar si el usuario es un profesor o administrador
-    if(user.rol==="profesor"){
-      if (taller.profesor.id !== userId) {
-        return { error: "No tienes permisos para inscribir alumnos en este taller", statusCode: 403 };
-      }
-    }
+   
 
     // Verificar si el alumno existe
     const alumno = await userRepository.findOne({ where: { id: alumnoId } });
@@ -384,6 +391,8 @@ export const inscribirAlumnoService = async (tallerId, alumnoId) => { // inscrib
     if (taller.estado === "eliminado") {
       return { success: false, error: "No se puede inscribir en un taller eliminado", statusCode: 400 };
     }
+    if (taller.estado === "finalizado") {
+      return { success: false, error: "No se puede inscribir en un taller finalizado", statusCode: 400 };}
 
     // Inscribir al alumno en el taller
     taller.usuarios.push(alumno);
@@ -489,3 +498,47 @@ export const obtenerTalleresInscritosProfesor1Service = async (profesorId, talle
     return { success: false, error: "Error interno del servidor", statusCode: 500 };
   }
 };
+
+export async function validarRutProfesorService(rut) {
+  try {
+    const userRepository = AppDataSource.getRepository("User"); // Asegúrate de usar el nombre correcto
+
+
+    // Buscar el profesor en la base de datos
+    const profesor = await userRepository.findOne({
+      where: { rut, rol: "profesor" }, // Búsqueda por RUT y rol
+    });
+
+    if (!profesor) {
+      console.log("Profesor no encontrado con RUT:", rut); // Log si no se encuentra
+      return [null, `Profesor no encontrado con RUT ${rut}`];
+    }
+
+    return [profesor.id, null]; // Retornar el ID del profesor
+  } catch (error) {
+    console.error("Error al validar el RUT del profesor:", error);
+    return [null, "Error interno del servidor al validar el RUT del profesor."];
+  }
+}
+
+export async function validarRutEstudianteService(rut) {
+  try {
+    const userRepository = AppDataSource.getRepository("User"); // Asegúrate de usar el nombre correcto
+
+    // Buscar el profesor en la base de datos
+    const estudiante = await userRepository.findOne({
+      where: { rut, rol: "estudiante" }, // Búsqueda por RUT y rol
+    });
+    console.log(rut );
+
+    if (!estudiante) {
+      console.log("Estudiante no encontrado con RUT:", rut); // Log si no se encuentra
+      return [null, `Estudiante no encontrado con RUT ${rut} `];
+    }
+   
+    return [estudiante.id, null]; // Retornar el ID del estudiante
+  } catch (error) {
+    console.error("Error al validar el RUT del estudiante:", error);
+    return [null, "Error interno del servidor al validar el RUT del estudiante."];
+  }
+}

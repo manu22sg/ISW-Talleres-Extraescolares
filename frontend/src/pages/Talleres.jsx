@@ -18,7 +18,7 @@ const Talleres = () => {
   const talleresConProfesorId = useMemo(() => 
     talleres.map(taller => ({
       ...taller,
-      profesorId: taller.profesor.id,
+      profesorId: taller.profesor.nombreCompleto,
     })),
     [talleres]
   );
@@ -31,10 +31,11 @@ const Talleres = () => {
 
   const columns = [
     { title: "ID", field: "id" },
-    { title: "Nombre", field: "nombre" },
-    { title: "Descripción", field: "descripcion" },
-    { title: "Estado", field: "estado" },
-    { title: "Profesor ID", field: "profesorId" },
+    { title: "Nombre del taller", field: "nombre", width : 400 },
+    //{ title: "Descripción", field: "descripcion" },
+    { title: "Profesor a cargo del taller", field: "profesorId", width : 350 },
+    {title: "Rut ", field: "profesor.rut"},
+    { title: "Estado ", field: "estado" },
     { title: "Inscritos", field: "inscritos" }
   ];
 
@@ -69,17 +70,25 @@ const Talleres = () => {
   };
   const handleInscribirAlumno = async () => {
     if (dataTaller) {
+      const result = await deleteDataAlert({
+        title: '¿Estás seguro?',
+        text: `Estás a punto de inscribirte en el taller "${dataTaller.nombre}". Esta acción no se puede deshacer.`,
+        confirmButtonText: 'Sí, inscribirme',
+        cancelButtonText: 'Cancelar',
+      });
+      if (result.isConfirmed) {
       try {
+
         await inscribirComoEstudiante(dataTaller.id); // Enviar el ID del taller seleccionado
         showSuccessAlert('Te has inscrito con exito al taller',dataTaller.nombre);
         fetchTalleres();
       } catch (error) {
         showErrorAlert(
-          'Error interno del servidor',
+          'Error Al inscribirte',
           error.response?.data?.message || 'Ocurrió un problema al inscribirte.'
         );
       }
-    }
+    }}
   };
 
 
@@ -92,7 +101,7 @@ const Talleres = () => {
           await deleteTaller(dataTaller.id);
           clearSelection();
           fetchTalleres();
-          showSuccessAlert("¡Eliminado!", "El estado del taller ha sido cambiado exitosamente.");
+          showSuccessAlert("¡Eliminado!", "El estado del taller ha sido cambiado a eliminado exitosamente.");
         } catch (error) {
           showErrorAlert("Error", error.response.data.message);
         }
@@ -120,7 +129,7 @@ const Talleres = () => {
       />
 
 {dataTaller && (
-  <div>
+  <div className='button-group flex-container'>
     {user.rol === 'estudiante' && (
       <>
         <button onClick={handleShowDetails}>Ver Detalles</button>
@@ -139,7 +148,7 @@ const Talleres = () => {
         <button onClick={handleShowDetails}>Ver Detalles</button>
         <button onClick={handleEdit}>Editar Taller</button>
         <button onClick={handleDelete}>Eliminar Taller</button>
-        <button onClick={handleManageAlumnos}>Gestionar Alumnos</button>
+        <button onClick={handleManageAlumnos}>Gestionar Estudiantes</button>
       </>
     )}
   </div>
