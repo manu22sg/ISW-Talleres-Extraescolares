@@ -56,20 +56,26 @@ export async function getTalleresController(req, res) { // Obtener todos los tal
 
 
 // Crear un nuevo taller
-export async function createTallerController(req, res) { // Crear un nuevo taller
+export async function createTallerController(req, res) {
   try {
-    const { error } = tallerBodyValidation.validate(req.body); // Validación de los datos del taller
+    const { error } = tallerBodyValidation.validate(req.body);
     if (error) {
-      return handleErrorClient(res, 400, error.details[0].message); // Si hay errores, devolver respuesta de error
+      return handleErrorClient(res, 400, error.details[0].message);
     }
 
-    const taller = await createTallerService(req.body); // Llamada al servicio para crear el taller
-    return handleSuccess(res, 201, "Taller creado exitosamente", taller);
+    const result = await createTallerService(req.body);
+
+    if (result.error) {
+      return handleErrorClient(res, result.statusCode, result.message);
+    }
+
+    return handleSuccess(res, 201, "Taller creado exitosamente", result);
   } catch (error) {
-    console.error("Error al crear el taller:", error);
+    console.error("Error interno del servidor:", error);
     return handleErrorServer(res, 500, "Error interno del servidor");
   }
 }
+
 
 
 

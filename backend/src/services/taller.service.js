@@ -82,14 +82,17 @@ export const createTallerService = async (tallerData) => {
   // Verificamos si el usuario con el profesorId existe
    const profesor = await userRepository.findOne({ where: { id: profesorId } });
 
-  // if (!profesor) {
-  //   throw new Error("El usuario no existe.");
-  // }
-// 
+  if (!profesor) {
+    return { error: true, statusCode: 404, message: "Profesor no encontrado" };
+  }
+ 
   // Verificamos si el usuario tiene el rol de "profesor"
-  // if (profesor.rol !== "profesor") {
-  //   throw new Error("El usuario no tiene el rol de profesor.");
-  // }
+   if (profesor.rol !== "profesor") {
+    return { error: true, statusCode: 403, message: "El usuario no tiene el rol de profesor." };
+   }
+   if(tallerData.estado === "eliminado"){
+      return { error: true, statusCode: 400, message: "No se puede crear un taller con estado eliminado" };
+   }
   
 
   // Si todo está bien, creamos el taller
@@ -210,6 +213,7 @@ export async function deleteStudentService(req) {
   
   const alumnoIndex = taller.usuarios.findIndex((u) => u.id === parseInt(alumnoId, 10));
   if (alumnoIndex === -1) throw { statusCode: 400, message: "El alumno no está inscrito en este taller" };
+  if (taller.estado === "eliminado") throw { statusCode: 400, message: "No se puede eliminar un alumno de un taller eliminado" };
 
   taller.usuarios.splice(alumnoIndex, 1);
   taller.inscritos -= 1; 
@@ -237,7 +241,9 @@ export async function deleteTallerService(id) { // Eliminar un taller
     if (tallerFound.estado === "enCurso") {
       return [null, "No se puede eliminar un taller en curso"];
     }
-
+    if (tallerFound.estado === "eliminado") {
+      return [null, "No se puede eliminar un taller ya eliminado"];
+    }
     
     
     tallerFound.estado = "eliminado"; // Cambiar el estado del taller a 'eliminado'

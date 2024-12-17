@@ -48,31 +48,46 @@ export const tallerBodyValidation = Joi.object({
       "string.max": "La descripción del taller debe tener como máximo 150 caracteres.",
       "string.pattern.base": "La descripción del taller solo puede contener letras y un solo espacio entre palabras.",
     }),
-  capacidad: Joi.number()
+    capacidad: Joi.number()
     .integer()
     .positive()
+    .required()
     .less(50)
+    .empty("")
     .messages({
-      "number.base": "La capacidad debe ser un número.",
+      "number.base": "La capacidad debe ser un número no decimal mayor a 0.",
       "number.positive": "La capacidad debe ser mayor a 0.",
       "number.integer": "La capacidad debe ser un número entero.",
       "number.less": "La capacidad debe ser menor a 50.",
+      "any.required": "La capacidad es obligatoria.", // Aparece cuando el campo está ausente o vacío
+       // Aparece cuando el campo está vacío
     }),
+
   fecha_inicio: Joi.string() // Cadena para el formato 'DD/MM/YYYY'
     .custom(validateDate)
     .required()
     .messages({
-      "any.invalid": "La fecha de inicio debe ser válida, en formato 'DD/MM/YYYY', y no puede ser anterior a la fecha actual. Tampoco la fecha actual de inicio puede ser anterior a la fecha actual.",
+      "string.empty": "La fecha de inicio no puede estar vacía.",
+      "any.invalid": "La fecha de inicio debe ser válida, en formato 'DD/MM/YYYY'",
       "any.required": "La fecha de inicio es obligatoria.",
     }),
   fecha_fin: Joi.string() // Cadena para el formato 'DD/MM/YYYY'
     .custom(validateDate)
     .required()
     .messages({
+      "string.empty": "La fecha de fin no puede estar vacía.",
       "any.invalid": "La fecha de fin debe ser válida, en formato 'DD/MM/YYYY', y no puede ser anterior a la fecha de inicio.",
       "any.required": "La fecha de fin es obligatoria.",
     }),
-  estado: Joi.string().valid('pendiente', 'enCurso', 'finalizado', 'eliminado').required(),
+    estado: Joi.string()
+    .valid('pendiente', 'enCurso', 'finalizado', 'eliminado')
+    .required()
+    .empty("")
+    .messages({
+      "any.only": "El estado debe ser uno de los siguientes valores: 'pendiente', 'enCurso', 'finalizado', 'eliminado'.",
+      "any.required": "El estado es obligatorio."
+    }),
+  
   profesorId: Joi.number()
     .integer()
     .positive()
