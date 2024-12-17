@@ -208,6 +208,7 @@ export async function deleteStudentService(req) {
   });
   
   if (!taller) throw { statusCode: 404, message: "Taller no encontrado" };
+  if (!alumnoId) throw { statusCode: 404, message: "Alumno no encontrado" };
 
   // Buscar y eliminar al alumno del taller
   
@@ -498,7 +499,7 @@ export async function validarRutProfesorService(rut) {
 
     if (!profesor) {
       console.log("Profesor no encontrado con RUT:", rut); // Log si no se encuentra
-      return [null, "Profesor no encontrado con ese RUT o no tiene el rol adecuado."];
+      return [null, `Profesor no encontrado con RUT ${rut}`];
     }
 
     return [profesor.id, null]; // Retornar el ID del profesor
@@ -512,17 +513,17 @@ export async function validarRutEstudianteService(rut) {
   try {
     const userRepository = AppDataSource.getRepository("User"); // Asegúrate de usar el nombre correcto
 
-
     // Buscar el profesor en la base de datos
     const estudiante = await userRepository.findOne({
       where: { rut, rol: "estudiante" }, // Búsqueda por RUT y rol
     });
+    console.log(rut );
 
     if (!estudiante) {
       console.log("Estudiante no encontrado con RUT:", rut); // Log si no se encuentra
-      return [null, "Estudiante no encontrado con ese RUT o no tiene el rol adecuado."];
+      return [null, `Estudiante no encontrado con RUT ${rut} `];
     }
-
+   
     return [estudiante.id, null]; // Retornar el ID del estudiante
   } catch (error) {
     console.error("Error al validar el RUT del estudiante:", error);
