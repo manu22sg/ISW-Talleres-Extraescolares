@@ -26,6 +26,7 @@ const Home = () => {
         )}
 
         {esProfesor && (
+<<<<<<< HEAD
           
           
           <>
@@ -38,9 +39,20 @@ const Home = () => {
 
           </>
         )}
-        {esEstudiante && (
-          <Link className="home-link" to="/mis-talleres/Estudiante">Mis Talleres</Link>
+=======
+          <Link className="home-link" to="/mis-talleres/Profesor">Mis Talleres</Link>
         )}
+      
+>>>>>>> 9e70b9a57ff692849f48a8ad86422d1488ff508a
+        {esEstudiante && (
+          <>
+        
+          <Link className="home-link" to="/mis-talleres/Estudiante">Mis Talleres</Link>
+          <Link className="home-link" to="/ListadeEspera">Ver Lista de espera</Link>
+          </>
+        )}
+
+
       </nav>
     </div>
   );

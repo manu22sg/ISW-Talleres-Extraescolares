@@ -38,6 +38,7 @@ table {
   th {
     background-color: #f4f4f4;
   }
+<<<<<<< HEAD
 
   .col-id {
     width: 5%; /* Ajusta el ancho de la columna de ID */
@@ -62,3 +63,5 @@ table {
   .col-taller {
     width: 15%; /* Ancho ajustado para talleres */
   }
+=======
+>>>>>>> 9e70b9a57ff692849f48a8ad86422d1488ff508a

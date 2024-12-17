@@ -82,14 +82,14 @@ export const createTallerService = async (tallerData) => {
   // Verificamos si el usuario con el profesorId existe
    const profesor = await userRepository.findOne({ where: { id: profesorId } });
 
-  // if (!profesor) {
-  //   throw new Error("El usuario no existe.");
-  // }
-// 
+  if (!profesor) {
+    throw new Error("El usuario no existe.");
+   }
+
   // Verificamos si el usuario tiene el rol de "profesor"
-  // if (profesor.rol !== "profesor") {
-  //   throw new Error("El usuario no tiene el rol de profesor.");
-  // }
+   if (profesor.rol !== "profesor") {
+    throw new Error("El usuario no tiene el rol de profesor.");
+   }
   
 
   // Si todo está bien, creamos el taller
@@ -281,7 +281,11 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
     if (isAlreadyEnrolled) {
       return { success: false, statusCode: 400, message: "Ya estás inscrito en este taller" };
     }
-
+    //verrificae si esta inscrito en la lista de espera
+    const isAlreadyEnrolledLista = await Lista.findOne({ where: { alumno: user, taller, estado: "espera" } });
+    if (isAlreadyEnrolledLista) {
+      return { success: false, statusCode: 400, message: "Ya estás inscrito en la lista de espera de este taller" };
+    }
     // Verificar si hay cupos disponibles y agregar a la lista de espera si el taller está lleno
     if (taller.usuarios.length >= taller.capacidad) {
       // Agregar a la lista de espera si el taller está lleno
@@ -291,8 +295,8 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
         estado: "espera",
       });
       await Lista.save(nuevaEntrada);
-      return { success: true, 
-        message: "El taller está lleno. El alumno ha sido agregado a la lista de espera.", taller: null };
+      return { success: true,statusCode: 202, 
+        message: "El taller está lleno. El alumno ha sido agregado a la lista de espera." };
     }
 
 // Verificar si el taller está en estado "eliminado"

@@ -4,11 +4,8 @@ import ListaDeEspera from "../entity/listaDeEspera.entity.js";
 import Taller from "../entity/taller.entity.js";
 import User from "../entity/user.entity.js";
 import { enviarCorreo } from "../helpers/nodemailer.helper.js";
-import {
-  handleErrorClient,
-  handleErrorServer,
-  handleSuccess,
-} from "../handlers/responseHandlers.js";
+
+
 
 export const inscribirEnListaDeEspera = async (req, res) => {
   const { tallerId, alumnoId } = req.body;
@@ -75,12 +72,12 @@ export const inscribirEnListaDeEspera = async (req, res) => {
     taller.inscritos += 1;
     await tallerRepository.save(taller);
 
-    const mensajeProfesor = `Se ha inscrito al taller "${taller.nombre}" el alumno ${alumno.nombreCompleto}.
-     La cantidad de inscritos es: ${taller.inscritos}.`;
-    enviarCorreo(taller.profesor.email, "Nuevo alumno inscrito en tu taller", mensajeProfesor);
+    //const mensajeProfesor = `Se ha inscrito al taller "${taller.nombre}" el alumno ${alumno.nombreCompleto}. 
+    // La cantidad de inscritos es: ${taller.inscritos}.`;
+    //enviarCorreo(taller.profesor.email, "Nuevo alumno inscrito en tu taller", mensajeProfesor);
 
-    const mensajeAlumno = `Te has inscrito con éxito al taller "${taller.nombre}".`;
-    enviarCorreo(alumno.email, "Inscripción exitosa al taller", mensajeAlumno);
+    const mensajeAlumno = `Has sido agregado a la lista de espera del taller: "${taller.nombre}".`;
+    enviarCorreo(alumno.email, "Inscripción exitosa a la lista de espera", mensajeAlumno);
 
     return res.status(200).json({
       status: "Success",
@@ -160,4 +157,93 @@ export const verListaDeEspera = async (req, res) => {
       details: {},
     });
   }
+}
+
+
+export const eliminarDeListaDeEspera = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const listaDeEsperaRepository = AppDataSource.getRepository(ListaDeEspera);
+    const entrada = await listaDeEsperaRepository.findOne({ where: { id } });
+
+    if (!entrada) {
+      return res.status(404).json({
+        status: "Client error",
+        message: "Alumno no encontrado en la lista de espera",
+        details: {"El Alumno no existe ": id},
+      });
+    }
+
+    await listaDeEsperaRepository.remove(entrada);
+
+    return res.status(200).json({
+      status: "Success",
+      message: "Alumno eliminado de la lista de espera",}
+    );
+  }
+  catch (error) {
+    console.error("Error en eliminarDeListaDeEspera:", error);
+    return res.status(500).json({
+      status: "Server error",
+      message: "Error interno del servidor",
+      details: {},
+    });
+  }
+}
+
+export const ActualizarEstadoListaDeEspera = async (req, res) => {
+
+  const { id} = req.body;
+  try{
+      //traer contexto de autenticacion
+      const listaDeEsperaRepository = AppDataSource.getRepository(ListaDeEspera);
+      const entrada = await listaDeEsperaRepository.findOne({ where: { id } ,relations: ["alumno"] });
+      const userRepository = AppDataSource.getRepository(User);
+      const userFound = await userRepository.findOne(
+        { where: {email: req.user.email}
+        });
+
+      if (!entrada) {
+        return res.status(404).json({
+          status: "Client error",
+          message: "Alumno no encontrado en la lista de espera",
+          details: {"El Alumno no existe ": id},
+        });
+      }
+      if (!userFound) {
+        return res.status(404).json({
+          status: "Client error",
+          message: "Usuario no encontrado en la base de datos",
+          details: {},
+        });
+      }
+      if (userFound.email !== entrada.alumno.email) {
+        return res.status(403).json({
+          status: "Client error",
+          message: "No puedes cambiar el estado de otro alumno",
+          details: {},
+
+        });
+
+      }
+      entrada.estado = "desinscrito";
+      await listaDeEsperaRepository.save(entrada);
+      console.log(entrada);
+      return res.status(200).json({
+        status: "Success",
+        message: "Estado de la lista de espera actualizado",
+        details: {},
+      });
+  }catch(error)
+  {
+    // Manejo de errores
+    console.error("Error en ActualizarEstadoListaDeEspera:", error);
+    return res.status(500).json({
+      status: "Server error",
+      message: "Error interno del servidor",
+      details: { error: error.message },
+    });
+  }
+  
 }
