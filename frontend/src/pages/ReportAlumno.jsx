@@ -36,7 +36,7 @@ const Report = () => {
         const cargarDatos = async()=>{
             try {
                 const respuesta = await datos(id);
-                console.log("estado de res:",  respuesta)
+                
                 if(respuesta.status === "Client error"){
                     showErrorAlert("Rut ingresado sin coincidencia");
                     navigate('/Report');    
