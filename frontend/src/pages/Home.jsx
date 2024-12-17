@@ -1,4 +1,4 @@
-import React from 'react';
+//import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@context/AuthContext';
 import '@styles/Home.css'; 
@@ -26,7 +26,7 @@ const Home = () => {
             <Link className="home-link" to="/crear-sesion">Crear Sesión</Link>
             <Link className="home-link" to="/Registrar-asistencia">Registrar Asistencia</Link>
             <Link className="home-link" to="/Ver-inscritos">Ver Inscritos</Link>
-
+            <Link className="home-link" to="/update-asistencia">Actualizar Asistencia</Link>
 
 
           </>

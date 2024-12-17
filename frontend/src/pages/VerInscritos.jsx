@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { obtenerInscritosSesion } from '../services/asistencia.service';
+import Editar from '../components/Editar';
 
 const VerInscritos = () => {
   const [tallerId, setTallerId] = useState('');
@@ -7,6 +8,18 @@ const VerInscritos = () => {
   const [estudiantes, setEstudiantes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [datos,setDatos] = useState({estado:''});
+
+  const abrirModal = (Estudiantes) => {
+    setMostrarModal(true);
+    setDatos(Estudiantes);
+  }
+
+  const cerrarModal = () => {
+    setMostrarModal(false);
+    handleSubmit();
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +37,7 @@ const VerInscritos = () => {
       setLoading(false);
     }
   };
+
 
   return (
     <div>
@@ -75,10 +89,13 @@ const VerInscritos = () => {
                   <td>{estudiante.nombreCompleto}</td>
                   <td>{estudiante.estado}</td>
                   <td>{estudiante.comentarios || 'Sin comentarios'}</td>
+                  <button type="submit" onClick={()=>abrirModal(estudiante)}>Editar</button>
                 </tr>
+                
               ))}
             </tbody>
           </table>
+          {mostrarModal && <Editar cerrarModal={cerrarModal} Estudiantes={datos} taller={tallerId} sesion={sesionId} />}
         </div>
       )}
 

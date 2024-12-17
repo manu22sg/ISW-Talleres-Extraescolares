@@ -30,7 +30,8 @@ export async function crearSesionService(tallerId, fecha, estado = "pendiente", 
     const tokenAsistencia = Math.floor(1000 + Math.random() * 9000); // Genera un número aleatorio de 4 dígitos
 
     // Calcular la fecha de expiración del token (1 hora y 30 minutos después de la fecha de creación)
-    const expiracionToken = addMinutes(new Date(), 90);
+    const fechaActual = new Date();
+    const expiracionToken = new Date(fechaActual.getTime() + 2 * 60 * 1000)
 
     // Crear la nueva sesión
     const nuevaSesion = sesionRepository.create({

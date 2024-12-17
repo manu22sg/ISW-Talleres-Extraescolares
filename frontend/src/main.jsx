@@ -18,6 +18,7 @@ import CrearSesion from './pages/CrearSesion';
 import RegistrarAsistencia from '@pages/RegistrarAsistencia';
 import VerInscritos from '@pages/VerInscritos';
 import RegistrarAsistenciaToken from "@pages/RegistrarAsistenciaToken"; // Importa el nuevo componente
+import UpdateAsistencia from "@pages/updateAsistencia";
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -90,6 +91,10 @@ const router = createBrowserRouter([
         {
           path: "/registrar-asistencia-token",
           element: <RegistrarAsistenciaToken />,
+        },
+        {
+          path: "/update-asistencia",
+          element: <UpdateAsistencia/>
         },
     ]
   },

@@ -1,15 +1,15 @@
-import React, { useState, useContext } from 'react';
+import { useState } from 'react';
 import { crearSesion } from '../services/sesion.service';
 import { useAuth } from '@context/AuthContext';
 import { format, parseISO } from 'date-fns';
+import {fechaHoy} from '../function/fechaHoy';
 
 const CrearSesion = () => {
   const { user } = useAuth(); // Obtener la información del usuario autenticado
  
-
   const [tallerId, setTallerId] = useState('');
-  const [fecha, setFecha] = useState('');
-  const [estado, setEstado] = useState('pendiente');
+  const [fecha, setFecha] = useState(fechaHoy());
+  const [estado, setEstado] = useState('Pendiente');
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
@@ -65,7 +65,7 @@ const CrearSesion = () => {
       // Limpiar formulario
       setTallerId('');
       setFecha('');
-      setEstado('pendiente');
+      setEstado('Pendiente');
     } catch (err) {
       setError(err.message || 'Ocurrió un error al crear la sesión.');
       setSuccessMessage(null);
@@ -99,15 +99,13 @@ const CrearSesion = () => {
         </div>
         <div>
           <label htmlFor="estado">Estado:</label>
-          <select
+          <input
             id="estado"
+            type='text'
             value={estado}
             onChange={(e) => setEstado(e.target.value)}
-          >
-            <option value="pendiente">Pendiente</option>
-            <option value="completada">Completada</option>
-            <option value="cancelada">Cancelada</option>
-          </select>
+            disabled  
+          />
         </div>
         <button type="submit">Crear Sesión</button>
       </form>

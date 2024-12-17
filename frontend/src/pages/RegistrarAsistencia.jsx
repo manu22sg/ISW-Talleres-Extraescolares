@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from '../services/root.service';
-import {validarRut} from '../function/validarRut';
+import { validarRut } from '../function/validarRut';
 
 const RegistrarAsistencia = () => {
   const [tallerId, setTallerId] = useState('');
@@ -10,56 +10,53 @@ const RegistrarAsistencia = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // Función para formatear RUT
   function setRutFormat(rut) {
-    // Convertir el RUT a string por si se ingresa como número
-    let rutString = rut.toString().replace(/\D/g, ''); // Eliminar cualquier carácter no numérico
-    // Validar largo máximo de 12 caracteres
-     if (rutString.length > 9) {
+    let rutString = rut.toString().replace(/[^0-9kK]/g, '');
+    if (rutString.length > 9) {
       setError('Largo máximo de 9 caracteres');
-    }else{
+    } else {
       setError('');
     }
-    if(rutString.length > 8){
-      // Separar el dígito verificador
+    if (rutString.length > 8) {
       const dv = rutString.slice(-1);
       const numero = rutString.slice(0, -1);
-    
-      // Formatear el número con puntos cada 3 dígitos
       const formateado = numero
         .split('')
         .reverse()
-        .reduce((acc, digit, i) => {
-          return digit + (i > 0 && i % 3 === 0 ? '.' : '') + acc;
-        }, '');
-      
+        .reduce((acc, digit, i) => digit + (i > 0 && i % 3 === 0 ? '.' : '') + acc, '');
       const rutValido = validarRut(rutString);
-      if(!rutValido){
+      if (!rutValido) {
         setError('Rut inválido');
       }
-
       return `${formateado}-${dv}`;
-    }else{
-      return rutString
+    } else {
+      return rutString;
     }
   }
 
+  // Añadir estudiante para registrar nueva asistencia
   const handleAddStudent = () => {
     setAsistencias([...asistencias, { usuarioId: '', estado: '', comentarios: '' }]);
   };
 
+  // Actualizar los valores de los campos
   const handleInputChange = (index, field, value) => {
     const newAsistencias = [...asistencias];
     newAsistencias[index][field] = value;
-    console.log(newAsistencias);
     setAsistencias(newAsistencias);
   };
 
+  // Registrar asistencias nuevas
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if(asistencias == undefined || asistencias == null || asistencias.length == 0){
+      setError('No se han ingresado asistencias');
+      return;
+    }
     setLoading(true);
     setError('');
     setSuccess('');
-
     try {
       const response = await axios.post(
         `/asistencia/talleres/${tallerId}/sesiones/${sesionId}/asistencia`,
@@ -78,7 +75,7 @@ const RegistrarAsistencia = () => {
       <h1>Registrar Asistencia</h1>
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="tallerId">ID del Taller:</label>
+          <label htmlFor="tallerId">Codigo del Taller:</label>
           <input
             type="text"
             id="tallerId"
@@ -98,13 +95,12 @@ const RegistrarAsistencia = () => {
           />
         </div>
 
-        <h2>Estudiantes</h2>
+        <h2>Nueva Asistencia</h2>
         {asistencias.map((asistencia, index) => (
           <div key={index}>
-            <label>Estudiante {index + 1}:</label>
             <input
               type="text"
-              placeholder="rut del Usuario"
+              placeholder="RUT del Usuario"
               value={asistencia.usuarioId}
               onChange={(e) => handleInputChange(index, 'usuarioId', setRutFormat(e.target.value))}
               required
@@ -124,7 +120,6 @@ const RegistrarAsistencia = () => {
               placeholder="Comentarios (opcional)"
               value={asistencia.comentarios}
               onChange={(e) => handleInputChange(index, 'comentarios', e.target.value)}
-              
             />
           </div>
         ))}
@@ -138,7 +133,7 @@ const RegistrarAsistencia = () => {
       </form>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      {success && <p style={{ color: 'green' }}>Éxito: {success}</p>}
+      {success && <p style={{ color: 'green' }}>{success}</p>}
     </div>
   );
 };

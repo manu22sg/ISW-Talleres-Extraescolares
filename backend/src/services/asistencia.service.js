@@ -72,7 +72,6 @@ export async function registrarAsistenciaService(tallerId, sesionId, asistencias
 
     // Verificar si el profesor es el profesor asignado al taller
     if (taller.profesor.id !== idProfesor) {
-
       return { error: "No está autorizado para registrar asistencia en este taller", statusCode: 403 };
     }
 
@@ -84,11 +83,15 @@ export async function registrarAsistenciaService(tallerId, sesionId, asistencias
       return { error: "Sesión no encontrada o no asociada con el taller", statusCode: 404 };
     }
 
+    //verificar si existe asistencia al taller
+
+    
+
     // Procesar cada registro de asistencia
     for (const { usuarioId, estado, comentarios } of asistencias) {
       // Validar si el estudiante existe y tiene el rol adecuado
       const usuario = await userRepository.findOne({
-        where: { id: usuarioId, rol: "estudiante" },
+        where: { rut: usuarioId, rol: "estudiante" },
       });
       if (!usuario) {
         return { error: "Estudiante no encontrado o no tiene el rol de estudiante", statusCode: 404 };
@@ -96,7 +99,7 @@ export async function registrarAsistenciaService(tallerId, sesionId, asistencias
 
       // Verificar si ya existe un registro de asistencia para esta sesión y usuario
       const registroExistente = await asistenciaRepository.findOne({
-        where: { sesionId, usuarioId },
+        where: { sesionId, usuarioId: usuario.id }, // Usa usuario.id directamente
       });
       if (registroExistente) {
         return { error: "La asistencia para este estudiante ya ha sido registrada", statusCode: 400 };
@@ -106,7 +109,7 @@ export async function registrarAsistenciaService(tallerId, sesionId, asistencias
       const nuevoRegistroAsistencia = asistenciaRepository.create({
         tallerId,
         sesionId,
-        usuarioId,
+        usuarioId: usuario.id, // Usa usuario.id directamente
         estado,
         comentarios,
       });
@@ -119,6 +122,7 @@ export async function registrarAsistenciaService(tallerId, sesionId, asistencias
     return { error: "Error interno del servidor", statusCode: 500 };
   }
 }
+
 
 // Servicio para actualizar el estado de la asistencia de un estudiante con validaciones adicionales
 export async function actualizarEstadoAsistenciaService(
@@ -212,6 +216,7 @@ export async function registrarAsistenciaConTokenService(tallerId, sesionId, usu
     }
 
     // Validar si el estudiante existe y tiene el rol adecuado
+    console.log(usuarioId);
     const usuario = await userRepository.findOne({
       where: { id: usuarioId, rol: "estudiante" },
     });

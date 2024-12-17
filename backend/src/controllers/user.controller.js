@@ -115,3 +115,4 @@ export async function deleteUser(req, res) {
     handleErrorServer(res, 500, error.message);
   }
 }
+
