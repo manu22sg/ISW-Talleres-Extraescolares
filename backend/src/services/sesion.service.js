@@ -16,6 +16,7 @@ export async function crearSesionService(tallerId, fecha, estado = "pendiente", 
       where: { id: tallerId },
       relations: ["profesor"],
     });
+    console.log("Taller encontrado:", idProfesor);
 
     if (!taller) {
       return { error: "Taller no encontrado", statusCode: 404 };
@@ -25,6 +26,7 @@ export async function crearSesionService(tallerId, fecha, estado = "pendiente", 
     if (taller.profesor.id !== idProfesor) {
       return { error: "No está autorizado para crear una sesión en este taller", statusCode: 403 };
     }
+    console.log("Creando sesión en el taller:", taller.profesor.id);
 
     // Generar un token de asistencia de 4 dígitos
     const tokenAsistencia = Math.floor(1000 + Math.random() * 9000); // Genera un número aleatorio de 4 dígitos

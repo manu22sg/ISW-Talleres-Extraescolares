@@ -8,7 +8,11 @@ import { eliminarSesionService } from "../services/sesion.service.js";
 export async function crearSesion(req, res) {
   const { tallerId } = req.params;
   const { fecha, estado } = req.body;
-  const idProfesor = req.user.id; // Usar el ID del profesor obtenido del middleware de autenticación
+  const idProfesor = req.user.id;
+  
+  // Usar el ID del profesor obtenido del middleware de autenticación
+
+  console.log(req.user.id);
   
   const result = await crearSesionService(tallerId, fecha, estado, idProfesor); // se agrega idProfesor
   if (result.error) {
