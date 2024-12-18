@@ -154,7 +154,7 @@ const userId = req.user.id;
     const { success, statusCode, message, taller } = await inscribirAlumnoAutenticadoService(userId,tallerId);
 
     if (!success) {
-      if (statusCode >= 400 && statusCode < 500) {
+      if (statusCode >= 300 && statusCode < 500) {
         return handleErrorClient(res, statusCode, message);
       }
       return handleErrorServer(res, statusCode, message);
@@ -180,7 +180,7 @@ export const inscribirAlumnoPorProfesorOAdminController = async (req, res) => {
 
   // Manejo de errores
   if (!success) {
-    if (statusCode >= 400 && statusCode < 500) {
+    if (statusCode >= 300 && statusCode < 500) {
       return handleErrorClient(res, statusCode, error);
     }
     return handleErrorServer(res, statusCode, error);
