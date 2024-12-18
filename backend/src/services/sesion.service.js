@@ -5,7 +5,7 @@ import Taller from "../entity/taller.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import { addMinutes } from "date-fns"; // Importar para manejar la fecha de expiración
 
-// Servicio para crear una nueva sesión en un taller
+
 export async function crearSesionService(tallerId, fecha, estado = "pendiente", idProfesor) {
   try {
     const sesionRepository = AppDataSource.getRepository(Sesion);
@@ -18,41 +18,36 @@ export async function crearSesionService(tallerId, fecha, estado = "pendiente", 
     });
 
     if (!taller) {
+      console.log(`Taller no encontrado: ID = ${tallerId}`);
       return { error: "Taller no encontrado", statusCode: 404 };
     }
 
-    // Verificar si el profesor que intenta crear la sesión es el profesor asignado al taller
+    // Verificar si el profesor que intenta crear la sesión es el asignado al taller
     if (taller.profesor.id !== idProfesor) {
+      console.log(`Acceso no autorizado: Profesor ID = ${idProfesor}, Taller Profesor ID = ${taller.profesor.id}`);
       return { error: "No está autorizado para crear una sesión en este taller", statusCode: 403 };
     }
 
-    // Generar un token de asistencia de 4 dígitos
-    const tokenAsistencia = Math.floor(1000 + Math.random() * 9000); // Genera un número aleatorio de 4 dígitos
+    // Crear la sesión
+    const tokenAsistencia = Math.floor(1000 + Math.random() * 9000);
+    const expiracionToken = new Date(Date.now() + 2 * 60 * 1000); // Token válido por 2 minutos
 
-    // Calcular la fecha de expiración del token (1 hora y 30 minutos después de la fecha de creación)
-    const fechaActual = new Date();
-    const expiracionToken = new Date(fechaActual.getTime() + 2 * 60 * 1000)
-
-    // Crear la nueva sesión
     const nuevaSesion = sesionRepository.create({
       taller: { id: tallerId },
       fecha,
       estado,
       tokenAsistencia,
       expiracionToken,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     });
 
-    // Guardar la sesión en la base de datos
     const sesionGuardada = await sesionRepository.save(nuevaSesion);
-
     return { success: true, sesion: sesionGuardada };
   } catch (error) {
     console.error("Error al crear la sesión:", error);
     return { error: "Error interno del servidor", statusCode: 500 };
   }
 }
+
 
 // Servicio para actualizar una sesión con validaciones adicionales
 export async function actualizarSesionService(sesionId, camposActualizados, idProfesor) {

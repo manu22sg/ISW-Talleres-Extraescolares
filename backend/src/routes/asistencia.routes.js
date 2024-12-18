@@ -25,6 +25,6 @@ router.patch("/talleres/:tallerId/sesiones/:sesionId/usuarios/:usuarioId/asisten
     
 // Ruta para que los estudiantes registren asistencia usando el token
 router.post(
-    "/talleres/:tallerId/sesiones/:sesionId/registrar", isTeacher , registrarAsistenciaConToken);
+    "/talleres/:tallerId/sesiones/:sesionId/registrar", isStudent , registrarAsistenciaConToken);
 
 export default router;
