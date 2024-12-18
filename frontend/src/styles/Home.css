@@ -48,3 +48,28 @@
     background-color: #0056b3;
   }
   
+.button-container {
+  width: 100%;
+  text-align: left;
+}
+
+.button-excel{
+  margin: 0;
+  padding: 10px 20px;
+  background-color: #006400; 
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
+.button-pdf{
+  margin: 0;
+  padding: 10px 20px;
+  background-color: #750505;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}

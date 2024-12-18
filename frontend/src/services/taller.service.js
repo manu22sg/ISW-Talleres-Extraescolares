@@ -27,7 +27,7 @@ export const createTaller = async (taller) => {
 };
 
 export const updateTaller = async (data, id) => {
-    // eslint-disable-next-line no-useless-catch
+    
     try {
         console.log(data);
         const response = await axios.patch(`/taller/${id}`, data);
@@ -63,6 +63,7 @@ export const inscribirAlumno = async (tallerId, alumnoId) => {
     try {
       const response = await axios.post('/taller/inscripcion', { tallerId, alumnoId });
       console.log (response);
+      console.log(response.data);
       return response.data;
     } catch (error) {
       throw error;
@@ -73,10 +74,11 @@ export const inscribirAlumno = async (tallerId, alumnoId) => {
     try {
       console.log(tallerId, alumnoId);
       const response = await axios.delete(`/taller/${tallerId}/alumno/${alumnoId}`);
-      
+      console.log(response);
       return response.data;
     } catch (error) {
-      throw error;
+      throw error.response.data.message;
+      
     }
   }
 
@@ -103,7 +105,7 @@ export const inscribirAlumno = async (tallerId, alumnoId) => {
   export const inscribirComoEstudiante = async (tallerId) => {
     try {
       const response = await axios.post('/estudiante', { tallerId });
-      console.log(response.data);
+     
       return response.data;
     } catch (error) {
       throw error;
@@ -112,15 +114,17 @@ export const inscribirAlumno = async (tallerId, alumnoId) => {
 
   export const validarProfesorRut = async (rut) => {
     try {
-      
       const response = await axios.post('/taller/ValidarRutProfesor', { rut });
-     
-      return response.data.data.profesorId; // Retorna el ID del profesor si es válido
+      return response.data.data.profesorId; // Retorna el ID si es válido
     } catch (error) {
-      console.error("Error al validar el RUT del profesor:", error);
-      return null; // Devuelve null si el RUT no es válido o ocurre un error
+      if (error.response && error.response.data && error.response.data.message) {
+        console.error("Error al validar el RUT del profesor:", error.response.data.message);
+        throw new Error(error.response.data.message); 
+      }
+      throw new Error("Error al conectar con el servidor.");
     }
   };
+  
   
   export const validarEstudianteRut = async (rut) => {
     try {

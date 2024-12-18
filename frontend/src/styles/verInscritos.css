@@ -1,0 +1,48 @@
+.div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10vh;
+}
+.input {
+    width: 60%;
+    height: 5vh;
+    margin-top: 1vh;
+    border-radius: 5px;
+    border: 1px solid #003366;
+    padding-left: 10px;
+    font-size: 1.2em;
+    color: #003366;
+    transition: .3s ease-out;
+    text-align: center;
+}
+.button {
+    border-radius: 10.1px;
+    border: 1px solid #003366;
+    background-color: #003366;
+    color: #eef7ff;
+    font-size: 1.2em;
+    transition: .3s ease-out;
+    padding: auto;
+    margin-top: 2.7vh;
+    margin-left: 1vh;
+}
+.button-2 {
+    border-radius: 0.8vh;
+    border: 1px solid #003366;
+    background-color: #003366;
+    color: #eef7ff;
+    font-size: 1.2em;
+    transition: .3s ease-out;
+    padding: auto;
+    margin-top: 2.7vh;
+    margin-left: 1vh;
+}
+.table{
+    width: 60px;
+    margin-top: 3vh;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 1px solid #003366;
+}

@@ -1,6 +1,6 @@
 import React from 'react';
-// import { Link } from 'react-router-dom';
-// import { useAuth } from '@context/AuthContext';
+import { Link } from 'react-router-dom';
+import { useAuth } from '@context/AuthContext';
 import '@styles/Home.css'; 
 import { getListadeespera } from '../services/listaEspera.service';
 import ListaDinamica from '../components/Lista';
@@ -23,13 +23,15 @@ const ListaEspera=  () => {
   useEffect(() => {
     const cargarListaDeEspera =  async () => {
       const respuesta = await datos();
-      //console.log(respuesta);
+      console.log(respuesta);
       setListaEspera(respuesta);
     };
     cargarListaDeEspera();
   }, []);
+  
 
   return (
+    
     <div>
       <ListaDinamica items={listaEspera} />
     </div>

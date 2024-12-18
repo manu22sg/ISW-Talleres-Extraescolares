@@ -1,4 +1,4 @@
-import { handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
+import { handleErrorClient, handleErrorServer, handleSuccess  } from "../handlers/responseHandlers.js";
 import { asistenciaAlumnosService,
          cantidadInscritosService,
          estadoTallerService,
@@ -13,8 +13,8 @@ export async function inscritosTallerController(req, res) {
     try {
         const { id } = req.params;
         const [taller, errorTaller] = await inscritosTallerService(id);
-
-        if (errorTaller) { return handleErrorClient(res, 400, errorTaller); }
+        
+        if (errorTaller) { return handleErrorClient(res, 200, errorTaller); }
 
         return handleSuccess(res, 200, "Alumnos inscritos en el taller", taller);
 
@@ -29,7 +29,7 @@ export async function inscritosAlumnosController(req, res) {
         // console.log(rut);
         const [alumnos, errorAlumnos] = await inscritosAlumnosService(rut);
         
-        if (errorAlumnos) { return handleErrorClient(res, 400, errorAlumnos); }
+        if (errorAlumnos) { return handleErrorClient(res, 200, errorAlumnos); }
 
         return handleSuccess(res, 200, "Talleres inscritos por el alumno", alumnos);
 
@@ -43,7 +43,7 @@ export async function cantidadInscritosController(req, res) {
         // console.log("cantidadInscritosController");
         const [ cantidad, errorCantidad ] =  await cantidadInscritosService();
         // console.log("pasa por el service");
-        if (errorCantidad) { return handleErrorClient(res, 400, errorCantidad); }
+        if (errorCantidad) { return handleErrorClient(res, 200, errorCantidad); }
 
         return handleSuccess(res, 200, "Cantidad de inscritos en el taller", cantidad);
 
@@ -57,9 +57,8 @@ export async function estadoTallerController(req, res) {
         const { estado } = req.params;
         
         const [Estado, errorEstado] = await estadoTallerService(estado);
-        
 
-        if (errorEstado) { return handleErrorClient(res, 400, errorEstado); }
+        if (errorEstado) { return handleErrorClient(res,200, errorEstado); }
 
         return handleSuccess(res, 200, "Talleres con el estado", Estado);
     } catch (error) {
@@ -72,7 +71,7 @@ export async function tallerProfesorController(req, res) { //mostrar los tallere
     try {
         const [profesor, errorProfesor] = await tallerProfesorService();
         
-        if (errorProfesor) { return handleErrorClient(res, 400, errorProfesor); }
+        if (errorProfesor) { return handleErrorClient(res, 200, errorProfesor); }
       
         return handleSuccess(res, 200, "talleres con sus respectivos profesor ", profesor);
 
@@ -84,11 +83,11 @@ export async function tallerProfesorController(req, res) { //mostrar los tallere
 //mostrar los talleres de un profesor en especifico
 export async function profesorTallerController(req, res) {
     try {
-        const { nombre } = req.body;
+        const { name } = req.params;
        
-        const [profesor, errorProfesor] = await profesorTallerService(nombre);
+        const [profesor, errorProfesor] = await profesorTallerService(name);
 
-        if (errorProfesor) { return handleErrorClient(res, 400, errorProfesor); }
+        if (errorProfesor) { return handleErrorClient(res, 200, errorProfesor); }
 
         return handleSuccess(res, 200, "Talleres del profesor", profesor);
 
@@ -102,7 +101,7 @@ export async function asistenciaAlumnosController(req, res) { //mostrar asistenc
     try {
         const { id } = req.params;
         const [asistencia, errorAsistencia] = await asistenciaAlumnosService(id);
-        if (errorAsistencia) { return handleErrorClient(res, 400, errorAsistencia); }
+        if (errorAsistencia) { return handleErrorClient(res, 200, errorAsistencia); }
       
         return handleSuccess(res, 200, "Asistencia del taller ", asistencia);
 

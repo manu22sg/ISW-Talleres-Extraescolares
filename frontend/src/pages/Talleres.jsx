@@ -31,10 +31,11 @@ const Talleres = () => {
 
   const columns = [
     { title: "ID", field: "id" },
-    { title: "Nombre", field: "nombre" },
-    { title: "Descripción", field: "descripcion" },
-    { title: "Estado", field: "estado" },
-    { title: "Profesor", field: "profesorId" },
+    { title: "Nombre del taller", field: "nombre", width : 400 },
+    //{ title: "Descripción", field: "descripcion" },
+    { title: "Profesor a cargo del taller", field: "profesorId", width : 350 },
+    {title: "Rut ", field: "profesor.rut"},
+    { title: "Estado ", field: "estado" },
     { title: "Inscritos", field: "inscritos" }
   ];
 
@@ -69,7 +70,11 @@ const Talleres = () => {
   };
   const handleInscribirAlumno = async () => {
     if (dataTaller) {
+      
+      const result = await deleteDataAlert();
+      if (result.isConfirmed) {
       try {
+
         await inscribirComoEstudiante(dataTaller.id); // Enviar el ID del taller seleccionado
         showSuccessAlert('Te has inscrito con exito al taller',dataTaller.nombre);
         fetchTalleres();
@@ -79,7 +84,7 @@ const Talleres = () => {
           error.response?.data?.message || 'Ocurrió un problema al inscribirte.'
         );
       }
-    }
+    }}
   };
 
 
@@ -92,7 +97,7 @@ const Talleres = () => {
           await deleteTaller(dataTaller.id);
           clearSelection();
           fetchTalleres();
-          showSuccessAlert("¡Eliminado!", "El estado del taller ha sido cambiado exitosamente.");
+          showSuccessAlert("¡Eliminado!", "El estado del taller ha sido cambiado a eliminado exitosamente.");
         } catch (error) {
           showErrorAlert("Error", error.response.data.message);
         }
@@ -120,7 +125,7 @@ const Talleres = () => {
       />
 
 {dataTaller && (
-  <div>
+  <div className='button-group flex-container'>
     {user.rol === 'estudiante' && (
       <>
         <button onClick={handleShowDetails}>Ver Detalles</button>

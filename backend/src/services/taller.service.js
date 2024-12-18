@@ -3,7 +3,7 @@ import Taller from "../entity/taller.entity.js";
 import ListaDeEspera from "../entity/listaDeEspera.entity.js";
 import { parse } from "date-fns"; //
 import { enviarCorreo } from "../helpers/nodemailer.helper.js";
-import { Not } from "typeorm";
+import { In,Not } from "typeorm";
 
 import User from "../entity/user.entity.js"; // Importar la entidad de usuarios
 import { AppDataSource } from "../config/configDb.js";
@@ -49,7 +49,9 @@ export async function getTalleresService(user) { // Obtener todos los talleres
     const tallerRepository = AppDataSource.getRepository(Taller);
 
     // Condición de búsqueda: si el usuario no es administrador, excluir los talleres eliminados
-    const condicion = user.rol !== "administrador" ? { estado: Not("eliminado") } : {};
+    //const condicion = user.rol !== "administrador" ? { estado: Not("eliminado","finalizado") } : {};
+    const condicion = user.rol !== "administrador" ? { estado: Not(In(["eliminado", "finalizado"])) } : {};
+
      // Si no es administrador, excluir los talleres eliminados
 
     // Obtener los talleres con la condición de búsqueda y relaciones
@@ -82,14 +84,17 @@ export const createTallerService = async (tallerData) => {
   // Verificamos si el usuario con el profesorId existe
    const profesor = await userRepository.findOne({ where: { id: profesorId } });
 
-  // if (!profesor) {
-  //   throw new Error("El usuario no existe.");
-  // }
-// 
+  if (!profesor) {
+    return { error: true, statusCode: 404, message: "Profesor no encontrado" };
+  }
+ 
   // Verificamos si el usuario tiene el rol de "profesor"
-  // if (profesor.rol !== "profesor") {
-  //   throw new Error("El usuario no tiene el rol de profesor.");
-  // }
+   if (profesor.rol !== "profesor") {
+    return { error: true, statusCode: 403, message: "El usuario no tiene el rol de profesor." };
+   }
+   if(tallerData.estado === "eliminado"){
+      return { error: true, statusCode: 400, message: "No se puede crear un taller con estado eliminado" };
+   }
   
 
   // Si todo está bien, creamos el taller
@@ -205,11 +210,14 @@ export async function deleteStudentService(req) {
   });
   
   if (!taller) throw { statusCode: 404, message: "Taller no encontrado" };
+  if (!alumnoId) throw { statusCode: 404, message: "Alumno no encontrado" };
 
   // Buscar y eliminar al alumno del taller
   
   const alumnoIndex = taller.usuarios.findIndex((u) => u.id === parseInt(alumnoId, 10));
   if (alumnoIndex === -1) throw { statusCode: 400, message: "El alumno no está inscrito en este taller" };
+  if (taller.estado === "eliminado") throw { statusCode: 400, 
+      message: "No se puede eliminar un alumno de un taller eliminado" };
 
   taller.usuarios.splice(alumnoIndex, 1);
   taller.inscritos -= 1; 
@@ -237,7 +245,9 @@ export async function deleteTallerService(id) { // Eliminar un taller
     if (tallerFound.estado === "enCurso") {
       return [null, "No se puede eliminar un taller en curso"];
     }
-
+    if (tallerFound.estado === "eliminado") {
+      return [null, "No se puede eliminar un taller ya eliminado"];
+    }
     
     
     tallerFound.estado = "eliminado"; // Cambiar el estado del taller a 'eliminado'
@@ -269,7 +279,6 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
     if (!taller) {
       return { success: false, statusCode: 404, message: "Taller no encontrado" };
     }
-
     
     const user = await userRepository.findOne({ where: { id: userId } }); // Verificar si el usuario es un estudiante
     if (user.rol !== "estudiante") {
@@ -281,7 +290,11 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
     if (isAlreadyEnrolled) {
       return { success: false, statusCode: 400, message: "Ya estás inscrito en este taller" };
     }
-
+    const isAlreadyEnrolledLista = await Lista.findOne({ where: { alumno: user, taller, estado: "espera" } });
+    if (isAlreadyEnrolledLista) {
+      return { success: false, statusCode: 400, message: "Ya estás inscrito en la lista de espera de este taller" };
+    }
+    
     // Verificar si hay cupos disponibles y agregar a la lista de espera si el taller está lleno
     if (taller.usuarios.length >= taller.capacidad) {
       // Agregar a la lista de espera si el taller está lleno
@@ -291,13 +304,19 @@ export const inscribirAlumnoAutenticadoService = async (userId, tallerId) => {
         estado: "espera",
       });
       await Lista.save(nuevaEntrada);
-      return { success: true, 
-        message: "El taller está lleno. El alumno ha sido agregado a la lista de espera.", taller: null };
+      //console.log("pase por aca si o si");
+      return { success: false,statusCode: 301, 
+        message: "El taller está lleno. Has sido agregado a la lista de espera." };
     }
+    
+    
 
 // Verificar si el taller está en estado "eliminado"
 if (taller.estado === "eliminado") {
   return { success: false, statusCode: 400, message: "No se puede inscribir en un taller eliminado" };
+}
+if (taller.estado === "finalizado") {
+  return { success: false, statusCode: 400, message: "No se puede inscribir en un taller finalizado" };
 }
 
 
@@ -355,25 +374,32 @@ export const inscribirAlumnoService = async (tallerId, alumnoId) => { // inscrib
     if (isAlreadyEnrolled) return { success: false, 
       error: "El alumno ya está inscrito en este taller", statusCode: 400 };
 
-    
+      const isAlreadyEnrolledLista = await Lista.findOne({ where: { alumno: alumno, taller, estado: "espera" } });
+      if (isAlreadyEnrolledLista) {
+        console.log("pase por aca si o si");
+        return { success: false, statusCode: 400, message: "Ya estás inscrito en la lista de espera de este taller" };
+      }
 
     // Verificar capacidad del taller
     if (taller.usuarios.length >= taller.capacidad) {
       // Agregar a la lista de espera si el taller está lleno
       const nuevaEntrada = Lista.create({
-        alumno: user,
+        alumno: alumno,
         taller,
         estado: "espera",
       });
+      
       await Lista.save(nuevaEntrada);
-      return { success: true, 
-        message: "El taller está lleno. El alumno ha sido agregado a la lista de espera.", taller: null };
+      return { success: false, 
+        error: "El taller está lleno. El alumno ha sido agregado a la lista de espera.", statusCode: 301 };
     }
 
     // Verificar si el taller está eliminado
     if (taller.estado === "eliminado") {
       return { success: false, error: "No se puede inscribir en un taller eliminado", statusCode: 400 };
     }
+    if (taller.estado === "finalizado") {
+      return { success: false, error: "No se puede inscribir en un taller finalizado", statusCode: 400 };}
 
     // Inscribir al alumno en el taller
     taller.usuarios.push(alumno);
@@ -399,8 +425,6 @@ export const inscribirAlumnoService = async (tallerId, alumnoId) => { // inscrib
     return { success: false, error: "Error interno del servidor", statusCode: 500 };
   }
 };
-
-
 
 
 
@@ -492,7 +516,7 @@ export async function validarRutProfesorService(rut) {
 
     if (!profesor) {
       console.log("Profesor no encontrado con RUT:", rut); // Log si no se encuentra
-      return [null, "Profesor no encontrado con ese RUT o no tiene el rol adecuado."];
+      return [null, `Profesor no encontrado con RUT ${rut}`];
     }
 
     return [profesor.id, null]; // Retornar el ID del profesor
@@ -506,17 +530,17 @@ export async function validarRutEstudianteService(rut) {
   try {
     const userRepository = AppDataSource.getRepository("User"); // Asegúrate de usar el nombre correcto
 
-
     // Buscar el profesor en la base de datos
     const estudiante = await userRepository.findOne({
       where: { rut, rol: "estudiante" }, // Búsqueda por RUT y rol
     });
+    console.log(rut );
 
     if (!estudiante) {
       console.log("Estudiante no encontrado con RUT:", rut); // Log si no se encuentra
-      return [null, "Estudiante no encontrado con ese RUT o no tiene el rol adecuado."];
+      return [null, `Estudiante no encontrado con RUT ${rut} `];
     }
-
+   
     return [estudiante.id, null]; // Retornar el ID del estudiante
   } catch (error) {
     console.error("Error al validar el RUT del estudiante:", error);
