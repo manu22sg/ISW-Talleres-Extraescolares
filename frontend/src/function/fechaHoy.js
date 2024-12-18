@@ -8,7 +8,7 @@ export function fechaHoy() {
     const anio = fecha.getFullYear();
 
     // Formato DD-MM-AAAA
-    const fechaFormateada = `${dia}-${mes}-${anio}`;
+    const fechaFormateada = `${dia}/${mes}/${anio}`;
 
     return fechaFormateada;
     

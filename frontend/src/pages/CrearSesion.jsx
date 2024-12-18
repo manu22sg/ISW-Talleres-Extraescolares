@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { crearSesion } from '../services/sesion.service';
-import { useAuth } from '@context/AuthContext';
 import { format, parseISO } from 'date-fns';
 import {fechaHoy} from '../function/fechaHoy';
 
 const CrearSesion = () => {
-  const { user } = useAuth(); // Obtener la información del usuario autenticado
+
  
   const [tallerId, setTallerId] = useState('');
   const [fecha, setFecha] = useState(fechaHoy());
@@ -51,26 +50,32 @@ const CrearSesion = () => {
   const handleCrearSesion = async (e) => {
     e.preventDefault();
     if (!validateForm()) return; // Validación
-
+  
     try {
       const sesionData = { fecha: format(parseISO(fecha.split('/').reverse().join('-')), 'yyyy-MM-dd'), estado };
-      const response = await crearSesion(tallerId, {
-        ...sesionData,
-        idProfesor: user?.id  // Usar el ID del profesor desde el contexto o autenticación
-      });
+      const response = await crearSesion(tallerId, sesionData);
       
-      setSuccessMessage("Sesión creada exitosamente: Token Creado: " + response.sesion.tokenAsistencia + ", ID de la sesión: " + response.sesion.id);
+      setSuccessMessage(`Sesión creada exitosamente: Token Creado: ${response.sesion.tokenAsistencia}, ID de la sesión: ${response.sesion.id}`);
       setError(null);
-
+  
       // Limpiar formulario
       setTallerId('');
-      setFecha('');
+      setFecha(fechaHoy());
       setEstado('Pendiente');
     } catch (err) {
-      setError(err.message || 'Ocurrió un error al crear la sesión.');
+      console.error("Error en la creación de la sesión:", err);
+      // Mensajes específicos de error
+      if (err.error === "Taller no encontrado") {
+        setError("No se encontró el taller. Verifique el ID ingresado.");
+      } else if (err.error === "No está autorizado para crear una sesión en este taller") {
+        setError("No está autorizado para crear una sesión en este taller.");
+      } else {
+        setError("Error desconocido al crear la sesión.");
+      }
       setSuccessMessage(null);
     }
   };
+  
 
   return (
     <div>

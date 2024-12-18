@@ -8,18 +8,25 @@ import { eliminarSesionService } from "../services/sesion.service.js";
 export async function crearSesion(req, res) {
   const { tallerId } = req.params;
   const { fecha, estado } = req.body;
-  const idProfesor = req.user.id;
-  
-  // Usar el ID del profesor obtenido del middleware de autenticación
+  const idProfesor = req.user.id; // ID del profesor autenticado
 
-  console.log(req.user.id);
+  console.log(`Solicitud de creación de sesión: Taller ID = ${tallerId}, Profesor ID = ${idProfesor}`);
   
-  const result = await crearSesionService(tallerId, fecha, estado, idProfesor); // se agrega idProfesor
-  if (result.error) {
-    return res.status(result.statusCode).json({ error: result.error });
+  try {
+    const result = await crearSesionService(tallerId, fecha, estado, idProfesor);
+    
+    // Manejo de errores específicos
+    if (result.error) {
+      console.error("Error al crear sesión:", result.error);
+      return res.status(result.statusCode || 500).json({ error: result.error });
+    }
+
+    // Éxito
+    return res.status(201).json({ success: true, sesion: result.sesion });
+  } catch (error) {
+    console.error("Error inesperado al crear sesión:", error.message);
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
-
-  res.json(result);
 }
 
 // Controlador para actualizar una sesión

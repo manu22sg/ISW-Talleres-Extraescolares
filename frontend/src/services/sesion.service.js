@@ -1,17 +1,15 @@
 // src/services/sesion.service.js
 import axios from './root.service'; // Importa la instancia configurada de Axios
 
-// Crear una nueva sesión en un taller específico
 export const crearSesion = async (tallerId, sesionData) => {
   try {
     const response = await axios.post(`/sesion/talleres/${tallerId}/sesiones`, sesionData);
-    console.log(response.data.sesion);
     return response.data;
   } catch (error) {
-    throw error.response ? error.response.data : error;
+    console.error("Error en el servicio al crear sesión:", error.response?.data || error.message);
+    throw error.response ? error.response.data : { error: "Error desconocido" };
   }
 };
-
 // Actualizar una sesión existente
 export const actualizarSesion = async (sesionId, sesionData) => {
   try {
