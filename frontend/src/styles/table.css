@@ -38,30 +38,3 @@ table {
   th {
     background-color: #f4f4f4;
   }
-<<<<<<< HEAD
-
-  .col-id {
-    width: 5%; /* Ajusta el ancho de la columna de ID */
-  }
-  
-  .col-email {
-    width: 20%; /* Da más espacio a la columna de Email */
-  }
-  
-  .col-descripcion {
-    width: 30%; /* Da más espacio a la descripción */
-  }
-  
-  .col-alumno {
-    width: 40%; /* Ancho ajustado para nombres largos */
-  }
-
-  .col-rut {
-    width: 15%; /* Ancho ajustado para RUTs */
-  }
-
-  .col-taller {
-    width: 15%; /* Ancho ajustado para talleres */
-  }
-=======
->>>>>>> 9e70b9a57ff692849f48a8ad86422d1488ff508a

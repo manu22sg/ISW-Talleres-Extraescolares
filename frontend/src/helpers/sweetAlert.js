@@ -8,11 +8,7 @@ export async function deleteDataAlert() {
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
-<<<<<<< HEAD
     confirmButtonText: "Si, eliminar!"
-=======
-    confirmButtonText: "¡Si, estoy seguro!"
->>>>>>> Miguel
   })
 }
 
