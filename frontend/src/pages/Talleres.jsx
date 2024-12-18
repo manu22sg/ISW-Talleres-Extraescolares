@@ -70,12 +70,8 @@ const Talleres = () => {
   };
   const handleInscribirAlumno = async () => {
     if (dataTaller) {
-      const result = await deleteDataAlert({
-        title: '¿Estás seguro?',
-        text: `Estás a punto de inscribirte en el taller "${dataTaller.nombre}". Esta acción no se puede deshacer.`,
-        confirmButtonText: 'Sí, inscribirme',
-        cancelButtonText: 'Cancelar',
-      });
+      
+      const result = await deleteDataAlert();
       if (result.isConfirmed) {
       try {
 

@@ -35,13 +35,20 @@ const ManageAlumnos = () => {
 
   const handleInscribir = async () => {
     try {
+      const result = await deleteDataAlert();
+      if (result.isConfirmed) {
       const alumnoId = await validarEstudianteRut(alumnoRut);
-      await inscribirAlumno(id, alumnoId);
+      
+       await inscribirAlumno(id, alumnoId);
+     
+      if (result.isConfirmed) {
       showSuccessAlert('Alumno inscrito en el taller con éxito');
       setAlumnoRut('');
+      }}
     } catch (error) {
       showErrorAlert('Error al inscribir al alumno', error.response?.data?.message || "Ocurrió un error");
     }
+    
   };
 
   const handleEliminar = async () => {

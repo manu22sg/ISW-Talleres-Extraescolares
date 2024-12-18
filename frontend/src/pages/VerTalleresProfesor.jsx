@@ -35,11 +35,11 @@ const TalleresProfesor = () => {
 
   return (
     <div>
-     <h1 style={{ marginTop: '130px', marginBottom: '20px', textAlign: 'center' }}>Talleres </h1>
+      <h1 style={{ marginTop: '100px', marginBottom: '20px', textAlign: 'center', fontSize: '2rem' }}>Talleres </h1>
       <ul>
         {talleres.map(taller => (
           <li key={taller.id}>
-            <h2>{taller.nombre}</h2>
+            <h2 style={{ fontSize: '1.5em', margin: '5px 0' }}>{taller.nombre}</h2>
             <p>{taller.descripcion}</p>
             <p>Estado: {taller.estado}</p>
             <p>Inscritos: {taller.inscritos}</p>

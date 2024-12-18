@@ -63,6 +63,7 @@ export const inscribirAlumno = async (tallerId, alumnoId) => {
     try {
       const response = await axios.post('/taller/inscripcion', { tallerId, alumnoId });
       console.log (response);
+      console.log(response.data);
       return response.data;
     } catch (error) {
       throw error;
@@ -104,7 +105,7 @@ export const inscribirAlumno = async (tallerId, alumnoId) => {
   export const inscribirComoEstudiante = async (tallerId) => {
     try {
       const response = await axios.post('/estudiante', { tallerId });
-      console.log(response.data);
+     
       return response.data;
     } catch (error) {
       throw error;
